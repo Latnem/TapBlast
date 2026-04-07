@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>TapBlast – Teacher Studio</title>
+<title>TapBlast – </title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -421,6 +421,7 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
   .lib-body{padding:0 12px 40px}
 }
 @media(max-width:400px){.quiz-grid{grid-template-columns:1fr}}
+.center{height:100vh;align-items:center;justify-content:center}.card{background:#fff;padding:40px;border-radius:20px;width:90%;max-width:420px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.1)}
 </style>
 </head>
 <body>
@@ -448,16 +449,16 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
 <div class="screen active" id="login-screen" style="justify-content:center;padding:24px">
   <div style="background:var(--surface);border-radius:24px;padding:34px 28px;max-width:420px;width:100%;box-shadow:var(--shadow2);text-align:center;border:1.5px solid var(--border)">
     <div style="font-size:2rem;font-weight:900;letter-spacing:-1px;margin-bottom:6px">Tap<em style="color:var(--red);font-style:normal">Blast</em> ⚡</div>
-    <div style="display:inline-flex;align-items:center;gap:6px;background:var(--purple-light);color:var(--purple-dark);padding:6px 12px;border-radius:999px;font-size:.78rem;font-weight:900;margin-bottom:14px">Teacher Studio</div>
+    <div style="display:inline-flex;align-items:center;gap:6px;background:var(--purple-light);color:var(--purple-dark);padding:6px 12px;border-radius:999px;font-size:.78rem;font-weight:900;margin-bottom:14px"></div>
     <h2 style="font-size:1.45rem;margin-bottom:8px">Sign in to create and host quizzes</h2>
     <p style="color:var(--text3);line-height:1.6;margin-bottom:22px">Teachers can manage folders, build quizzes, and host live games. Players join separately without an account.</p>
     <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:10px;padding:14px 18px;font-size:.96rem" onclick="signInTeacher('google')">Continue with Google</button>
     <button class="btn btn-outline" style="width:100%;justify-content:center;margin-bottom:12px;padding:14px 18px;font-size:.96rem" onclick="signInTeacher('microsoft')">Continue with Microsoft</button>
-    <details style="margin-bottom:16px;text-align:left;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:12px 14px"><summary style="cursor:pointer;font-weight:800;color:var(--text2)">Firebase setup</summary><div style="margin-top:10px;color:var(--text3);font-size:.78rem;line-height:1.6">Firebase config is already included in this file. Turn on Google Auth, Firestore, and Realtime Database in Firebase Console, add <code>latnem.github.io</code> to Authorized Domains, then deploy to GitHub Pages.</div></details>
+    <details style="margin-bottom:16px;text-align:left;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:12px 14px"><summary style="cursor:pointer;font-weight:800;color:var(--text2)"></summary><div style="margin-top:10px;color:var(--text3);font-size:.78rem;line-height:1.6">Firebase config is already included in this file. Turn on Google Auth, Firestore, and Realtime Database in Firebase Console, add <code>latnem.github.io</code> to Authorized Domains, then deploy to GitHub Pages.</div></details>
         <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
-      <a href="tapblast_join_cloud.html" class="btn btn-outline btn-sm" style="text-decoration:none">Public Join Page</a>
+      <a href="tapblast_join_cloud.html" class="btn btn-outline btn-sm" style="text-decoration:none"></a>
     </div>
-    <div style="margin-top:16px;color:var(--text3);font-size:.78rem;line-height:1.5">Cloud mode uses Firebase Auth, Firestore, and Realtime Database. Add your Firebase config below in the file before deploying.</div>
+    <div style="margin-top:16px;color:var(--text3);font-size:.78rem;line-height:1.5"></div>
   </div>
 </div>
 
@@ -467,14 +468,14 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
     <div class="lib-topbar-inner">
       <div>
         <div class="lib-logo">Tap<em>Blast</em> ⚡</div>
-        <div class="lib-hero-sub">Teacher Studio · Create, organize, and host quizzes live</div>
+        <div class="lib-hero-sub"> · Create, organize, and host quizzes live</div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end">
         <div id="teacher-badge" style="display:none;align-items:center;gap:8px;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.24);color:#fff;padding:8px 12px;border-radius:999px;font-size:.82rem;font-weight:800">
           <span>👩‍🏫</span>
           <span id="teacher-badge-text">Teacher</span>
         </div>
-        <a class="btn btn-outline btn-sm" href="tapblast_join_cloud.html" style="color:#fff;border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.12);text-decoration:none">Public Join Page</a>
+        <a class="btn btn-outline btn-sm" href="tapblast_join_cloud.html" style="color:#fff;border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.12);text-decoration:none"></a>
         <button class="btn" style="background:var(--purple);color:#fff;border-radius:999px;padding:9px 18px;font-size:.88rem" onclick="createNewQuiz()">+ New Quiz</button>
         <button class="btn btn-outline btn-sm" onclick="teacherLogout()" style="color:#fff;border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.08)">Sign Out</button>
       </div>
