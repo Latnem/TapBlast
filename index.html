@@ -444,21 +444,18 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
   <button onclick="$('app-banner').classList.add('hidden')" style="background:transparent;border:none;color:rgba(255,255,255,.6);cursor:pointer;font-size:1.2rem;padding:4px 8px;flex-shrink:0">✕</button>
 </div>
 
-
 <!-- ==================== TEACHER LOGIN ==================== -->
 <div class="screen active" id="login-screen" style="justify-content:center;padding:24px">
   <div style="background:var(--surface);border-radius:24px;padding:34px 28px;max-width:420px;width:100%;box-shadow:var(--shadow2);text-align:center;border:1.5px solid var(--border)">
     <div style="font-size:2rem;font-weight:900;letter-spacing:-1px;margin-bottom:6px">Tap<em style="color:var(--red);font-style:normal">Blast</em> ⚡</div>
-    <div style="display:inline-flex;align-items:center;gap:6px;background:var(--purple-light);color:var(--purple-dark);padding:6px 12px;border-radius:999px;font-size:.78rem;font-weight:900;margin-bottom:14px"></div>
-    <h2 style="font-size:1.45rem;margin-bottom:8px">Sign in to create and host quizzes</h2>
-    <p style="color:var(--text3);line-height:1.6;margin-bottom:22px">Teachers can manage folders, build quizzes, and host live games. Players join separately without an account.</p>
+    
+    <h2 style="font-size:1.45rem;margin-bottom:8px">Create and Host Quizzes</h2>
+    <p style="color:var(--text3);line-height:1.6;margin-bottom:22px">Teachers can manage folders, build quizzes, and host live games.<br><br>Players join separately without an account.</p>
     <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:10px;padding:14px 18px;font-size:.96rem" onclick="signInTeacher('google')">Continue with Google</button>
     <button class="btn btn-outline" style="width:100%;justify-content:center;margin-bottom:12px;padding:14px 18px;font-size:.96rem" onclick="signInTeacher('microsoft')">Continue with Microsoft</button>
-    <details style="margin-bottom:16px;text-align:left;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:12px 14px"><summary style="cursor:pointer;font-weight:800;color:var(--text2)"></summary><div style="margin-top:10px;color:var(--text3);font-size:.78rem;line-height:1.6">Firebase config is already included in this file. Turn on Google Auth, Firestore, and Realtime Database in Firebase Console, add <code>latnem.github.io</code> to Authorized Domains, then deploy to GitHub Pages.</div></details>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
-      <a href="tapblast_join_cloud.html" class="btn btn-outline btn-sm" style="text-decoration:none"></a>
-    </div>
-    <div style="margin-top:16px;color:var(--text3);font-size:.78rem;line-height:1.5"></div>
+    
+        
+    
   </div>
 </div>
 
@@ -468,14 +465,14 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
     <div class="lib-topbar-inner">
       <div>
         <div class="lib-logo">Tap<em>Blast</em> ⚡</div>
-        <div class="lib-hero-sub"> · Create, organize, and host quizzes live</div>
+        <div class="lib-hero-sub"> Create, organize, and host quizzes live</div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end">
         <div id="teacher-badge" style="display:none;align-items:center;gap:8px;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.24);color:#fff;padding:8px 12px;border-radius:999px;font-size:.82rem;font-weight:800">
           <span>👩‍🏫</span>
           <span id="teacher-badge-text">Teacher</span>
         </div>
-        <a class="btn btn-outline btn-sm" href="tapblast_join_cloud.html" style="color:#fff;border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.12);text-decoration:none"></a>
+        
         <button class="btn" style="background:var(--purple);color:#fff;border-radius:999px;padding:9px 18px;font-size:.88rem" onclick="createNewQuiz()">+ New Quiz</button>
         <button class="btn btn-outline btn-sm" onclick="teacherLogout()" style="color:#fff;border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.08)">Sign Out</button>
       </div>
@@ -523,11 +520,11 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
         <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px">
           <label style="display:flex;align-items:center;justify-content:space-between;text-transform:none;letter-spacing:0;font-size:.8rem;font-weight:700;cursor:pointer">
             <span>🔀 Shuffle questions</span>
-            <label class="toggle-switch"><input type="checkbox" id="opt-shuffle-q" onchange="saveQuizOptions()"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+            <label class="toggle-switch"><input type="checkbox" id="opt-shuffle-q" onchange="saveQuizOptions()"/></label>
           </label>
           <label style="display:flex;align-items:center;justify-content:space-between;text-transform:none;letter-spacing:0;font-size:.8rem;font-weight:700;cursor:pointer">
             <span>🔀 Shuffle answers</span>
-            <label class="toggle-switch"><input type="checkbox" id="opt-shuffle-a" onchange="saveQuizOptions()"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+            <label class="toggle-switch"><input type="checkbox" id="opt-shuffle-a" onchange="saveQuizOptions()"/></label>
           </label>
         </div>
       </div>
@@ -540,15 +537,13 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
 <div class="screen" id="host-lobby" style="padding:20px">
   <div style="text-align:center;margin-bottom:20px;color:#fff">
     <h2 style="font-size:1.4rem" id="lobby-quiz-title">My Quiz</h2>
-    <p style="color:rgba(255,255,255,.65);font-size:.88rem" id="lobby-q-count"></p>
+    
   </div>
   <div class="code-display">
     <div class="code-label">Room Code</div>
     <div class="code-number" id="lobby-code">----</div>
   </div>
-  <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:-4px 0 14px">
-    <button class="btn btn-outline btn-sm" onclick="copyJoinInfo()" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.35);color:#fff">📋 Copy Join Info</button>
-  </div>
+  
   <div style="display:flex;justify-content:center;margin:0 0 14px">
     <div style="background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);border-radius:18px;padding:14px 14px 10px;text-align:center;max-width:230px;width:100%">
       <div style="font-size:.72rem;font-weight:800;color:rgba(255,255,255,.62);letter-spacing:1px;margin-bottom:8px">SCAN TO JOIN</div>
@@ -662,7 +657,7 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
     <div id="sp-waiting" style="text-align:center;padding:36px 18px">
       <h2 style="color:#fff;font-size:1.5rem;margin-bottom:6px">You're in! 🎉</h2>
       <p id="sp-waiting-msg" style="color:rgba(255,255,255,.6);margin-bottom:22px">Waiting for the teacher to start…</p>
-      <div class="bounce-dots"><div class="bdot"></div><div class="bdot"></div><div class="bdot"></div><div class="bdot"></div></div>
+      <div class="bounce-dots"></div>
       <div style="margin-top:18px;font-size:.8rem;color:rgba(255,255,255,.45)" id="sp-room-info"></div>
     </div>
     <div id="sp-question-view" style="width:100%;display:none;flex-direction:column;align-items:center">
@@ -764,10 +759,10 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
             <!-- crop overlay: the card aspect ratio frame -->
             <div id="crop-frame" style="position:absolute;border:2.5px solid #fff;border-radius:8px;pointer-events:none;box-shadow:0 0 0 9999px rgba(0,0,0,.48)"></div>
             <!-- corner handles -->
-            <div class="crop-corner" style="top:0;left:0;border-top:3px solid #fff;border-left:3px solid #fff"></div>
-            <div class="crop-corner" style="top:0;right:0;border-top:3px solid #fff;border-right:3px solid #fff"></div>
-            <div class="crop-corner" style="bottom:0;left:0;border-bottom:3px solid #fff;border-left:3px solid #fff"></div>
-            <div class="crop-corner" style="bottom:0;right:0;border-bottom:3px solid #fff;border-right:3px solid #fff"></div>
+            
+            
+            
+            
           </div>
 
           <!-- Zoom controls -->
@@ -870,7 +865,7 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
         </div>
       </div>
       <div id="ai-gen-status" style="display:none" class="ai-loading">
-        <div class="ai-spin"></div><span>Generating questions…</span>
+        <span>Generating questions…</span>
       </div>
       <div id="ai-gen-preview" style="display:none;max-height:260px;overflow-y:auto;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:12px;margin-bottom:12px"></div>
       <div class="modal-footer">
@@ -1112,7 +1107,6 @@ function makeNewQuizObj(title='New Quiz',cover=0,emoji=''){
   return{id:uid(),title,cover,coverImg:null,emoji:emoji||COVER_EMOJIS[cover%COVER_EMOJIS.length],timePerQ:20,createdAt:Date.now(),updatedAt:Date.now(),questions:[]};
 }
 
-
 function renderQuizCard(q){
   const qCount=q.questions.length;
   const hasMedia=q.questions.some(qu=>qu.media||qu.answerMedia.some(Boolean));
@@ -1159,7 +1153,7 @@ function toggleCardMenu(e,id){
     <button onclick="openCoverSettings('${id}');closeMenu()">🎨 Change Cover</button>
     <button onclick="openMoveToFolder('${id}');closeMenu()">📁 Move to Folder</button>
     <button onclick="duplicateQuizInLibrary('${id}');closeMenu()">⧉ Duplicate</button>
-    <div class="dropdown-divider"></div>
+    
     <button class="danger" onclick="promptDelete('${id}');closeMenu()">🗑 Delete</button>`;
   btn.parentElement.appendChild(menu);
   // close on outside click
@@ -1289,8 +1283,7 @@ function switchCoverTab(tab){
 function renderCoverSwatches(){
   const grid=$('cover-swatch-grid');if(!grid)return;
   grid.innerHTML=COVER_GRADIENTS.map((g,i)=>`
-    <div class="cover-swatch${coverSettingsSelectedIdx===i?' selected':''}"
-      style="background:${g}" data-idx="${i}" onclick="selectCoverSwatch(${i})"></div>`).join('');
+    `).join('');
 }
 
 function selectCoverSwatch(i){
@@ -1627,10 +1620,7 @@ function renderNewCoverPicker(){
   const grid=$('new-cover-picker');
   if(!grid)return;
   grid.innerHTML=COVER_GRADIENTS.map((g,i)=>`
-    <div class="cover-swatch${selectedCover===i?' selected':''}"
-      style="background:${g}"
-      data-cover="${i}"
-      onclick="selectCover(${i})"></div>`).join('');
+    `).join('');
 }
 
 function selectCover(i){
@@ -1998,7 +1988,6 @@ function moveQ(i,dir){
 // HOST GAME
 // =============================================
 let room=null, timerInterval=null, lobbyPollInterval=null;
-
 
 function getJoinUrl(code){
   const basePath=(window.location.pathname||'/').replace(/index\.html$/,'');
@@ -2589,7 +2578,7 @@ async function searchImages(){
   const q=($('img-search-input').value||'').trim();
   if(!q)return;
   const status=$('img-search-status'),grid=$('img-search-grid');
-  status.innerHTML='<div class="ai-loading"><div class="ai-spin"></div> Searching…</div>';
+  status.innerHTML='<div class="ai-loading"> Searching…</div>';
   status.style.display='block';
   grid.innerHTML='';
   $('img-use-btn').style.display='none';
