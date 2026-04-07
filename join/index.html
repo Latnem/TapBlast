@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>TapBlast – Join a Room</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:'Nunito',sans-serif;background:#f5f6f8;color:#1f2f57;min-height:100vh}
+.wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.shell{width:100%;max-width:1080px;display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:stretch}
+.hero,.card{background:#fff;border-radius:28px;box-shadow:0 12px 38px rgba(0,0,0,.08);border:1px solid #e7e8ee}
+.hero{padding:40px 38px;background:linear-gradient(145deg,#1f2f57,#3f6db5);color:#fff;position:relative;overflow:hidden}
+.hero:after{content:'';position:absolute;right:-80px;bottom:-80px;width:220px;height:220px;background:rgba(255,255,255,.08);border-radius:50%}
+.brand{font-size:2.5rem;font-weight:900;letter-spacing:-1px;margin:0 0 10px}
+.brand em{color:#f0b323;font-style:normal}
+.pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);padding:7px 12px;border-radius:999px;font-size:.8rem;font-weight:900;margin-bottom:16px}
+.hero h2{font-size:2rem;line-height:1.1;margin:0 0 12px}
+.hero p{font-size:1rem;line-height:1.65;color:rgba(255,255,255,.82);max-width:520px}
+.hero-list{display:grid;gap:10px;margin-top:22px}
+.hero-item{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);padding:12px 14px;border-radius:16px;font-weight:800}
+.card{padding:30px}
+.card h3{margin:0 0 6px;font-size:1.55rem}
+.muted{color:#6d7285;line-height:1.6;margin-bottom:18px}
+label{display:block;font-size:.78rem;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#5b6278;margin-bottom:6px}
+input{width:100%;padding:15px 16px;border-radius:14px;border:2px solid #e0e2e8;font:inherit;margin-bottom:14px;outline:none}
+input:focus{border-color:#3f6db5;box-shadow:0 0 0 3px rgba(63,109,181,.12)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:14px;padding:14px 18px;font:inherit;font-weight:900;cursor:pointer;text-decoration:none}
+.btn-primary{width:100%;background:#3f6db5;color:#fff}
+.btn-primary:hover{filter:brightness(1.05)}
+.btn-outline{background:#fff;color:#1f2f57;border:2px solid #d9e2f4}
+.teacher-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.small{font-size:.82rem;color:#6d7285;margin-top:14px;line-height:1.55}
+@media(max-width:860px){.shell{grid-template-columns:1fr}.hero{padding:30px}.card{padding:24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="shell">
+    <section class="hero">
+      <div class="brand">Tap<em>Blast</em> ⚡</div>
+      <div class="pill">No account needed for players</div>
+      <h2>Join a live room fast.</h2>
+      <p>Enter the room code from your teacher, add your nickname, and jump into the game. Teachers create and host quizzes from the main TapBlast page.</p>
+      <div class="hero-list">
+        <div class="hero-item">⚡ Quick room join</div>
+        <div class="hero-item">🙋 No guest login required</div>
+        <div class="hero-item">📷 QR code or room code both work</div>
+      </div>
+    </section>
+    <section class="card">
+      <h3>Join a Room</h3>
+      <div class="muted">Enter your room code and nickname. This opens the TapBlast player join screen.</div>
+      <label for="roomCode">Room Code</label>
+      <input id="roomCode" type="text" placeholder="Enter room code" maxlength="6" inputmode="numeric"/>
+      <label for="nickname">Nickname</label>
+      <input id="nickname" type="text" placeholder="Your nickname" maxlength="20"/>
+      <button class="btn btn-primary" onclick="goJoin()">Join Game →</button>
+      <div class="teacher-actions">
+        <a class="btn btn-outline" href="../index.html">Teacher Sign In</a>
+      </div>
+      <div class="small">You do not need an account to join. Your teacher signs in separately on the main TapBlast page.</div>
+    </section>
+  </div>
+</div>
+<script>
+(function prefillFromUrl(){
+  const params=new URLSearchParams(location.search);
+  if(params.get('code')) document.getElementById('roomCode').value=(params.get('code')||'').replace(/\D/g,'').slice(0,6);
+  if(params.get('name')) document.getElementById('nickname').value=(params.get('name')||'').slice(0,20);
+})();
+function goJoin(){
+  const code=(document.getElementById('roomCode').value||'').replace(/\D/g,'').slice(0,6);
+  const name=(document.getElementById('nickname').value||'').trim().slice(0,20);
+  const q=new URLSearchParams();
+  if(code) q.set('code',code);
+  if(name) q.set('name',name);
+  location.href='../index.html'+(q.toString()?'?'+q.toString():'')+'#student-join';
+}
+</script>
+</body>
+</html>
