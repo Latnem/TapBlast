@@ -1026,7 +1026,7 @@ function getTeacherAuth(){
 function setTeacherAuth(data){
   localStorage.setItem(TEACHER_AUTH_KEY,JSON.stringify(data));
 }
-function signInTeacher(provider='demo'){
+function signInTeacherLegacy(provider='demo'){
   const providerName=provider==='google'?'Google':provider==='microsoft'?'Microsoft':'Demo';
   const name=provider==='google'?'Google Teacher':provider==='microsoft'?'Microsoft Teacher':'Demo Teacher';
   setTeacherAuth({provider:providerName,name,signedInAt:Date.now()});
@@ -1035,12 +1035,12 @@ function signInTeacher(provider='demo'){
   renderLibrary();
   toast(`Signed in with ${providerName}.`,'success');
 }
-function teacherLogout(){
+function teacherLogoutLegacy(){
   localStorage.removeItem(TEACHER_AUTH_KEY);
   showScreen('login-screen');
   toast('Signed out.');
 }
-function updateTeacherBadge(){
+function updateTeacherBadgeLegacy(){
   const auth=getTeacherAuth();
   const badge=$('teacher-badge');
   const txt=$('teacher-badge-text');
@@ -3073,14 +3073,17 @@ async function afterTeacherSignIn(){
   showScreen('library');
 }
 signInTeacher = async function(provider='google'){
-  if(!initFirebaseIfNeeded()){ toast('Add Firebase config first. Cloud mode is required here.','error'); return; }
+  if(!initFirebaseIfNeeded()){ toast('Firebase is not ready.','error'); return; }
   try{
     let prov;
     if(provider==='google') prov=new firebase.auth.GoogleAuthProvider();
     else if(provider==='microsoft') prov=new firebase.auth.OAuthProvider('microsoft.com');
-    else { toast('Use Google or Microsoft in cloud mode.','error'); return; }
+    else { toast('Only Google or Microsoft sign-in is available.','error'); return; }
     await fbAuth.signInWithPopup(prov);
-  }catch(err){ console.error(err); toast((err&&err.message)||'Sign-in failed','error'); }
+  }catch(err){
+    console.error(err);
+    toast((err&&err.message)||'Sign-in failed','error');
+  }
 };
 teacherLogout = async function(){
   try{
