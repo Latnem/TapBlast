@@ -1143,21 +1143,15 @@ function renderQuizCard(q){
 
 function toggleCardMenu(e,id){
   e.stopPropagation();
-  // remove any existing
   document.querySelectorAll('.dropdown-menu').forEach(d=>d.remove());
   const btn=e.currentTarget;
   const menu=document.createElement('div');
   menu.className='dropdown-menu';
   menu.innerHTML=`
-    <button onclick="editQuiz('${id}');closeMenu()">✏️ Edit</button>
-    <button onclick="hostQuiz('${id}');closeMenu()">Host Now</button>
-    <button onclick="openCoverSettings('${id}');closeMenu()">🎨 Change Cover</button>
-    <button onclick="openMoveToFolder('${id}');closeMenu()">📁 Move to Folder</button>
+    <button onclick="openMoveToFolder('${id}');closeMenu()">Move to Folder</button>
     <button onclick="duplicateQuizInLibrary('${id}');closeMenu()">Duplicate</button>
-    
-    <button class="danger" onclick="promptDelete('${id}');closeMenu()">Delete Delete</button>`;
+    <button class="danger" onclick="promptDelete('${id}');closeMenu()">Delete</button>`;
   btn.parentElement.appendChild(menu);
-  // close on outside click
   setTimeout(()=>document.addEventListener('click',closeMenu,{once:true}),0);
 }
 function closeMenu(){document.querySelectorAll('.dropdown-menu').forEach(d=>d.remove());}
@@ -1712,7 +1706,7 @@ function saveQuizToLibrary(thenHost){
   if(thenHost){
     const valid=editorQuiz.questions.filter(q=>{
       if(!q.text.trim())return false;
-      if(displayQ.type==='Type-In')return q.typeInAnswers&&q.typeInAnswers.some(a=>a.trim());
+      if(q.type==='Type-In')return q.typeInAnswers&&q.typeInAnswers.some(a=>a.trim());
       return q.answers.filter(a=>a&&a.trim()).length>=2;
     });
     if(valid.length===0){toast('Add at least 1 complete question','error');return;}
@@ -1759,7 +1753,7 @@ function renderSidebar(){
 
 function renderQuestionEditor(){
   const q=editorQuiz.questions[selectedQIndex];
-  const numAns=displayQ.type==='True/False'?2:4;
+  const numAns=q.type==='True/False'?2:4;
   const isTypeIn=q.type==='Type-In';
   $('editor-content').innerHTML=`
   <div class="q-editor-card">
@@ -1950,7 +1944,7 @@ function saveCurrentEditorState(){
   if(!editorQuiz||!editorQuiz.questions[selectedQIndex])return;
   const q=editorQuiz.questions[selectedQIndex];
   const ti=$('q-text-input');if(ti)q.text=ti.value;
-  if(displayQ.type==='Type-In'){
+  if(q.type==='Type-In'){
     const inputs=document.querySelectorAll('[id^="typein-ans-"]');
     if(inputs.length)q.typeInAnswers=Array.from(inputs).map(i=>i.value);
   } else {
@@ -2098,7 +2092,7 @@ function showHostQuestion(){
       <div style="color:rgba(255,255,255,.45);font-size:.75rem;margin-top:6px">${(displayQ.typeInAnswers||[]).filter(a=>a.trim()).length} accepted answer${(displayQ.typeInAnswers||[]).filter(a=>a.trim()).length!==1?'s':''} — revealed after time</div>
     </div>`;
   } else {
-  const numAns=displayQ.type==='True/False'?2:4;
+  const numAns=q.type==='True/False'?2:4;
   $('hq-ans-grid').innerHTML=Array.from({length:numAns},(_,i)=>{
     const am=((displayQ.answerMedia||[])[i]||null);const isV=am&&am.mimeType&&am.mimeType.startsWith('video');
     const med=am?(isV?`<video src="${am.dataURL}" style="max-height:44px;border-radius:5px;object-fit:cover;max-width:80px" muted autoplay loop></video>`
@@ -2177,28 +2171,36 @@ function studentPoll(){
   if(phase==='lobby')$('sp-room-info').textContent=r.players.length+' player'+(r.players.length!==1?'s':'')+' in room';
 }
 
+
+function getCurrentDisplayQuestion(r){
+  if(!r || !r.quiz || !r.quiz.questions) return null;
+  return r.quiz.questions[r.currentQ] || null;
+}
+
 function showStudentQuestion(){
-  const r=window.__room,q=r.quiz.questions[r.currentQ];
-  const numAns=displayQ.type==='True/False'?2:4;
+  const r=window.__room;
+  const q=getCurrentDisplayQuestion(r);
+  if(!r||!q)return;
+  const numAns=q.type==='True/False'?2:(q.type==='Type-In'?0:4);
   $('sp-waiting').style.display='none';$('sp-question-view').style.display='flex';
   $('sp-gameover').style.display='none';$('sp-feedback').style.display='none';
   $('sp-q-counter').textContent='Q '+(r.currentQ+1)+'/'+r.quiz.questions.length;
-  $('sp-score').textContent=studentState.score.toLocaleString();
-  $('sp-q-text').textContent=q.text;
+  $('sp-score').textContent=(studentState.score||0).toLocaleString();
+  $('sp-q-text').textContent=q.text||'';
   const mw=$('sp-q-media-wrap');
   if(q.media){mw.innerHTML=renderMediaForPlay(q.media).replace('hq-question-media','sp-q-media');}else mw.innerHTML='';
 
-  if(displayQ.type==='Type-In'){
+  if(q.type==='Type-In'){
     $('sp-ans-grid').innerHTML=`<div class="sp-typein-wrap" style="grid-column:1/-1">
       <input type="text" class="sp-typein-input" id="sp-typein-field"
-        placeholder="Type your answer…" autocomplete="off" autocorrect="off" spellcheck="false"
+        placeholder="Type your answer..." autocomplete="off" autocorrect="off" spellcheck="false"
         onkeydown="if(event.key==='Enter')studentTypeInSubmit()"/>
-      <button class="sp-typein-submit" id="sp-typein-btn" onclick="studentTypeInSubmit()">Submit Answer </button>
+      <button class="sp-typein-submit" id="sp-typein-btn" onclick="studentTypeInSubmit()">Submit Answer</button>
     </div>`;
     setTimeout(()=>{ const f=$('sp-typein-field');if(f)f.focus(); },100);
   } else {
     $('sp-ans-grid').innerHTML=Array.from({length:numAns},(_,i)=>{
-      const am=((displayQ.answerMedia||[])[i]||null);const isV=am&&am.mimeType&&am.mimeType.startsWith('video');
+      const am=((q.answerMedia||[])[i]||null);const isV=am&&am.mimeType&&am.mimeType.startsWith('video');
       const med=am?(isV?`<video src="${am.dataURL}" style="max-height:42px;border-radius:5px;object-fit:cover" muted autoplay loop class="sp-ans-media"></video>`
         :`<img src="${am.dataURL||am.url||''}" class="sp-ans-media"/>`):'';
       const label=q.answers[i]||(q.type==='True/False'?['True','False'][i]:'');
@@ -2220,7 +2222,7 @@ function studentTypeInSubmit(){
   studentState.answered=true;
   const q=r.quiz.questions[r.currentQ],player=studentState.playerRef;
   player.answered=true;
-  const accepted=(displayQ.typeInAnswers||[]).map(a=>a.trim().toLowerCase()).filter(Boolean);
+  const accepted=((q.typeInAnswers)||[]).map(a=>a.trim().toLowerCase()).filter(Boolean);
   const isCorrect=accepted.includes(typed.toLowerCase());
   player.lastCorrect=isCorrect;
   player.lastTypeInAnswer=typed;
@@ -2274,8 +2276,8 @@ function showStudentReveal(){
   const pts=player.lastPts||0;
   const streakTxt=player.streak>=5?` 🔥×${player.streak} streak!`:player.streak>=3?` 🔥 streak!`:'';
 
-  if(displayQ.type==='Type-In'){
-    const accepted=(displayQ.typeInAnswers||[]).filter(a=>a.trim());
+  if(q.type==='Type-In'){
+    const accepted=(q.typeInAnswers||[]).filter(a=>a.trim());
     const typed=player.lastTypeInAnswer||'(no answer)';
     if(player.lastCorrect){
       fb.innerHTML=`<div class="sp-feedback correct">✅ Correct! +${pts.toLocaleString()} pts${streakTxt}<span style="font-size:.82rem;font-weight:700;opacity:.8;display:block;margin-top:3px">Total: ${studentState.score.toLocaleString()}</span></div>`;
@@ -3241,25 +3243,33 @@ showHostQuestion = async function(){
   },1000);
 };
 revealAnswer = async function(){
-  clearInterval(timerInterval); room.phase='revealed';
+  clearInterval(timerInterval);
+  if(!room) return;
+  room.phase='revealed';
   await syncRoomState();
-  const q=room.quiz.questions[room.currentQ];
-  if(displayQ.type==='Type-In'){
-    const tags=(displayQ.typeInAnswers||[]).filter(a=>a.trim()).map(a=>`<span class="hq-typein-tag" style="background:rgba(76,255,145,.25);border:1px solid rgba(76,255,145,.5)">${esc(a)}</span>`).join('');
+  const q=getCurrentDisplayQuestion(room);
+  if(!q) return;
+  if(q.type==='Type-In'){
+    const tags=(q.typeInAnswers||[]).filter(a=>a.trim()).map(a=>`<span class="hq-typein-tag" style="background:rgba(76,255,145,.25);border:1px solid rgba(76,255,145,.5)">${esc(a)}</span>`).join('');
     $('hq-ans-grid').innerHTML=`<div class="hq-typein-display" style="grid-column:1/-1"><div class="hq-typein-answers">${tags}</div></div>`;
   } else {
-    const numAns=displayQ.type==='True/False'?2:4;
-    for(let i=0;i<numAns;i++){ const btn=$('hq-ans-'+i); if(!btn) continue; if(q.correct.includes(i)) btn.classList.add('correct-flash'); else btn.classList.add('dimmed'); }
+    const numAns=q.type==='True/False'?2:4;
+    for(let i=0;i<numAns;i++){
+      const btn=$('hq-ans-'+i);
+      if(!btn) continue;
+      if((q.correct||[]).includes(i)) btn.classList.add('correct-flash'); else btn.classList.add('dimmed');
+    }
   }
-  const correct=(room.players||[]).filter(p=>p.lastCorrect).length;
-  const wrong=(room.players||[]).filter(p=>p.answered&&!p.lastCorrect).length;
-  const noAns=(room.players||[]).filter(p=>!p.answered).length;
+  const players=(room.players||[]);
+  const correct=players.filter(p=>p.lastCorrect).length;
+  const wrong=players.filter(p=>p.answered&&!p.lastCorrect).length;
+  const noAns=players.filter(p=>!p.answered).length;
   $('hq-stat-bar').innerHTML=`<div class="hq-stat"><div class="hq-stat-num" style="color:#4cff91">${correct}</div><div class="hq-stat-lbl">correct</div></div><div class="hq-stat"><div class="hq-stat-num" style="color:#ff6b6b">${wrong}</div><div class="hq-stat-lbl">wrong</div></div><div class="hq-stat"><div class="hq-stat-num">${noAns}</div><div class="hq-stat-lbl">no answer</div></div>`;
   $('hq-mid-lb-btn').style.display='inline-flex';
   const isLast=room.currentQ>=room.quiz.questions.length-1;
   if(isLast) $('hq-final-btn').style.display='inline-flex'; else $('hq-next-btn').style.display='inline-flex';
 };
-nextQuestion = async function(){
+nextQuestion = async function(){nextQuestion = async function(){
   if(!room) return;
   room.currentQ += 1;
   if(room.currentQ >= room.quiz.questions.length){ return showFinalLeaderboard(); }
@@ -3297,49 +3307,61 @@ studentPoll = function(){};
 studentTypeInSubmit = async function(){
   if(!studentState||studentState.answered)return;
   const r=window.__room;if(!r||r.phase!=='question')return;
+  const q=getCurrentDisplayQuestion(r); if(!q) return;
   const field=$('sp-typein-field'); const typed=(field?field.value:'').trim(); if(!typed){ if(field)field.focus(); return; }
   const btn=$('sp-typein-btn'); if(field)field.disabled=true; if(btn)btn.disabled=true; studentState.answered=true;
-  const q=r.quiz.questions[r.currentQ]; const me=(r.players||[]).find(p=>p.id===studentState.playerId) || {score:studentState.score,streak:0,correctCount:0};
-  const accepted=(displayQ.typeInAnswers||[]).map(a=>a.trim().toLowerCase()).filter(Boolean); const isCorrect=accepted.includes(typed.toLowerCase());
+  const me=(r.players||[]).find(p=>p.id===studentState.playerId) || {score:studentState.score,streak:0,correctCount:0};
+  const accepted=(q.typeInAnswers||[]).map(a=>a.trim().toLowerCase()).filter(Boolean); const isCorrect=accepted.includes(typed.toLowerCase());
   const update={answered:true,lastCorrect:isCorrect,lastTypeInAnswer:typed};
   if(isCorrect){
     const streak=(me.streak||0)+1; const correctCount=(me.correctCount||0)+1; const pts=calcPoints(q,r,{...me,streak});
     Object.assign(update,{streak,correctCount,lastPts:pts,score:(me.score||0)+pts}); studentState.score=update.score; $('sp-score').textContent=studentState.score.toLocaleString(); showPtsPopup(pts,streak);
   } else { Object.assign(update,{streak:0,lastPts:0,score:me.score||0,correctCount:me.correctCount||0}); }
   await fbRTDB.ref(`rooms/${r.code}/players/${studentState.playerId}`).update(update);
-  $('sp-feedback').innerHTML=`<div style="background:rgba(255,255,255,.12);border-radius:14px;padding:11px 18px;text-align:center;color:rgba(255,255,255,.75);font-weight:800;margin-top:8px">⏳ Answer locked in!</div>`;
+  $('sp-feedback').innerHTML=`<div style="background:rgba(255,255,255,.12);border-radius:14px;padding:11px 18px;text-align:center;color:rgba(255,255,255,.75);font-weight:800;margin-top:8px">Answer locked in!</div>`;
   $('sp-feedback').style.display='block';
 };
 studentAnswer = async function(idx){
   if(!studentState||studentState.answered)return;
   const r=window.__room;if(!r||r.phase!=='question')return;
+  const q=getCurrentDisplayQuestion(r); if(!q) return;
   studentState.answered=true;
-  const q=r.quiz.questions[r.currentQ]; const me=(r.players||[]).find(p=>p.id===studentState.playerId) || {score:studentState.score,streak:0,correctCount:0};
-  const isCorrect=q.correct.includes(idx); const update={answered:true,lastCorrect:isCorrect,answerIndex:idx};
+  const me=(r.players||[]).find(p=>p.id===studentState.playerId) || {score:studentState.score,streak:0,correctCount:0};
+  const isCorrect=(q.correct||[]).includes(idx); const update={answered:true,lastCorrect:isCorrect,answerIndex:idx};
   if(isCorrect){
     const streak=(me.streak||0)+1; const correctCount=(me.correctCount||0)+1; const pts=calcPoints(q,r,{...me,streak});
     Object.assign(update,{streak,correctCount,lastPts:pts,score:(me.score||0)+pts}); studentState.score=update.score; $('sp-score').textContent=studentState.score.toLocaleString(); showPtsPopup(pts,streak);
   } else { Object.assign(update,{streak:0,lastPts:0,score:me.score||0,correctCount:me.correctCount||0}); }
   await fbRTDB.ref(`rooms/${r.code}/players/${studentState.playerId}`).update(update);
-  for(let i=0;i<4;i++){const b=$('sp-ans-'+i);if(!b)continue;if(i!==idx)b.classList.add('dimmed-out');b.disabled=true;} if($('sp-ans-'+idx)) $('sp-ans-'+idx).classList.add('selected');
-  $('sp-feedback').innerHTML=`<div style="background:rgba(255,255,255,.12);border-radius:14px;padding:11px 18px;text-align:center;color:rgba(255,255,255,.75);font-weight:800;margin-top:8px">⏳ Answer locked in!</div>`;
+  const numAns=q.type==='True/False'?2:4;
+  for(let i=0;i<numAns;i++){const b=$('sp-ans-'+i);if(!b)continue;if(i!==idx)b.classList.add('dimmed-out');b.disabled=true;}
+  if($('sp-ans-'+idx)) $('sp-ans-'+idx).classList.add('selected');
+  $('sp-feedback').innerHTML=`<div style="background:rgba(255,255,255,.12);border-radius:14px;padding:11px 18px;text-align:center;color:rgba(255,255,255,.75);font-weight:800;margin-top:8px">Answer locked in!</div>`;
   $('sp-feedback').style.display='block';
 };
 showStudentReveal = function(){
-  const r=window.__room,q=r.quiz.questions[r.currentQ],player=(r.players||[]).find(p=>p.id===studentState.playerId) || {lastPts:0,lastCorrect:false,streak:0};
-  const fb=$('sp-feedback'); const pts=player.lastPts||0; const streakTxt=player.streak>=5?` 🔥×${player.streak} streak!`:player.streak>=3?` 🔥 streak!`:'';
-  if(displayQ.type==='Type-In'){
-    const accepted=(displayQ.typeInAnswers||[]).filter(a=>a.trim()); const typed=player.lastTypeInAnswer||'(no answer)';
-    fb.innerHTML=player.lastCorrect?`<div class="sp-feedback correct">✅ Correct! +${pts.toLocaleString()} pts${streakTxt}<span style="font-size:.82rem;font-weight:700;opacity:.8;display:block;margin-top:3px">Total: ${(player.score||studentState.score).toLocaleString()}</span></div>`:`<div class="sp-feedback wrong">❌ Wrong — you typed: "<em style="font-style:normal">${esc(typed)}</em>"<div style="font-size:.8rem;opacity:.85;margin-top:4px">Accepted: ${accepted.map(a=>`<strong>${esc(a)}</strong>`).join(', ')}</div></div>`;
+  const r=window.__room;
+  const q=getCurrentDisplayQuestion(r);
+  const player=(r&&r.players||[]).find(p=>p.id===studentState.playerId) || {lastPts:0,lastCorrect:false,streak:0,score:studentState.score};
+  const fb=$('sp-feedback'); const pts=player.lastPts||0; const streakTxt=player.streak>=5?` x${player.streak} streak!`:player.streak>=3?` streak!`:'';
+  if(!q) return;
+  if(q.type==='Type-In'){
+    const accepted=(q.typeInAnswers||[]).filter(a=>a.trim()); const typed=player.lastTypeInAnswer||'(no answer)';
+    fb.innerHTML=player.lastCorrect
+      ?`<div class="sp-feedback correct">Correct! +${pts.toLocaleString()} pts${streakTxt}<span style="font-size:.82rem;font-weight:700;opacity:.8;display:block;margin-top:3px">Total: ${(player.score||studentState.score).toLocaleString()}</span></div>`
+      :`<div class="sp-feedback wrong">Wrong — you typed: "<em style="font-style:normal">${esc(typed)}</em>"<div style="font-size:.8rem;opacity:.85;margin-top:4px">Accepted: ${accepted.map(a=>`<strong>${esc(a)}</strong>`).join(', ')}</div></div>`;
     fb.style.display='block';
     const f=$('sp-typein-field'),b=$('sp-typein-btn'); if(f)f.disabled=true; if(b)b.disabled=true;
   } else {
-    for(let i=0;i<4;i++){const b=$('sp-ans-'+i);if(!b)continue;if(q.correct.includes(i)){b.classList.remove('dimmed-out');b.classList.add('correct-reveal');}b.disabled=true;}
-    fb.innerHTML=player.lastCorrect?`<div class="sp-feedback correct">✅ Correct! +${pts.toLocaleString()} pts${streakTxt}<span style="font-size:.82rem;font-weight:700;opacity:.8;display:block;margin-top:3px">Total: ${(player.score||studentState.score).toLocaleString()}</span></div>`:`<div class="sp-feedback wrong">❌ Wrong! Streak reset.</div>`;
+    const numAns=q.type==='True/False'?2:4;
+    for(let i=0;i<numAns;i++){const b=$('sp-ans-'+i);if(!b)continue;if((q.correct||[]).includes(i)){b.classList.remove('dimmed-out');b.classList.add('correct-reveal');}b.disabled=true;}
+    fb.innerHTML=player.lastCorrect
+      ?`<div class="sp-feedback correct">Correct! +${pts.toLocaleString()} pts${streakTxt}<span style="font-size:.82rem;font-weight:700;opacity:.8;display:block;margin-top:3px">Total: ${(player.score||studentState.score).toLocaleString()}</span></div>`
+      :`<div class="sp-feedback wrong">Wrong! Streak reset.</div>`;
     fb.style.display='block';
   }
 };
-showStudentGameOver = function(){
+showStudentGameOver = function(){showStudentGameOver = function(){
   $('sp-question-view').style.display='none'; $('sp-gameover').style.display='block';
   const r=window.__room || room || {players:[]};
   const me=(r.players||[]).find(p=>p.id===studentState.playerId) || {score:studentState.score};
