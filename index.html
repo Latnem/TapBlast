@@ -125,7 +125,8 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
 .editor-main{display:flex;width:100%;flex:1}
 .editor-sidebar{width:210px;background:var(--surface);border-right:1.5px solid var(--border);padding:14px 10px;min-height:calc(100vh - 58px);flex-shrink:0;display:flex;flex-direction:column;gap:5px;overflow-y:auto}
 .editor-sidebar-title{font-size:.72rem;font-weight:800;color:var(--text3);letter-spacing:1px;text-transform:uppercase;padding:0 8px;margin-bottom:5px}
-.q-thumb{background:var(--surface2);border:2px solid var(--border);border-radius:11px;padding:9px 11px;cursor:pointer;transition:border .18s,background .18s;position:relative}
+#sidebar-list{padding:4px 6px}
+.q-thumb{background:var(--surface2);border:2px solid var(--border);border-radius:11px;padding:9px 11px;cursor:pointer;transition:border .18s,background .18s;position:relative;margin-bottom:10px}
 .q-thumb:hover{border-color:var(--purple)}
 .q-thumb.selected{border-color:var(--purple);background:var(--purple-light)}
 .q-thumb-num{font-size:.7rem;font-weight:800;color:var(--text3);margin-bottom:3px}
@@ -194,6 +195,7 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
 .question-textarea{font-size:1.1rem;font-weight:800;border-radius:var(--radius-lg);min-height:76px;resize:none}
 .media-zone{border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:16px;text-align:center;cursor:pointer;transition:all .18s;background:var(--surface2);position:relative;overflow:hidden}
 .media-zone:hover{border-color:var(--purple);background:var(--purple-light)}
+.media-zone.drag-over{border-color:var(--purple);background:var(--purple-light);box-shadow:0 0 0 3px #7c4dff1a}
 .media-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .media-zone-icon{font-size:1.6rem;margin-bottom:5px}
 .media-zone-label{font-size:.82rem;color:var(--text2);font-weight:700}
@@ -787,12 +789,6 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
             <button class="btn btn-outline btn-sm" onclick="$('crop-file-input').click()" style="gap:5px">📁 Change</button>
             <button class="btn btn-danger btn-sm" onclick="clearCropImage()" style="gap:5px;margin-left:auto">✕ Remove</button>
           </div>
-
-          <!-- Emoji on image -->
-          <div style="margin-top:14px">
-            <label>Cover Emoji (shown over image)</label>
-            <input type="text" id="cover-emoji-image" placeholder="e.g. 🧬" maxlength="4" style="width:90px"/>
-          </div>
         </div>
       </div>
 
@@ -1200,7 +1196,6 @@ function openCoverSettings(id){
   // set emoji fields
   const emoji=q.emoji||'';
   $('cover-emoji-color').value=emoji;
-  if($('cover-emoji-image'))$('cover-emoji-image').value=emoji;
   // decide initial tab
   const startTab=q.coverImg?'image':'color';
   renderCoverSwatches();
@@ -1547,7 +1542,7 @@ function saveCoverSettings(){
       mimeType:cropImgMime||'image/jpeg',
       cropState:{scale:cropScale,ox:cropOffsetX,oy:cropOffsetY}
     };
-    const emoji=$('cover-emoji-image')&&$('cover-emoji-image').value.trim();
+    const emoji=$('cover-emoji-color')&&$('cover-emoji-color').value.trim();
     if(emoji)quizLibrary[idx].emoji=emoji;
   } else if(coverActiveTab==='color'){
     quizLibrary[idx].coverImg=null;
@@ -1749,10 +1744,14 @@ function renderQuestionEditor(){
 
 function renderMediaZone(id,ctx){
   return `<div style="display:flex;flex-direction:column;gap:6px">
-    <div class="media-zone" onclick="triggerFile('${id}')">
+    <div class="media-zone"
+         onclick="triggerFile('${id}')"
+         ondragover="handleMediaDragOver(event)"
+         ondragleave="handleMediaDragLeave(event)"
+         ondrop="handleMediaDrop(event,'${ctx}','${id}')">
       <input type="file" id="${id}-input" accept="image/*,video/*,image/gif" onchange="handleMedia('${id}','${ctx}')" style="display:none"/>
       <div class="media-zone-icon">🖼️</div>
-      <div class="media-zone-label">Click to upload image, GIF, or video</div>
+      <div class="media-zone-label">Click or drag and drop image, GIF, or video</div>
       <div class="media-zone-hint">JPG · PNG · WebP · GIF · MP4 · WebM</div>
     </div>
     <div style="display:flex;gap:6px">
@@ -1864,10 +1863,25 @@ function renderAnswerTile(q,i){
 }
 
 function triggerFile(id){const el=$(id+'-input');if(el)el.click();}
-function handleMedia(id,ctx){
-  const input=$(id+'-input');
-  if(!input||!input.files||!input.files[0])return;
-  const file=input.files[0];
+function handleMediaDragOver(event){
+  event.preventDefault();
+  const zone=event.currentTarget;
+  if(zone)zone.classList.add('drag-over');
+}
+function handleMediaDragLeave(event){
+  const zone=event.currentTarget;
+  if(zone)zone.classList.remove('drag-over');
+}
+function handleMediaDrop(event,ctx,id){
+  event.preventDefault();
+  const zone=event.currentTarget;
+  if(zone)zone.classList.remove('drag-over');
+  const files=event.dataTransfer&&event.dataTransfer.files;
+  if(!files||!files[0])return;
+  handleMediaFile(files[0],ctx,id);
+}
+function handleMediaFile(file,ctx,id){
+  if(!file)return;
   if(file.size>10*1024*1024){toast('File too large (max 10 MB)','error');return;}
   const reader=new FileReader();
   reader.onload=e=>{
@@ -1875,8 +1889,15 @@ function handleMedia(id,ctx){
     const q=editorQuiz.questions[selectedQIndex];
     if(ctx==='q')q.media=m; else q.answerMedia[parseInt(ctx)]=m;
     saveCurrentEditorState();renderSidebar();renderQuestionEditor();toast('Media added!','success');
+    const input=$(id+'-input');
+    if(input) input.value='';
   };
   reader.readAsDataURL(file);
+}
+function handleMedia(id,ctx){
+  const input=$(id+'-input');
+  if(!input||!input.files||!input.files[0])return;
+  handleMediaFile(input.files[0],ctx,id);
 }
 function removeMedia(ctx){
   const q=editorQuiz.questions[selectedQIndex];
