@@ -387,13 +387,14 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
 .sp-q-box{width:100%;background:rgba(255,255,255,.1);border-radius:var(--radius-xl);padding:14px;text-align:center;margin-bottom:12px}
 .sp-q-media{max-width:100%;max-height:150px;border-radius:var(--radius);object-fit:contain;margin-bottom:8px}
 .sp-q-text{font-size:1.05rem;font-weight:900;color:#fff;line-height:1.4}
-.sp-ans-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;width:100%}
-.sp-ans-btn{border:none;border-radius:var(--radius-lg);padding:20px 12px;font-family:var(--font);font-weight:900;font-size:.95rem;cursor:pointer;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:transform .12s,opacity .14s;min-height:76px}
+.sp-ans-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+.sp-ans-btn{border:none;border-radius:18px;padding:14px;font-family:var(--font);font-weight:900;font-size:1rem;cursor:pointer;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:transform .12s,opacity .14s,box-shadow .14s,border .14s;min-height:132px;aspect-ratio:1/1;text-align:center}
 .sp-ans-btn-0{background:#e21b3c}.sp-ans-btn-1{background:#1368ce}
 .sp-ans-btn-2{background:#d89e00}.sp-ans-btn-3{background:#26890c}
 .sp-ans-btn:hover:not(:disabled){transform:scale(1.04)}
 .sp-ans-btn.dimmed-out{opacity:.26}
 .sp-ans-btn.correct-reveal{border:3px solid #fff}
+.sp-ans-btn.selected{box-shadow:0 0 0 4px rgba(255,255,255,.35);border:3px solid rgba(255,255,255,.95)}
 .sp-ans-media{max-height:44px;border-radius:5px;object-fit:cover}
 .sp-feedback{border-radius:var(--radius-xl);padding:14px 22px;text-align:center;margin-top:10px;font-size:1.1rem;font-weight:900;color:#fff;animation:fadeUp .28s ease;width:100%}
 .sp-feedback.correct{background:#26890c}.sp-feedback.wrong{background:#e21b3c}
@@ -414,7 +415,9 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
 
 /* RESPONSIVE */
 @media(max-width:620px){
-  .ans-grid,.hq-ans-grid,.sp-ans-grid{grid-template-columns:1fr}
+  .ans-grid,.hq-ans-grid{grid-template-columns:1fr}
+  .sp-ans-grid{grid-template-columns:1fr 1fr}
+  .sp-ans-btn{min-height:140px;aspect-ratio:1/1;font-size:1rem;padding:12px}
   .editor-sidebar{display:none}
   .code-number{font-size:2.8rem;letter-spacing:7px}
   .quiz-grid{grid-template-columns:1fr 1fr}
@@ -558,7 +561,7 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
   </div>
   <div class="player-chips" id="player-chips"></div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
-    <button class="btn btn-lg" style="background:var(--purple);color:#fff" id="start-btn" onclick="startGame()" disabled>▶ Start Game</button>
+    <button class="btn btn-lg" style="background:var(--purple);color:#fff" id="start-btn" onclick="startGame()" disabled>Start Quiz</button>
     <button class="btn btn-ghost btn-sm" onclick="showScreen('library')" style="color:rgba(255,255,255,.55)">← Library</button>
   </div>
 </div>
@@ -585,8 +588,8 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
     <div class="hq-ans-grid" id="hq-ans-grid"></div>
     <div class="hq-stat-bar" id="hq-stat-bar"></div>
     <div style="text-align:center;margin-top:14px;display:flex;gap:9px;flex-wrap:wrap;justify-content:center" id="hq-btn-row">
-      <button class="btn btn-kahoot" id="hq-next-btn" onclick="nextQuestion()" style="display:none">Next →</button>
-      <button class="btn btn-kahoot" id="hq-mid-lb-btn" onclick="showMidLeaderboard()" style="display:none">📊 Scores</button>
+      <button class="btn btn-kahoot" id="hq-next-btn" onclick="nextQuestion()" style="display:none">Next</button>
+      <button class="btn btn-kahoot" id="hq-mid-lb-btn" onclick="revealAnswer()" style="display:none">Show Results</button>
       <button class="btn" id="hq-final-btn" onclick="showFinalLeaderboard()" style="display:none;background:var(--purple);color:#fff">🏆 Final Results</button>
     </div>
   </div>
@@ -597,7 +600,7 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
   <div class="mid-lb-title" id="mid-lb-title" style="font-size:1.45rem;font-weight:900;color:#fff;margin-bottom:18px;text-align:center">📊 After Question 1</div>
   <div class="mid-lb-list" id="mid-lb-list" style="width:100%;max-width:480px"></div>
   <div style="display:flex;gap:9px;margin-top:14px;flex-wrap:wrap;justify-content:center">
-    <button class="btn btn-kahoot" id="mid-lb-next-btn" onclick="proceedFromMidLB()">Next Question →</button>
+    <button class="btn btn-kahoot" id="mid-lb-next-btn" onclick="proceedFromMidLB()">Next</button>
     <button class="btn" style="background:var(--purple);color:#fff" id="mid-lb-final-btn" onclick="showFinalLeaderboard()">🏆 Final Results</button>
   </div>
 </div>
@@ -2264,32 +2267,35 @@ function showStudentGameOver(){
 // KAHOOT-STYLE SCORING ENGINE
 // =============================================
 /**
- * Kahoot point system (always 1000 base — no per-question setting):
- *   Base = 1000 pts for every correct answer
- *   Speed bonus = up to +500 (50% of base) for instant answer, scales linearly with time left
- *   Streak bonus: 3 = +100, 4 = +200, 5+ = +300
- *   Max per question = 1000 + 500 + 300 = 1800 pts
+ * Kahoot-style standard scoring:
+ * Correct answer gets up to 1000 points based on response speed.
+ * No streak bonus points. Streak is visual only.
  */
 function calcPoints(q, r, player){
-  const base=1000;
-  const timeLeft=Math.max(0,r._currentTimer||0);
-  const timeLimit=r.quiz.timePerQ||20;
-  const speedBonus=Math.round(base*0.5*(timeLeft/timeLimit));
-  const streak=player.streak||1;
-  const streakBonus=streak===3?100:streak===4?200:streak>=5?300:0;
-  return base+speedBonus+streakBonus;
+  const timerSeconds=(r.quiz.timePerQ||20);
+  const responseMs=Math.max(0, Math.min(player.answerMs||timerSeconds*1000, timerSeconds*1000));
+  const responseTime=responseMs/1000;
+  if(responseTime < 0.5) return 1000;
+  const raw = 1000 * (1 - ((responseTime / timerSeconds) / 2));
+  return Math.max(0, Math.round(raw));
+}
+
+function getStreakMessage(streak){
+  if(streak>=8){ const opts=['🔥 Unstoppable!','🚀 On a roll!','🌈 Legendary streak!']; return opts[Math.floor(Math.random()*opts.length)]; }
+  if(streak>=5){ const opts=['🔥 On fire!','⚡ Hot streak!','✨ Can’t miss!']; return opts[Math.floor(Math.random()*opts.length)]; }
+  if(streak>=3){ const opts=['🔥 Answer streak!','💥 Heating up!','⚡ Nice streak!']; return opts[Math.floor(Math.random()*opts.length)]; }
+  if(streak>=2){ const opts=['👏 Nice!','🎯 Back-to-back!','✅ Keeping it going!']; return opts[Math.floor(Math.random()*opts.length)]; }
+  return '';
 }
 
 function showPtsPopup(pts, streak){
-  // Floating +pts animation
   const el=document.createElement('div');
   el.className='pts-toast';
   el.textContent='+'+pts.toLocaleString();
   document.body.appendChild(el);
   setTimeout(()=>el.remove(),950);
-  // Streak toast for 3+
-  if(streak>=3){
-    let msg=streak>=5?`🔥 ${streak}× Streak! +300 bonus`:`🔥 ${streak}× Streak! +${streak===3?100:200} bonus`;
+  const msg=getStreakMessage(streak);
+  if(msg){
     const st=document.createElement('div');
     st.className='streak-toast';
     st.textContent=msg;
@@ -3087,9 +3093,13 @@ function listenStudentRoom(code){
     const phase=data.phase;
     const me=(data.players||[]).find(p=>p.id===studentState.playerId);
     if(me){ studentState.score=me.score||0; $('sp-score').textContent=studentState.score.toLocaleString(); }
-    if(phase==='question'&&studentState.lastPhase!=='question'){
+    if(phase==='countdown'){
+      studentState.lastPhase='countdown'; showStudentCountdown(data._countdown);
+    }else if(phase==='question'&&studentState.lastPhase!=='question'){
       studentState.lastPhase='question'; studentState.answered=false; showStudentQuestion();
-    }else if(phase==='revealed'&&studentState.lastPhase==='question'){
+    }else if(phase==='question-ended'){
+      studentState.lastPhase='question-ended'; $('sp-waiting').style.display='block'; $('sp-question-view').style.display='none'; $('sp-waiting-msg').textContent='Time is up — waiting for results…'; $('sp-room-info').textContent='Teacher is about to reveal the answer';
+    }else if(phase==='revealed'&&studentState.lastPhase!=='revealed'){
       studentState.lastPhase='revealed'; showStudentReveal();
     }else if(phase==='gameover'&&studentState.lastPhase!=='gameover'){
       studentState.lastPhase='gameover'; showStudentGameOver();
@@ -3134,16 +3144,85 @@ hostQuiz = async function(id){
     showScreen('host-lobby');
   }catch(err){ console.error(err); toast((err&&err.message)||'Unable to host room','error'); }
 };
+
+function getPlayerById(arr,id){ return (arr||[]).find(p=>p.id===id); }
+
+async function startQuestionCountdown(){
+  if(!room) return;
+  clearInterval(timerInterval);
+  room.phase='countdown';
+  room._countdown=3;
+  room._currentTimer=room.quiz.timePerQ||20;
+  await syncRoomState();
+  showScreen('host-question');
+  const q=room.quiz.questions[room.currentQ];
+  $('hq-q-counter').textContent=(room.currentQ+1)+'/'+room.quiz.questions.length;
+  $('hq-q-label').textContent='GET READY';
+  $('hq-q-text').textContent=q&&q.text?q.text:'Upcoming question';
+  $('hq-q-media-wrap').innerHTML='';
+  $('hq-ans-grid').innerHTML=`<div class="hq-typein-display" style="grid-column:1/-1"><div style="font-size:3rem;font-weight:900;color:#fff" id="hq-precount">3</div><div style="color:rgba(255,255,255,.75);font-weight:800;letter-spacing:1px;text-transform:uppercase">Question starts soon</div></div>`;
+  $('hq-stat-bar').innerHTML='';
+  $('hq-mid-lb-btn').style.display='none'; $('hq-next-btn').style.display='none'; $('hq-final-btn').style.display='none';
+  $('hq-progress').style.width='100%'; $('hq-timer-num').textContent='3'; updateArc(3,3);
+  let c=3;
+  timerInterval=setInterval(async ()=>{
+    c--;
+    room._countdown=c;
+    await roomDbRef(room.code).update({_countdown:c,phase:'countdown'});
+    if($('hq-precount')) $('hq-precount').textContent=c>0?String(c):'Go!';
+    $('hq-timer-num').textContent=c>0?String(c):'Go';
+    updateArc(Math.max(c,0),3);
+    $('hq-progress').style.width=(Math.max(c,0)/3*100)+'%';
+    if(c<=0){ clearInterval(timerInterval); setTimeout(()=>{ showHostQuestion(); },350); }
+  },1000);
+}
+
+async function finalizeQuestionScoring(){
+  const q=room.quiz.questions[room.currentQ];
+  (room.players||[]).forEach(p=>{
+    const answered=!!p.answered;
+    let isCorrect=false;
+    if(q.type==='Type-In'){
+      const accepted=(q.typeInAnswers||[]).map(a=>(a||'').trim().toLowerCase()).filter(Boolean);
+      isCorrect=answered && accepted.includes(((p.lastTypeInAnswer||'').trim().toLowerCase()));
+    } else {
+      isCorrect=answered && Array.isArray(q.correct) && q.correct.includes(p.answerIndex);
+    }
+    p.lastCorrect=isCorrect;
+    if(isCorrect){
+      p.streak=(p.streak||0)+1;
+      p.correctCount=(p.correctCount||0)+1;
+      const pts=calcPoints(q,room,p);
+      p.lastPts=pts;
+      p.score=(p.score||0)+pts;
+    } else {
+      p.streak=0;
+      p.lastPts=0;
+    }
+  });
+  room.phase='revealed';
+  await syncRoomState();
+}
+
+function showStudentCountdown(sec){
+  $('sp-waiting').style.display='block';
+  $('sp-question-view').style.display='none';
+  $('sp-gameover').style.display='none';
+  $('sp-waiting-msg').textContent=sec>0?`Get ready... ${sec}`:'Go!';
+  $('sp-room-info').textContent='Question '+(room.currentQ+1)+' of '+room.quiz.questions.length;
+  $('sp-timer').textContent=sec>0?sec:'Go';
+}
+
 startGame = async function(){
   if(!room) return;
   room.phase='playing';
-  room.players.forEach(p=>{p.score=0;p.answered=false;p.lastCorrect=false;p.streak=0;p.correctCount=0;p.lastPts=0;p.answerIndex=null;p.lastTypeInAnswer='';});
+  room._prevScores={};
+  room.players.forEach(p=>{p.score=0;p.answered=false;p.lastCorrect=false;p.streak=0;p.correctCount=0;p.lastPts=0;p.answerIndex=null;p.lastTypeInAnswer='';p.answerMs=null;});
   if(room.quiz.options&&room.quiz.options.shuffleQ){ room.quiz.questions=shuffle([...room.quiz.questions]); }
   room.currentQ=0;
   $('pin-badge-code').textContent=room.code;
   $('pin-badge').classList.add('visible');
-  await syncRoomState();
-  showHostQuestion();
+  await startQuestionCountdown();
 };
 showHostQuestion = async function(){
   clearInterval(timerInterval);
@@ -3156,17 +3235,15 @@ showHostQuestion = async function(){
     const baseAnswerMedia = Array.isArray(q.answerMedia) ? q.answerMedia : [];
     const pairs=baseAnswers.map((a,i)=>({a,isCorrect:baseCorrect.includes(i),m:baseAnswerMedia[i]}));
     const shuffled=shuffle([...pairs]);
-    displayQ={...q,_answersShuffled:true,
-      answers:shuffled.map(p=>p.a),
-      correct:shuffled.map((p,i)=>p.isCorrect?i:-1).filter(i=>i>=0),
-      answerMedia:shuffled.map(p=>p.m)
-    };
+    displayQ={...q,_answersShuffled:true,answers:shuffled.map(p=>p.a),correct:shuffled.map((p,i)=>p.isCorrect?i:-1).filter(i=>i>=0),answerMedia:shuffled.map(p=>p.m)};
     room.quiz.questions[room.currentQ]=displayQ;
   }
   const total=room.quiz.questions.length;
   const timeLimit=room.quiz.timePerQ||20;
-  room.phase='question'; room._currentTimer=timeLimit;
-  room.players.forEach(p=>{p.answered=false;p.lastCorrect=false;p.lastPts=0;p.answerIndex=null;p.lastTypeInAnswer='';});
+  room.phase='question';
+  room._currentTimer=timeLimit;
+  room._questionStartedAt=Date.now();
+  room.players.forEach(p=>{p.answered=false;p.lastCorrect=false;p.lastPts=0;p.answerIndex=null;p.lastTypeInAnswer='';p.answerMs=null;});
   await syncRoomState();
   showScreen('host-question');
   $('hq-q-counter').textContent=(room.currentQ+1)+'/'+total;
@@ -3174,8 +3251,7 @@ showHostQuestion = async function(){
   $('hq-q-text').textContent=displayQ.text;
   const mw=$('hq-q-media-wrap');
   if(displayQ.media){const isV=displayQ.media.mimeType&&displayQ.media.mimeType.startsWith('video');
-    mw.innerHTML=isV?`<video src="${displayQ.media.dataURL}" autoplay muted loop class="hq-question-media"></video>`
-      :`<img src="${displayQ.media.dataURL}" class="hq-question-media"/>`; } else mw.innerHTML='';
+    mw.innerHTML=isV?`<video src="${displayQ.media.dataURL}" autoplay muted loop class="hq-question-media"></video>`:`<img src="${displayQ.media.dataURL}" class="hq-question-media"/>`; } else mw.innerHTML='';
   if(displayQ.type==='Type-In'){
     $('hq-ans-grid').innerHTML=`<div class="hq-typein-display" style="grid-column:1/-1"><div class="hq-typein-answers">${(displayQ.typeInAnswers||[]).filter(a=>a.trim()).map(a=>`<span class="hq-typein-tag">?</span>`).join('')}</div></div>`;
   } else {
@@ -3184,8 +3260,7 @@ showHostQuestion = async function(){
     const hostAnswers = Array.isArray(displayQ.answers) ? displayQ.answers : [];
     $('hq-ans-grid').innerHTML=Array.from({length:numAns},(_,i)=>{
       const am=hostAnswerMedia[i];const isV=am&&am.mimeType&&am.mimeType.startsWith('video');
-      const med=am?(isV?`<video src="${am.dataURL}" style="max-height:44px;border-radius:5px;object-fit:cover;max-width:80px" muted autoplay loop></video>`
-        :`<img src="${am.dataURL}" class="hq-ans-media"/>`):'';
+      const med=am?(isV?`<video src="${am.dataURL}" style="max-height:44px;border-radius:5px;object-fit:cover;max-width:80px" muted autoplay loop></video>`:`<img src="${am.dataURL}" class="hq-ans-media"/>`):'';
       return `<div class="hq-ans-btn hq-ans-btn-${i}" id="hq-ans-${i}"><span style="font-size:1.2rem">${SHAPES[i]}</span><span style="flex:1">${esc(hostAnswers[i]||(displayQ.type==='True/False'?['True','False'][i]:''))}</span>${med}</div>`;
     }).join('');
   }
@@ -3201,12 +3276,20 @@ showHostQuestion = async function(){
     const ans=(room.players||[]).filter(p=>p.answered).length;
     $('hq-stat-bar').innerHTML=`<div class="hq-stat"><div class="hq-stat-num">${ans}</div><div class="hq-stat-lbl">answered</div></div><div class="hq-stat"><div class="hq-stat-num" style="color:#4cff91">${(room.players||[]).length-ans}</div><div class="hq-stat-lbl">waiting</div></div>`;
     await roomDbRef(room.code).update({_currentTimer:t});
-    if(t<=0){ clearInterval(timerInterval); revealAnswer(); }
+    if(t<=0){
+      clearInterval(timerInterval);
+      room.phase='question-ended';
+      await syncRoomState();
+      $('hq-timer-num').textContent='0';
+      $('hq-stat-bar').innerHTML += `<div class="hq-stat"><div class="hq-stat-num" style="color:#fff">Time</div><div class="hq-stat-lbl">up</div></div>`;
+      $('hq-mid-lb-btn').style.display='inline-flex';
+    }
   },1000);
 };
 revealAnswer = async function(){
-  clearInterval(timerInterval); room.phase='revealed';
-  await syncRoomState();
+  if(!room) return;
+  clearInterval(timerInterval);
+  await finalizeQuestionScoring();
   const q=room.quiz.questions[room.currentQ];
   if(q.type==='Type-In'){
     const tags=(q.typeInAnswers||[]).filter(a=>a.trim()).map(a=>`<span class="hq-typein-tag" style="background:rgba(76,255,145,.25);border:1px solid rgba(76,255,145,.5)">${esc(a)}</span>`).join('');
@@ -3219,16 +3302,15 @@ revealAnswer = async function(){
   const wrong=(room.players||[]).filter(p=>p.answered&&!p.lastCorrect).length;
   const noAns=(room.players||[]).filter(p=>!p.answered).length;
   $('hq-stat-bar').innerHTML=`<div class="hq-stat"><div class="hq-stat-num" style="color:#4cff91">${correct}</div><div class="hq-stat-lbl">correct</div></div><div class="hq-stat"><div class="hq-stat-num" style="color:#ff6b6b">${wrong}</div><div class="hq-stat-lbl">wrong</div></div><div class="hq-stat"><div class="hq-stat-num">${noAns}</div><div class="hq-stat-lbl">no answer</div></div>`;
-  $('hq-mid-lb-btn').style.display='inline-flex';
+  $('hq-mid-lb-btn').style.display='none';
   const isLast=room.currentQ>=room.quiz.questions.length-1;
-  if(isLast) $('hq-final-btn').style.display='inline-flex'; else $('hq-next-btn').style.display='inline-flex';
+  setTimeout(()=>{ if(isLast) showFinalLeaderboard(); else showMidLeaderboard(); }, 1100);
 };
 nextQuestion = async function(){
   if(!room) return;
   room.currentQ += 1;
   if(room.currentQ >= room.quiz.questions.length){ return showFinalLeaderboard(); }
-  await syncRoomState();
-  showHostQuestion();
+  await startQuestionCountdown();
 };
 proceedFromMidLB = function(){ nextQuestion(); };
 playAgain = async function(){
@@ -3259,39 +3341,28 @@ studentJoin = async function(){
 };
 studentPoll = function(){};
 studentTypeInSubmit = async function(){
-  if(!studentState||studentState.answered)return;
-  const r=window.__room;if(!r||r.phase!=='question')return;
+  const r=window.__room;if(!studentState||!r||r.phase!=='question')return;
   const field=$('sp-typein-field'); const typed=(field?field.value:'').trim(); if(!typed){ if(field)field.focus(); return; }
-  const btn=$('sp-typein-btn'); if(field)field.disabled=true; if(btn)btn.disabled=true; studentState.answered=true;
-  const q=r.quiz.questions[r.currentQ]; const me=(r.players||[]).find(p=>p.id===studentState.playerId) || {score:studentState.score,streak:0,correctCount:0};
-  const accepted=(q.typeInAnswers||[]).map(a=>a.trim().toLowerCase()).filter(Boolean); const isCorrect=accepted.includes(typed.toLowerCase());
-  const update={answered:true,lastCorrect:isCorrect,lastTypeInAnswer:typed};
-  if(isCorrect){
-    const streak=(me.streak||0)+1; const correctCount=(me.correctCount||0)+1; const pts=calcPoints(q,r,{...me,streak});
-    Object.assign(update,{streak,correctCount,lastPts:pts,score:(me.score||0)+pts}); studentState.score=update.score; $('sp-score').textContent=studentState.score.toLocaleString(); showPtsPopup(pts,streak);
-  } else { Object.assign(update,{streak:0,lastPts:0,score:me.score||0,correctCount:me.correctCount||0}); }
-  await fbRTDB.ref(`rooms/${r.code}/players/${studentState.playerId}`).update(update);
-  $('sp-feedback').innerHTML=`<div style="background:rgba(255,255,255,.12);border-radius:14px;padding:11px 18px;text-align:center;color:rgba(255,255,255,.75);font-weight:800;margin-top:8px">⏳ Answer locked in!</div>`;
+  const answerMs=Math.max(0, Date.now() - (r._questionStartedAt||Date.now()));
+  studentState.answered=true;
+  await fbRTDB.ref(`rooms/${r.code}/players/${studentState.playerId}`).update({answered:true,lastTypeInAnswer:typed,answerMs});
+  $('sp-feedback').innerHTML=`<div style="background:rgba(255,255,255,.12);border-radius:14px;padding:11px 18px;text-align:center;color:rgba(255,255,255,.75);font-weight:800;margin-top:8px">✅ Answer saved — keep typing and submit again to change it.</div>`;
   $('sp-feedback').style.display='block';
 };
 studentAnswer = async function(idx){
-  if(!studentState||studentState.answered)return;
+  if(!studentState) return;
   const r=window.__room;if(!r||r.phase!=='question')return;
+  const answerMs=Math.max(0, Date.now() - (r._questionStartedAt||Date.now()));
   studentState.answered=true;
-  const q=r.quiz.questions[r.currentQ]; const me=(r.players||[]).find(p=>p.id===studentState.playerId) || {score:studentState.score,streak:0,correctCount:0};
-  const isCorrect=q.correct.includes(idx); const update={answered:true,lastCorrect:isCorrect,answerIndex:idx};
-  if(isCorrect){
-    const streak=(me.streak||0)+1; const correctCount=(me.correctCount||0)+1; const pts=calcPoints(q,r,{...me,streak});
-    Object.assign(update,{streak,correctCount,lastPts:pts,score:(me.score||0)+pts}); studentState.score=update.score; $('sp-score').textContent=studentState.score.toLocaleString(); showPtsPopup(pts,streak);
-  } else { Object.assign(update,{streak:0,lastPts:0,score:me.score||0,correctCount:me.correctCount||0}); }
+  const update={answered:true,answerIndex:idx,answerMs:answerMs};
   await fbRTDB.ref(`rooms/${r.code}/players/${studentState.playerId}`).update(update);
-  for(let i=0;i<4;i++){const b=$('sp-ans-'+i);if(!b)continue;if(i!==idx)b.classList.add('dimmed-out');b.disabled=true;} if($('sp-ans-'+idx)) $('sp-ans-'+idx).classList.add('selected');
-  $('sp-feedback').innerHTML=`<div style="background:rgba(255,255,255,.12);border-radius:14px;padding:11px 18px;text-align:center;color:rgba(255,255,255,.75);font-weight:800;margin-top:8px">⏳ Answer locked in!</div>`;
+  for(let i=0;i<4;i++){const b=$('sp-ans-'+i);if(!b)continue;b.classList.toggle('selected', i===idx);b.classList.remove('dimmed-out');}
+  $('sp-feedback').innerHTML=`<div style="background:rgba(255,255,255,.12);border-radius:14px;padding:11px 18px;text-align:center;color:rgba(255,255,255,.75);font-weight:800;margin-top:8px">✅ Answer selected — tap another choice to change it.</div>`;
   $('sp-feedback').style.display='block';
 };
 showStudentReveal = function(){
   const r=window.__room,q=r.quiz.questions[r.currentQ],player=(r.players||[]).find(p=>p.id===studentState.playerId) || {lastPts:0,lastCorrect:false,streak:0};
-  const fb=$('sp-feedback'); const pts=player.lastPts||0; const streakTxt=player.streak>=5?` 🔥×${player.streak} streak!`:player.streak>=3?` 🔥 streak!`:'';
+  const fb=$('sp-feedback'); const pts=player.lastPts||0; const streakMsg=getStreakMessage(player.streak||0); const streakTxt=streakMsg?`<div style="font-size:.82rem;font-weight:800;opacity:.9;margin-top:4px">${streakMsg}</div>`:'';
   if(q.type==='Type-In'){
     const accepted=(q.typeInAnswers||[]).filter(a=>a.trim()); const typed=player.lastTypeInAnswer||'(no answer)';
     fb.innerHTML=player.lastCorrect?`<div class="sp-feedback correct">✅ Correct! +${pts.toLocaleString()} pts${streakTxt}<span style="font-size:.82rem;font-weight:700;opacity:.8;display:block;margin-top:3px">Total: ${(player.score||studentState.score).toLocaleString()}</span></div>`:`<div class="sp-feedback wrong">❌ Wrong — you typed: "<em style="font-style:normal">${esc(typed)}</em>"<div style="font-size:.8rem;opacity:.85;margin-top:4px">Accepted: ${accepted.map(a=>`<strong>${esc(a)}</strong>`).join(', ')}</div></div>`;
@@ -3299,7 +3370,7 @@ showStudentReveal = function(){
     const f=$('sp-typein-field'),b=$('sp-typein-btn'); if(f)f.disabled=true; if(b)b.disabled=true;
   } else {
     for(let i=0;i<4;i++){const b=$('sp-ans-'+i);if(!b)continue;if(q.correct.includes(i)){b.classList.remove('dimmed-out');b.classList.add('correct-reveal');}b.disabled=true;}
-    fb.innerHTML=player.lastCorrect?`<div class="sp-feedback correct">✅ Correct! +${pts.toLocaleString()} pts${streakTxt}<span style="font-size:.82rem;font-weight:700;opacity:.8;display:block;margin-top:3px">Total: ${(player.score||studentState.score).toLocaleString()}</span></div>`:`<div class="sp-feedback wrong">❌ Wrong! Streak reset.</div>`;
+    fb.innerHTML=player.lastCorrect?`<div class="sp-feedback correct">✅ Correct! +${pts.toLocaleString()} pts${streakTxt}<span style="font-size:.82rem;font-weight:700;opacity:.8;display:block;margin-top:3px">Total: ${(player.score||studentState.score).toLocaleString()}</span></div>`:`<div class="sp-feedback wrong">❌ Wrong! Better luck on the next one.</div>`;
     fb.style.display='block';
   }
 };
