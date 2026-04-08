@@ -498,23 +498,23 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
 <!-- ==================== EDITOR ==================== -->
 <div class="screen" id="editor" style="justify-content:flex-start;padding:0">
   <div class="editor-topbar">
-    <button class="btn btn-ghost btn-sm" onclick="exitEditor()">← Library</button>
+    <button class="btn btn-ghost btn-sm" onclick="exitEditor()">Library</button>
     <input class="quiz-title-input" id="quiz-title" type="text" placeholder="Quiz title…"/>
     <div style="display:flex;gap:8px;align-items:center;margin-left:auto;flex-wrap:wrap">
       <div style="display:flex;align-items:center;gap:6px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius);padding:5px 12px">
         <span style="font-size:.8rem;font-weight:800;color:var(--text2);white-space:nowrap">⏱ Seconds per question</span>
         <input type="number" id="timer-setting" min="5" max="120" value="20" style="width:58px;padding:4px 8px;font-size:.92rem;font-weight:800;border-radius:8px;border:1.5px solid var(--border)"/>
       </div>
-      <button class="btn btn-outline btn-sm" onclick="saveQuizToLibrary(false)">💾 Save</button>
-      <button class="btn btn-kahoot btn-sm" onclick="saveQuizToLibrary(true)">▶ Host</button>
+      <button class="btn btn-outline btn-sm" onclick="saveQuizToLibrary(false)">Save</button>
+      <button class="btn btn-kahoot btn-sm" onclick="saveQuizToLibrary(true)">Host</button>
     </div>
   </div>
   <div class="editor-main">
     <div class="editor-sidebar" id="sidebar">
       <div class="editor-sidebar-title">Questions</div>
       <div id="sidebar-list"></div>
-      <button class="btn btn-outline btn-sm w100" style="margin-top:10px;width:100%" onclick="addQuestion()">+ Add Question</button>
-      <button class="btn btn-sm w100" style="margin-top:6px;width:100%;background:linear-gradient(135deg,var(--purple-dark),var(--purple));color:#fff" onclick="openAIGenerator()">✨ AI Generate</button>
+      <button class="btn btn-outline btn-sm w100" style="margin-top:10px;width:100%" onclick="addQuestion()">Add Question</button>
+      <button class="btn btn-sm w100" style="margin-top:6px;width:100%;background:linear-gradient(135deg,var(--purple-dark),var(--purple));color:#fff" onclick="openAIGenerator()">AI Generate</button>
       <div style="border-top:1px solid var(--border);margin-top:12px;padding-top:12px">
         <div class="editor-sidebar-title">Quiz Settings</div>
         <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px">
@@ -558,8 +558,8 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
   </div>
   <div class="player-chips" id="player-chips"></div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
-    <button class="btn btn-lg" style="background:var(--purple);color:#fff" id="start-btn" onclick="startGame()" disabled>▶ Start Game</button>
-    <button class="btn btn-ghost btn-sm" onclick="showScreen('library')" style="color:rgba(255,255,255,.55)">← Library</button>
+    <button class="btn btn-lg" style="background:var(--purple);color:#fff" id="start-btn" onclick="startGame()" disabled>Start Game</button>
+    <button class="btn btn-ghost btn-sm" onclick="showScreen('library')" style="color:rgba(255,255,255,.55)">Library</button>
   </div>
 </div>
 
@@ -585,35 +585,35 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
     <div class="hq-ans-grid" id="hq-ans-grid"></div>
     <div class="hq-stat-bar" id="hq-stat-bar"></div>
     <div style="text-align:center;margin-top:14px;display:flex;gap:9px;flex-wrap:wrap;justify-content:center" id="hq-btn-row">
-      <button class="btn btn-kahoot" id="hq-next-btn" onclick="nextQuestion()" style="display:none">Next →</button>
-      <button class="btn btn-kahoot" id="hq-mid-lb-btn" onclick="showMidLeaderboard()" style="display:none">📊 Scores</button>
-      <button class="btn" id="hq-final-btn" onclick="showFinalLeaderboard()" style="display:none;background:var(--purple);color:#fff">🏆 Final Results</button>
+      <button class="btn btn-kahoot" id="hq-next-btn" onclick="nextQuestion()" style="display:none">Next</button>
+      <button class="btn btn-kahoot" id="hq-mid-lb-btn" onclick="showMidLeaderboard()" style="display:none">Scores</button>
+      <button class="btn" id="hq-final-btn" onclick="showFinalLeaderboard()" style="display:none;background:var(--purple);color:#fff">Final Results</button>
     </div>
   </div>
 </div>
 
 <!-- ==================== MID LEADERBOARD ==================== -->
 <div class="screen" id="mid-leaderboard" style="padding:20px">
-  <div class="mid-lb-title" id="mid-lb-title" style="font-size:1.45rem;font-weight:900;color:#fff;margin-bottom:18px;text-align:center">📊 After Question 1</div>
+  <div class="mid-lb-title" id="mid-lb-title" style="font-size:1.45rem;font-weight:900;color:#fff;margin-bottom:18px;text-align:center">After Question 1</div>
   <div class="mid-lb-list" id="mid-lb-list" style="width:100%;max-width:480px"></div>
   <div style="display:flex;gap:9px;margin-top:14px;flex-wrap:wrap;justify-content:center">
-    <button class="btn btn-kahoot" id="mid-lb-next-btn" onclick="proceedFromMidLB()">Next Question →</button>
-    <button class="btn" style="background:var(--purple);color:#fff" id="mid-lb-final-btn" onclick="showFinalLeaderboard()">🏆 Final Results</button>
+    <button class="btn btn-kahoot" id="mid-lb-next-btn" onclick="proceedFromMidLB()">Next Question </button>
+    <button class="btn" style="background:var(--purple);color:#fff" id="mid-lb-final-btn" onclick="showFinalLeaderboard()">Final Results</button>
   </div>
 </div>
 
 <!-- ==================== FINAL LEADERBOARD ==================== -->
 <div class="screen" id="leaderboard" style="padding:20px;overflow-y:auto">
   <div style="text-align:center;margin-bottom:8px">
-    <div style="font-size:1.6rem;font-weight:900;color:#fff">🏆 Final Results</div>
+    <div style="font-size:1.6rem;font-weight:900;color:#fff">Final Results</div>
     <div style="color:rgba(255,255,255,.55);font-size:.85rem" id="final-quiz-title-lbl"></div>
   </div>
   <!-- podium injected here by JS -->
   <div id="final-podium" style="width:100%;max-width:480px;margin:0 auto"></div>
   <div style="width:100%;max-width:480px;margin:16px auto 0" id="final-list"></div>
   <div style="display:flex;gap:9px;margin-top:20px;flex-wrap:wrap;justify-content:center">
-    <button class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.1)" onclick="playAgain()">🔁 Play Again</button>
-    <button class="btn btn-kahoot" onclick="showScreen('library')">← Library</button>
+    <button class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.1)" onclick="playAgain()">Play Again</button>
+    <button class="btn btn-kahoot" onclick="showScreen('library')">Library</button>
   </div>
 </div>
 
@@ -635,7 +635,7 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
       <label>Choose Your Avatar</label>
       <div class="avatar-grid" id="join-avatar-grid"></div>
     </div>
-    <button class="btn btn-kahoot w100" style="border-radius:var(--radius);width:100%" onclick="studentJoin()">Join! →</button>
+    <button class="btn btn-kahoot w100" style="border-radius:var(--radius);width:100%" onclick="studentJoin()">Join! </button>
     <div id="join-err" style="color:#e21b3c;text-align:center;margin-top:9px;font-weight:800;font-size:.88rem;display:none"></div>
     <div style="text-align:center;margin-top:12px">
       <button class="btn btn-ghost btn-sm" onclick="showScreen('library')" style="color:var(--text2)">← Back</button>
@@ -701,7 +701,7 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
       </div>
       <div class="modal-footer">
         <button class="btn btn-outline btn-sm" onclick="closeNewQuizModal()">Cancel</button>
-        <button class="btn btn-primary btn-sm" onclick="confirmCreateQuiz()">Create →</button>
+        <button class="btn btn-primary btn-sm" onclick="confirmCreateQuiz()">Create </button>
       </div>
     </div>
   </div>
@@ -1134,7 +1134,7 @@ function renderQuizCard(q){
       <div class="quiz-card-actions">
         <button class="btn btn-outline" onclick="openCoverSettings('${q.id}')" title="Change cover" style="flex:0 0 auto;padding:7px 10px">🎨</button>
         <button class="btn btn-outline" onclick="editQuiz('${q.id}')">✏️ Edit</button>
-        <button class="btn btn-primary" onclick="hostQuiz('${q.id}')">▶ Host</button>
+        <button class="btn btn-primary" onclick="hostQuiz('${q.id}')">Host</button>
       </div>
     </div>
   </div>`;
@@ -1149,12 +1149,12 @@ function toggleCardMenu(e,id){
   menu.className='dropdown-menu';
   menu.innerHTML=`
     <button onclick="editQuiz('${id}');closeMenu()">✏️ Edit</button>
-    <button onclick="hostQuiz('${id}');closeMenu()">▶ Host Now</button>
+    <button onclick="hostQuiz('${id}');closeMenu()">Host Now</button>
     <button onclick="openCoverSettings('${id}');closeMenu()">🎨 Change Cover</button>
     <button onclick="openMoveToFolder('${id}');closeMenu()">📁 Move to Folder</button>
-    <button onclick="duplicateQuizInLibrary('${id}');closeMenu()">⧉ Duplicate</button>
+    <button onclick="duplicateQuizInLibrary('${id}');closeMenu()">Duplicate</button>
     
-    <button class="danger" onclick="promptDelete('${id}');closeMenu()">🗑 Delete</button>`;
+    <button class="danger" onclick="promptDelete('${id}');closeMenu()">Delete Delete</button>`;
   btn.parentElement.appendChild(menu);
   // close on outside click
   setTimeout(()=>document.addEventListener('click',closeMenu,{once:true}),0);
@@ -1430,7 +1430,7 @@ function updateZoomUI(){
 }
 
 function canvasPxToImgPx(cpx,cpy){
-  // canvas pixel → image-space delta from image center
+  // canvas pixel  image-space delta from image center
   return{x:(cpx-CANVAS_W/2)/cropScale, y:(cpy-CANVAS_H/2)/cropScale};
 }
 
@@ -1479,7 +1479,7 @@ function onCropMouseMove(e){
   const canvas=e.currentTarget;
   const rect=canvas.getBoundingClientRect();
   const cssToCanvas=canvas.width/rect.width;
-  // dx in canvas pixels → image pixels
+  // dx in canvas pixels  image pixels
   cropOffsetX=cropLastOffsetX+dx*cssToCanvas/cropScale;
   cropOffsetY=cropLastOffsetY+dy*cssToCanvas/cropScale;
   clampOffset();drawCrop();
@@ -1557,7 +1557,7 @@ function exportCroppedDataURL(){
   // srcX = imgCenter.x + offsetX - FRAME_W/(2*scale)
   const srcW=FRAME_W/cropScale;
   const srcH=FRAME_H/cropScale;
-  const srcX=cropImg.naturalWidth/2+cropOffsetX - srcW/2;  // note: offsetX is image-px from center → SUBTRACT (pan left = move frame right over image)
+  const srcX=cropImg.naturalWidth/2+cropOffsetX - srcW/2;  // note: offsetX is image-px from center  SUBTRACT (pan left = move frame right over image)
   const srcY=cropImg.naturalHeight/2+cropOffsetY - srcH/2;
   // Wait—offsetX is "image center offset from canvas center" stored as canvas coordinates.
   // Let's re-derive: image is drawn at cx=CANVAS_W/2+offsetX*scale, so
@@ -1764,14 +1764,14 @@ function renderQuestionEditor(){
   <div class="q-editor-card">
     <div class="q-toolbar">
       <span class="q-toolbar-title">Q${selectedQIndex+1} of ${editorQuiz.questions.length}</span>
-      <button type="button" class="btn btn-outline btn-sm" onclick="duplicateQuestion(${selectedQIndex})">⧉ Duplicate</button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="duplicateQuestion(${selectedQIndex})">Duplicate</button>
       <button type="button" class="btn btn-outline btn-sm" onclick="moveQ(${selectedQIndex},-1)" ${selectedQIndex===0?'disabled':''}>↑</button>
       <button type="button" class="btn btn-outline btn-sm" onclick="moveQ(${selectedQIndex},1)" ${selectedQIndex===editorQuiz.questions.length-1?'disabled':''}>↓</button>
-      <button type="button" class="btn btn-danger btn-sm" onclick="removeQuestion(${selectedQIndex})" ${editorQuiz.questions.length===1?'disabled':''}>🗑</button>
+      <button type="button" class="btn btn-danger btn-sm" onclick="removeQuestion(${selectedQIndex})" ${editorQuiz.questions.length===1?'disabled':''}>Delete</button>
     </div>
     <div style="margin-bottom:14px">
       <label>Question Type</label>
-      <div class="q-type-bar">${Q_TYPES.map(t=>`<button type="button" class="q-type-btn${q.type===t?' active':''}" onclick="setQType('${t}')">${t==='Type-In'?'⌨️ Type-In':t}</button>`).join('')}</div>
+      <div class="q-type-bar">${Q_TYPES.map(t=>`<button type="button" class="q-type-btn${q.type===t?' active':''}" onclick="setQType('${t}')">${t==='Type-In'?'Type-In':t}</button>`).join('')}</div>
     </div>
     <div style="margin-bottom:14px">
       <label>Question</label>
@@ -2030,7 +2030,7 @@ function hostQuiz(id){
     quiz:JSON.parse(JSON.stringify({...q,questions:valid}))};
   window.__room=room;
   $('lobby-quiz-title').textContent=q.title;
-  $('lobby-q-count').textContent=valid.length+' question'+(valid.length!==1?'s':'');
+  const lobbyQCount=$('lobby-q-count'); if(lobbyQCount) lobbyQCount.textContent=valid.length+' question'+(valid.length!==1?'s':'');
   $('lobby-code').textContent=code;
   updateJoinLobbyUI(code);
   $('player-chips').innerHTML='';
@@ -2192,7 +2192,7 @@ function showStudentQuestion(){
       <input type="text" class="sp-typein-input" id="sp-typein-field"
         placeholder="Type your answer…" autocomplete="off" autocorrect="off" spellcheck="false"
         onkeydown="if(event.key==='Enter')studentTypeInSubmit()"/>
-      <button class="sp-typein-submit" id="sp-typein-btn" onclick="studentTypeInSubmit()">Submit Answer →</button>
+      <button class="sp-typein-submit" id="sp-typein-btn" onclick="studentTypeInSubmit()">Submit Answer </button>
     </div>`;
     setTimeout(()=>{ const f=$('sp-typein-field');if(f)f.focus(); },100);
   } else {
@@ -3166,7 +3166,7 @@ hostQuiz = async function(id){
     await syncRoomState();
     listenHostRoom(code);
     $('lobby-quiz-title').textContent=q.title;
-    $('lobby-q-count').textContent=valid.length+' question'+(valid.length!==1?'s':'');
+    const lobbyQCount=$('lobby-q-count'); if(lobbyQCount) lobbyQCount.textContent=valid.length+' question'+(valid.length!==1?'s':'');
     $('lobby-code').textContent=code;
     updateJoinLobbyUI(code);
     $('player-chips').innerHTML='';
