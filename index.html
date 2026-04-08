@@ -537,7 +537,7 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
 <div class="screen" id="host-lobby" style="padding:20px">
   <div style="text-align:center;margin-bottom:20px;color:#fff">
     <h2 style="font-size:1.4rem" id="lobby-quiz-title">My Quiz</h2>
-    
+    <div id="lobby-q-count" style="margin-top:6px;font-size:.85rem;font-weight:800;color:rgba(255,255,255,.72)">0 questions</div>
   </div>
   <div class="code-display">
     <div class="code-label">Room Code</div>
@@ -1983,7 +1983,7 @@ function hostQuiz(id){
     quiz:JSON.parse(JSON.stringify({...q,questions:valid}))};
   window.__room=room;
   $('lobby-quiz-title').textContent=q.title;
-  $('lobby-q-count').textContent=valid.length+' question'+(valid.length!==1?'s':'');
+  if($('lobby-q-count')) $('lobby-q-count').textContent=valid.length+' question'+(valid.length!==1?'s':'');
   $('lobby-code').textContent=code;
   updateJoinLobbyUI(code);
   $('player-chips').innerHTML='';
@@ -2022,7 +2022,10 @@ function showHostQuestion(){
   // Apply answer shuffle per question
   let displayQ=q;
   if(room.quiz.options&&room.quiz.options.shuffleA&&q.type==='Quiz'){
-    const pairs=q.answers.map((a,i)=>({a,isCorrect:q.correct.includes(i),m:q.answerMedia[i]}));
+    const baseAnswers = Array.isArray(q.answers) ? q.answers : [];
+    const baseCorrect = Array.isArray(q.correct) ? q.correct : [];
+    const baseAnswerMedia = Array.isArray(q.answerMedia) ? q.answerMedia : [];
+    const pairs=baseAnswers.map((a,i)=>({a,isCorrect:baseCorrect.includes(i),m:baseAnswerMedia[i]}));
     const shuffled=shuffle([...pairs]);
     displayQ={...q,
       answers:shuffled.map(p=>p.a),
@@ -2131,6 +2134,7 @@ function studentPoll(){
 
 function showStudentQuestion(){
   const r=window.__room,q=r.quiz.questions[r.currentQ];
+  if(!q) return;
   const numAns=q.type==='True/False'?2:4;
   $('sp-waiting').style.display='none';$('sp-question-view').style.display='flex';
   $('sp-gameover').style.display='none';$('sp-feedback').style.display='none';
@@ -2149,11 +2153,13 @@ function showStudentQuestion(){
     </div>`;
     setTimeout(()=>{ const f=$('sp-typein-field');if(f)f.focus(); },100);
   } else {
+    const studentAnswerMedia = Array.isArray(q.answerMedia) ? q.answerMedia : [];
+    const studentAnswers = Array.isArray(q.answers) ? q.answers : [];
     $('sp-ans-grid').innerHTML=Array.from({length:numAns},(_,i)=>{
-      const am=q.answerMedia[i];const isV=am&&am.mimeType&&am.mimeType.startsWith('video');
+      const am=studentAnswerMedia[i];const isV=am&&am.mimeType&&am.mimeType.startsWith('video');
       const med=am?(isV?`<video src="${am.dataURL}" style="max-height:42px;border-radius:5px;object-fit:cover" muted autoplay loop class="sp-ans-media"></video>`
         :`<img src="${am.dataURL||am.url||''}" class="sp-ans-media"/>`):'';
-      const label=q.answers[i]||(q.type==='True/False'?['True','False'][i]:'');
+      const label=studentAnswers[i]||(q.type==='True/False'?['True','False'][i]:'');
       return `<button class="sp-ans-btn sp-ans-btn-${i}" id="sp-ans-${i}" onclick="studentAnswer(${i})">
         <span style="font-size:1.2rem">${SHAPES[i]}</span>${med}<span>${esc(label)}</span></button>`;
     }).join('');
@@ -3119,7 +3125,7 @@ hostQuiz = async function(id){
     await syncRoomState();
     listenHostRoom(code);
     $('lobby-quiz-title').textContent=q.title;
-    $('lobby-q-count').textContent=valid.length+' question'+(valid.length!==1?'s':'');
+    if($('lobby-q-count')) $('lobby-q-count').textContent=valid.length+' question'+(valid.length!==1?'s':'');
     $('lobby-code').textContent=code;
     updateJoinLobbyUI(code);
     $('player-chips').innerHTML='';
@@ -3142,9 +3148,13 @@ startGame = async function(){
 showHostQuestion = async function(){
   clearInterval(timerInterval);
   const q=room.quiz.questions[room.currentQ];
+  if(!q) return;
   let displayQ=q;
   if(room.quiz.options&&room.quiz.options.shuffleA&&q.type==='Quiz' && !q._answersShuffled){
-    const pairs=q.answers.map((a,i)=>({a,isCorrect:q.correct.includes(i),m:q.answerMedia[i]}));
+    const baseAnswers = Array.isArray(q.answers) ? q.answers : [];
+    const baseCorrect = Array.isArray(q.correct) ? q.correct : [];
+    const baseAnswerMedia = Array.isArray(q.answerMedia) ? q.answerMedia : [];
+    const pairs=baseAnswers.map((a,i)=>({a,isCorrect:baseCorrect.includes(i),m:baseAnswerMedia[i]}));
     const shuffled=shuffle([...pairs]);
     displayQ={...q,_answersShuffled:true,
       answers:shuffled.map(p=>p.a),
@@ -3170,11 +3180,13 @@ showHostQuestion = async function(){
     $('hq-ans-grid').innerHTML=`<div class="hq-typein-display" style="grid-column:1/-1"><div class="hq-typein-answers">${(displayQ.typeInAnswers||[]).filter(a=>a.trim()).map(a=>`<span class="hq-typein-tag">?</span>`).join('')}</div></div>`;
   } else {
     const numAns=displayQ.type==='True/False'?2:4;
+    const hostAnswerMedia = Array.isArray(displayQ.answerMedia) ? displayQ.answerMedia : [];
+    const hostAnswers = Array.isArray(displayQ.answers) ? displayQ.answers : [];
     $('hq-ans-grid').innerHTML=Array.from({length:numAns},(_,i)=>{
-      const am=displayQ.answerMedia[i];const isV=am&&am.mimeType&&am.mimeType.startsWith('video');
+      const am=hostAnswerMedia[i];const isV=am&&am.mimeType&&am.mimeType.startsWith('video');
       const med=am?(isV?`<video src="${am.dataURL}" style="max-height:44px;border-radius:5px;object-fit:cover;max-width:80px" muted autoplay loop></video>`
         :`<img src="${am.dataURL}" class="hq-ans-media"/>`):'';
-      return `<div class="hq-ans-btn hq-ans-btn-${i}" id="hq-ans-${i}"><span style="font-size:1.2rem">${SHAPES[i]}</span><span style="flex:1">${esc(displayQ.answers[i]||(displayQ.type==='True/False'?['True','False'][i]:''))}</span>${med}</div>`;
+      return `<div class="hq-ans-btn hq-ans-btn-${i}" id="hq-ans-${i}"><span style="font-size:1.2rem">${SHAPES[i]}</span><span style="flex:1">${esc(hostAnswers[i]||(displayQ.type==='True/False'?['True','False'][i]:''))}</span>${med}</div>`;
     }).join('');
   }
   $('hq-stat-bar').innerHTML='';
