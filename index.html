@@ -594,6 +594,9 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
     <div style="text-align:center;margin-top:14px;display:flex;gap:9px;flex-wrap:wrap;justify-content:center" id="hq-btn-row">
       <button class="btn btn-kahoot" id="hq-next-btn" onclick="nextQuestion()" style="display:none">Next</button>
       <button class="btn btn-kahoot" id="hq-mid-lb-btn" onclick="revealAnswer()" style="display:none">Show Results</button>
+      <button class="btn btn-outline" id="hq-pause-btn" onclick="pauseHostedGame()" style="display:none;background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.35)">Pause</button>
+      <button class="btn btn-outline" id="hq-resume-btn" onclick="resumeHostedGame()" style="display:none;background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.35)">Resume</button>
+      <button class="btn" id="hq-end-btn" onclick="endHostedGame()" style="display:none;background:#b3342f;color:#fff">End Game</button>
       <button class="btn" id="hq-final-btn" onclick="showFinalLeaderboard()" style="display:none;background:var(--purple);color:#fff">🏆 Final Results</button>
     </div>
   </div>
@@ -2181,6 +2184,7 @@ function startGame(){
   }
   room.currentQ=0;
   // Show persistent PIN badge
+  rememberActiveHostRoom(room.code);
   $('pin-badge-code').textContent=room.code;
   $('pin-badge').classList.add('visible');
   showHostQuestion();
@@ -2243,7 +2247,7 @@ function showHostQuestion(){
   $('hq-stat-bar').innerHTML='';
   $('hq-next-btn').style.display='none';$('hq-mid-lb-btn').style.display='none';$('hq-final-btn').style.display='none';
   $('hq-progress').style.width='100%';
-  let t=timeLimit;
+  let t=Math.max(1, Number(room._currentTimer||timeLimit));
   $('hq-timer-num').textContent=t;updateArc(t,timeLimit);
   timerInterval=setInterval(()=>{
     t--;room._currentTimer=t;
@@ -2577,6 +2581,7 @@ function updateLobby(){
 
 // Show avatars in final leaderboard
 function showFinalLeaderboard(){
+  clearActiveHostRoom();
   clearInterval(timerInterval);
   room.phase='gameover';
   hidePinBadge();
@@ -2654,6 +2659,7 @@ function showMidLeaderboard(){
   const isLast=room.currentQ>=room.quiz.questions.length-1;
   $('mid-lb-next-btn').style.display=isLast?'none':'inline-flex';
   $('mid-lb-final-btn').style.display=isLast?'inline-flex':'none';
+  setHostActionButtons('revealed');
   showScreen('mid-leaderboard');
 }
 
@@ -3117,6 +3123,9 @@ const FIREBASE_CONFIG = window.TAPBLAST_FIREBASE_CONFIG || {
   measurementId: 'G-QLTZFNLH2X'
 };
 let fbApp=null, fbAuth=null, fbStore=null, fbRTDB=null, currentTeacher=null;
+const HOST_ROOM_STORAGE_KEY='tapblast_active_host_room';
+let timerPhase='';
+let hostRenderLock=false;
 let roomRefHandle=null, roomListenerCb=null, studentRoomRefHandle=null, studentRoomCb=null;
 let currentRoomPlayerId=null;
 let cloudSaveTimer=null;
@@ -3152,6 +3161,129 @@ function playerMapFromArray(players){
 function roomDbRef(code){ return fbRTDB.ref('rooms/'+code); }
 function stopHostRoomListener(){ if(roomRefHandle && roomListenerCb){ roomRefHandle.off('value', roomListenerCb); } roomRefHandle=null; roomListenerCb=null; }
 function stopStudentRoomListener(){ if(studentRoomRefHandle && studentRoomCb){ studentRoomRefHandle.off('value', studentRoomCb); } studentRoomRefHandle=null; studentRoomCb=null; }
+
+function rememberActiveHostRoom(code){
+  try{
+    if(currentTeacher && code) localStorage.setItem(HOST_ROOM_STORAGE_KEY, JSON.stringify({uid:currentTeacher.uid, code}));
+  }catch(e){ console.error(e); }
+}
+function clearActiveHostRoom(){
+  try{ localStorage.removeItem(HOST_ROOM_STORAGE_KEY); }catch(e){ console.error(e); }
+}
+function getRememberedHostRoomCode(){
+  try{
+    const raw=localStorage.getItem(HOST_ROOM_STORAGE_KEY);
+    if(!raw) return '';
+    const parsed=JSON.parse(raw);
+    if(!parsed || !currentTeacher || parsed.uid!==currentTeacher.uid) return '';
+    return parsed.code || '';
+  }catch(e){ return ''; }
+}
+function setHostActionButtons(state){
+  const map={
+    next:false,results:false,pause:false,resume:false,end:false,final:false
+  };
+  if(state==='countdown' || state==='question'){
+    map.pause=true; map.end=true;
+  }else if(state==='question-ended'){
+    map.results=true; map.end=true;
+  }else if(state==='paused'){
+    map.resume=true; map.end=true;
+  }else if(state==='revealed'){
+    map.next=true; map.end=true;
+  }else if(state==='gameover'){
+    map.final=true;
+  }
+  if($('hq-next-btn')) $('hq-next-btn').style.display=map.next?'inline-flex':'none';
+  if($('hq-mid-lb-btn')) $('hq-mid-lb-btn').style.display=map.results?'inline-flex':'none';
+  if($('hq-pause-btn')) $('hq-pause-btn').style.display=map.pause?'inline-flex':'none';
+  if($('hq-resume-btn')) $('hq-resume-btn').style.display=map.resume?'inline-flex':'none';
+  if($('hq-end-btn')) $('hq-end-btn').style.display=map.end?'inline-flex':'none';
+  if($('hq-final-btn')) $('hq-final-btn').style.display=map.final?'inline-flex':'none';
+}
+function renderPausedHostView(){
+  if(!room) return;
+  clearInterval(timerInterval);
+  showScreen('host-question');
+  $('hq-q-counter').textContent=(room.currentQ+1)+'/'+room.quiz.questions.length;
+  $('hq-q-label').textContent='PAUSED';
+  $('hq-q-media-wrap').innerHTML='';
+  $('hq-q-text').textContent='Game paused';
+  $('hq-ans-grid').innerHTML=`<div class="hq-typein-display" style="grid-column:1/-1"><div style="font-size:2.2rem;font-weight:900;color:#fff">Paused</div><div style="color:rgba(255,255,255,.75);font-weight:800;margin-top:6px">Resume when you are ready.</div></div>`;
+  $('hq-stat-bar').innerHTML=`<div class="hq-stat"><div class="hq-stat-num">${(room.players||[]).length}</div><div class="hq-stat-lbl">players connected</div></div>`;
+  $('hq-timer-num').textContent=String(room._currentTimer||0);
+  updateArc(Math.max(room._currentTimer||0,0), Math.max(room.quiz.timePerQ||20,1));
+  setHostActionButtons('paused');
+}
+function renderHostFromRoomState(){
+  if(!room || hostRenderLock) return;
+  const activeHost=$('host-lobby').classList.contains('active') || $('host-question').classList.contains('active') || $('mid-leaderboard').classList.contains('active') || $('leaderboard').classList.contains('active');
+  if(!activeHost) return;
+  if(room.phase==='lobby'){
+    $('lobby-quiz-title').textContent=room.quiz?.title||'Quiz';
+    $('lobby-code').textContent=room.code||'----';
+    updateJoinLobbyUI(room.code||'');
+    updateLobby();
+    showScreen('host-lobby');
+    return;
+  }
+  if(room.phase==='paused'){
+    renderPausedHostView();
+    return;
+  }
+  if(room.phase==='revealed'){
+    showMidLeaderboard();
+    return;
+  }
+  if(room.phase==='gameover'){
+    showFinalLeaderboard();
+    return;
+  }
+  if(room.phase==='question-ended'){
+    showScreen('host-question');
+    setHostActionButtons('question-ended');
+    return;
+  }
+}
+async function pauseHostedGame(){
+  if(!room || (room.phase!=='question' && room.phase!=='countdown')) return;
+  clearInterval(timerInterval);
+  room._pausedFrom=room.phase;
+  room.phase='paused';
+  await syncRoomState();
+  renderPausedHostView();
+}
+async function resumeHostedGame(){
+  if(!room || room.phase!=='paused') return;
+  const prev=room._pausedFrom||'question';
+  room.phase=prev;
+  await syncRoomState();
+  if(prev==='countdown') await startQuestionCountdown(true);
+  else await showHostQuestion(true);
+}
+async function endHostedGame(){
+  if(!room) return;
+  clearInterval(timerInterval);
+  room.phase='gameover';
+  await syncRoomState();
+  showFinalLeaderboard();
+}
+async function restoreHostedRoomIfAny(){
+  const code=getRememberedHostRoomCode();
+  if(!code || !initFirebaseIfNeeded()) return false;
+  try{
+    const snap=await roomDbRef(code).get();
+    const data=normalizeRoom(snap.val());
+    if(!data || data.hostUid!==currentTeacher.uid) { clearActiveHostRoom(); return false; }
+    room=data;
+    window.__room=data;
+    listenHostRoom(code);
+    $('pin-badge-code').textContent=code;
+    $('pin-badge').classList.add('visible');
+    renderHostFromRoomState();
+    return true;
+  }catch(err){ console.error(err); return false; }
+}
 async function saveCloudDataNow(){
   if(!initFirebaseIfNeeded() || !currentTeacher) return;
   await cloudAppDoc().set({
@@ -3209,7 +3341,8 @@ async function afterTeacherSignIn(){
   updateTeacherBadge();
   await loadLibrary();
   renderLibrary();
-  showScreen('library');
+  const resumed = await restoreHostedRoomIfAny();
+  if(!resumed) showScreen('library');
 }
 signInTeacher = async function(provider='google'){
   if(!initFirebaseIfNeeded()){ toast('Add Firebase config first. Cloud mode is required here.','error'); return; }
@@ -3227,6 +3360,7 @@ teacherLogout = async function(){
     stopStudentRoomListener();
     if(initFirebaseIfNeeded() && fbAuth) await fbAuth.signOut();
     currentTeacher=null;
+    clearActiveHostRoom();
     showScreen('login-screen');
     toast('Signed out.');
   }catch(err){ console.error(err); toast('Sign-out failed','error'); }
@@ -3256,6 +3390,7 @@ function listenHostRoom(code){
     room=data;
     window.__room=data;
     if($('host-lobby').classList.contains('active')) updateLobby();
+    renderHostFromRoomState();
   };
   roomRefHandle.on('value', roomListenerCb);
 }
@@ -3276,6 +3411,8 @@ function listenStudentRoom(code){
       studentState.lastPhase='question'; studentState.answered=false; showStudentQuestion();
     }else if(phase==='question-ended'){
       studentState.lastPhase='question-ended'; $('sp-waiting').style.display='block'; $('sp-question-view').style.display='none'; $('sp-waiting-msg').textContent='Time is up — waiting for results…'; $('sp-room-info').textContent='Teacher is about to reveal the answer';
+    }else if(phase==='paused'){
+      studentState.lastPhase='paused'; $('sp-waiting').style.display='block'; $('sp-question-view').style.display='none'; $('sp-waiting-msg').textContent='Game paused'; $('sp-room-info').textContent='Waiting for teacher to resume';
     }else if(phase==='revealed'&&studentState.lastPhase!=='revealed'){
       studentState.lastPhase='revealed'; showStudentReveal();
     }else if(phase==='gameover'&&studentState.lastPhase!=='gameover'){
@@ -3310,6 +3447,7 @@ hostQuiz = async function(id){
       createdAt: Date.now(),
       quiz:JSON.parse(JSON.stringify({...q,questions:valid}))};
     await syncRoomState();
+    rememberActiveHostRoom(code);
     listenHostRoom(code);
     $('lobby-quiz-title').textContent=q.title;
     if($('lobby-q-count')) $('lobby-q-count').textContent=valid.length+' question'+(valid.length!==1?'s':'');
@@ -3324,12 +3462,12 @@ hostQuiz = async function(id){
 
 function getPlayerById(arr,id){ return (arr||[]).find(p=>p.id===id); }
 
-async function startQuestionCountdown(){
+async function startQuestionCountdown(resume=false){
   if(!room) return;
   clearInterval(timerInterval);
   room.phase='countdown';
-  room._countdown=3;
-  room._currentTimer=room.quiz.timePerQ||20;
+  room._countdown=resume ? Math.max(1, Number(room._countdown||3)) : 3;
+  room._currentTimer=resume ? Math.max(1, Number(room._currentTimer||room.quiz.timePerQ||20)) : (room.quiz.timePerQ||20);
   await syncRoomState();
   showScreen('host-question');
   const q=room.quiz.questions[room.currentQ];
@@ -3339,9 +3477,9 @@ async function startQuestionCountdown(){
   $('hq-q-media-wrap').innerHTML='';
   $('hq-ans-grid').innerHTML=`<div class="hq-typein-display" style="grid-column:1/-1"><div style="font-size:3rem;font-weight:900;color:#fff" id="hq-precount">3</div><div style="color:rgba(255,255,255,.75);font-weight:800;letter-spacing:1px;text-transform:uppercase">Question starts soon</div></div>`;
   $('hq-stat-bar').innerHTML='';
-  $('hq-mid-lb-btn').style.display='none'; $('hq-next-btn').style.display='none'; $('hq-final-btn').style.display='none';
+  setHostActionButtons('countdown');
   $('hq-progress').style.width='100%'; $('hq-timer-num').textContent='3'; updateArc(3,3);
-  let c=3;
+  let c=Math.max(1, Number(room._countdown||3));
   timerInterval=setInterval(async ()=>{
     c--;
     room._countdown=c;
@@ -3397,11 +3535,12 @@ startGame = async function(){
   room.players.forEach(p=>{p.score=0;p.answered=false;p.lastCorrect=false;p.streak=0;p.correctCount=0;p.lastPts=0;p.answerIndex=null;p.lastTypeInAnswer='';p.answerMs=null;});
   if(room.quiz.options&&room.quiz.options.shuffleQ){ room.quiz.questions=shuffle([...room.quiz.questions]); }
   room.currentQ=0;
+  rememberActiveHostRoom(room.code);
   $('pin-badge-code').textContent=room.code;
   $('pin-badge').classList.add('visible');
   await startQuestionCountdown();
 };
-showHostQuestion = async function(){
+showHostQuestion = async function(resume=false){
   clearInterval(timerInterval);
   const q=room.quiz.questions[room.currentQ];
   if(!q) return;
@@ -3416,11 +3555,12 @@ showHostQuestion = async function(){
     room.quiz.questions[room.currentQ]=displayQ;
   }
   const total=room.quiz.questions.length;
-  const timeLimit=room.quiz.timePerQ||20;
+  const baseTimeLimit=room.quiz.timePerQ||20;
+  const timeLimit=resume ? Math.max(1, Number(room._currentTimer||baseTimeLimit)) : baseTimeLimit;
   room.phase='question';
   room._currentTimer=timeLimit;
-  room._questionStartedAt=Date.now();
-  room.players.forEach(p=>{p.answered=false;p.lastCorrect=false;p.lastPts=0;p.answerIndex=null;p.lastTypeInAnswer='';p.answerMs=null;});
+  room._questionStartedAt=resume ? (Date.now()-((baseTimeLimit-timeLimit)*1000)) : Date.now();
+  if(!resume){ room.players.forEach(p=>{p.answered=false;p.lastCorrect=false;p.lastPts=0;p.answerIndex=null;p.lastTypeInAnswer='';p.answerMs=null;}); }
   await syncRoomState();
   showScreen('host-question');
   $('hq-q-counter').textContent=(room.currentQ+1)+'/'+total;
@@ -3428,7 +3568,7 @@ showHostQuestion = async function(){
   $('hq-q-text').textContent=displayQ.text;
   const mw=$('hq-q-media-wrap');
   if(displayQ.media){const isV=displayQ.media.mimeType&&displayQ.media.mimeType.startsWith('video');
-    mw.innerHTML=isV?`<video src="${displayQ.media.dataURL}" autoplay muted loop class="hq-question-media"></video>`:`<img src="${displayQ.media.dataURL}" class="hq-question-media"/>`; } else mw.innerHTML='';
+    mw.innerHTML=isV?`<video id="hq-question-video" src="${displayQ.media.dataURL}" autoplay controls class="hq-question-media"></video>`:`<img src="${displayQ.media.dataURL}" class="hq-question-media"/>`; } else mw.innerHTML='';
   if(displayQ.type==='Type-In'){
     $('hq-ans-grid').innerHTML=`<div class="hq-typein-display" style="grid-column:1/-1"><div class="hq-typein-answers">${(displayQ.typeInAnswers||[]).filter(a=>a.trim()).map(a=>`<span class="hq-typein-tag">?</span>`).join('')}</div></div>`;
   } else {
@@ -3446,9 +3586,9 @@ showHostQuestion = async function(){
     }).join('');
   }
   $('hq-stat-bar').innerHTML='';
-  $('hq-next-btn').style.display='none'; $('hq-mid-lb-btn').style.display='none'; $('hq-final-btn').style.display='none';
+  setHostActionButtons('question');
   $('hq-progress').style.width='100%';
-  let t=timeLimit;
+  let t=Math.max(1, Number(room._currentTimer||timeLimit));
   $('hq-timer-num').textContent=t; updateArc(t,timeLimit);
   timerInterval=setInterval(async ()=>{
     t--; room._currentTimer=t;
@@ -3463,12 +3603,12 @@ showHostQuestion = async function(){
       await syncRoomState();
       $('hq-timer-num').textContent='0';
       $('hq-stat-bar').innerHTML += `<div class="hq-stat"><div class="hq-stat-num" style="color:#fff">Time</div><div class="hq-stat-lbl">up</div></div>`;
-      $('hq-mid-lb-btn').textContent='Show Results'; $('hq-mid-lb-btn').style.display='inline-flex';
+      setHostActionButtons('question-ended');
     }
   },1000);
 };
 revealAnswer = async function(){
-  if(!room) return;
+  if(!room || room.phase!=='question-ended') return;
   clearInterval(timerInterval);
   await finalizeQuestionScoring();
   const q=room.quiz.questions[room.currentQ];
@@ -3483,9 +3623,7 @@ revealAnswer = async function(){
   const wrong=(room.players||[]).filter(p=>p.answered&&!p.lastCorrect).length;
   const noAns=(room.players||[]).filter(p=>!p.answered).length;
   $('hq-stat-bar').innerHTML=`<div class="hq-stat"><div class="hq-stat-num" style="color:#4cff91">${correct}</div><div class="hq-stat-lbl">correct</div></div><div class="hq-stat"><div class="hq-stat-num" style="color:#ff6b6b">${wrong}</div><div class="hq-stat-lbl">wrong</div></div><div class="hq-stat"><div class="hq-stat-num">${noAns}</div><div class="hq-stat-lbl">no answer</div></div>`;
-  $('hq-mid-lb-btn').style.display='none';
-  const isLast=room.currentQ>=room.quiz.questions.length-1;
-  setTimeout(()=>{ if(isLast) showFinalLeaderboard(); else showMidLeaderboard(); }, 1100);
+  showMidLeaderboard();
 };
 nextQuestion = async function(){
   if(!room) return;
@@ -3496,6 +3634,7 @@ nextQuestion = async function(){
 proceedFromMidLB = function(){ nextQuestion(); };
 playAgain = async function(){
   try{ if(room && room.code && initFirebaseIfNeeded()) await roomDbRef(room.code).remove(); }catch(e){ console.error(e); }
+  clearActiveHostRoom();
   room=null; window.__room=null; stopHostRoomListener(); hidePinBadge(); showScreen('library'); renderLibrary();
 };
 studentJoin = async function(){
