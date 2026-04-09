@@ -2285,7 +2285,7 @@ function revealAnswer(){
     <div class="hq-stat"><div class="hq-stat-num" style="color:#4cff91">${correct}</div><div class="hq-stat-lbl">correct</div></div>
     <div class="hq-stat"><div class="hq-stat-num" style="color:#ff6b6b">${wrong}</div><div class="hq-stat-lbl">wrong</div></div>
     <div class="hq-stat"><div class="hq-stat-num">${noAns}</div><div class="hq-stat-lbl">no answer</div></div>`;
-  $('hq-mid-lb-btn').style.display='inline-flex';
+  $('hq-mid-lb-btn').textContent='Show Results'; $('hq-mid-lb-btn').style.display='inline-flex';
   const isLast=room.currentQ>=room.quiz.questions.length-1;
   if(isLast)$('hq-final-btn').style.display='inline-flex'; else $('hq-next-btn').style.display='inline-flex';
 }
@@ -2332,13 +2332,16 @@ function showStudentQuestion(){
   } else {
     const studentAnswerMedia = Array.isArray(q.answerMedia) ? q.answerMedia : [];
     const studentAnswers = Array.isArray(q.answers) ? q.answers : [];
-    $('sp-ans-grid').innerHTML=Array.from({length:numAns},(_,i)=>{
-      const am=studentAnswerMedia[i];const isV=am&&am.mimeType&&am.mimeType.startsWith('video');
+    const studentIndexes = q.type==='True/False'
+      ? [0,1]
+      : studentAnswers.map((a,i)=>({a:(a||'').trim(),i})).filter(x=>x.a).map(x=>x.i);
+    $('sp-ans-grid').innerHTML=studentIndexes.map((srcIdx,renderIdx)=>{
+      const am=studentAnswerMedia[srcIdx];const isV=am&&am.mimeType&&am.mimeType.startsWith('video');
       const med=am?(isV?`<video src="${am.dataURL}" style="max-height:42px;border-radius:5px;object-fit:cover" muted autoplay loop class="sp-ans-media"></video>`
         :`<img src="${am.dataURL||am.url||''}" class="sp-ans-media"/>`):'';
-      const label=studentAnswers[i]||(q.type==='True/False'?['True','False'][i]:'');
-      return `<button class="sp-ans-btn sp-ans-btn-${i}" id="sp-ans-${i}" onclick="studentAnswer(${i})">
-        <span style="font-size:1.2rem">${SHAPES[i]}</span>${med}<span>${esc(label)}</span></button>`;
+      const label=studentAnswers[srcIdx]||(q.type==='True/False'?['True','False'][srcIdx]:'');
+      return `<button class="sp-ans-btn sp-ans-btn-${renderIdx}" id="sp-ans-${srcIdx}" onclick="studentAnswer(${srcIdx})">
+        <span style="font-size:1.2rem">${SHAPES[renderIdx]}</span>${med}<span>${esc(label)}</span></button>`;
     }).join('');
   }
 }
@@ -2574,59 +2577,58 @@ function updateLobby(){
 
 // Show avatars in final leaderboard
 function showFinalLeaderboard(){
-  clearInterval(timerInterval);room.phase='gameover';
+  clearInterval(timerInterval);
+  room.phase='gameover';
   hidePinBadge();
   const sorted=getSorted();
   $('final-quiz-title-lbl').textContent=room.quiz.title;
 
-  // ── PODIUM (top 3) ──
   const podium=$('final-podium');
   podium.innerHTML='';
-  podium.className=''; // reset
+  const showPodium=(room.players||[]).length>=3;
 
-  const medals=['🥇','🥈','🥉'];
-  const blockClass=['podium-block-1','podium-block-2','podium-block-3'];
-  const avatarClass=['podium-avatar-1','podium-avatar-2','podium-avatar-3'];
-  const scoreClass=['podium-score-1','podium-score-2','podium-score-3'];
-  const ranks=[1,0,2]; // display order: 2nd left, 1st centre, 3rd right
+  if(showPodium){
+    const medals=['🥇','🥈','🥉'];
+    const blockClass=['podium-block-1','podium-block-2','podium-block-3'];
+    const avatarClass=['podium-avatar-1','podium-avatar-2','podium-avatar-3'];
+    const scoreClass=['podium-score-1','podium-score-2','podium-score-3'];
+    const ranks=[1,0,2];
 
-  // Build stage
-  const stage=document.createElement('div');
-  stage.className='podium-stage';
+    const stage=document.createElement('div');
+    stage.className='podium-stage';
 
-  ranks.forEach(rank=>{
-    const p=sorted[rank];
-    const slot=document.createElement('div');
-    slot.className='podium-slot';
-    if(p){
-      slot.innerHTML=`
-        <div class="podium-medal">${medals[rank]}</div>
-        <div class="podium-avatar ${avatarClass[rank]}">${p.avatar||'🙂'}</div>
-        <div class="podium-name">${esc(p.name)}</div>
-        <div class="podium-score ${scoreClass[rank]}">${p.score.toLocaleString()} pts</div>
-        <div class="podium-block ${blockClass[rank]}">
-          <span class="podium-rank-num">${rank+1}</span>
-        </div>`;
-    } else {
-      // empty slot (fewer than 3 players)
-      slot.innerHTML=`<div class="podium-block ${blockClass[rank]}" style="opacity:.25"><span class="podium-rank-num">${rank+1}</span></div>`;
-    }
-    stage.appendChild(slot);
-  });
+    ranks.forEach(rank=>{
+      const p=sorted[rank];
+      const slot=document.createElement('div');
+      slot.className='podium-slot';
+      if(p){
+        slot.innerHTML=`
+          <div class="podium-medal">${medals[rank]}</div>
+          <div class="podium-avatar ${avatarClass[rank]}">${p.avatar||'🙂'}</div>
+          <div class="podium-name">${esc(p.name)}</div>
+          <div class="podium-score ${scoreClass[rank]}">${p.score.toLocaleString()} pts</div>
+          <div class="podium-block ${blockClass[rank]}">
+            <span class="podium-rank-num">${rank+1}</span>
+          </div>`;
+      } else {
+        slot.innerHTML=`<div class="podium-block ${blockClass[rank]}" style="opacity:.25"><span class="podium-rank-num">${rank+1}</span></div>`;
+      }
+      stage.appendChild(slot);
+    });
 
-  podium.appendChild(stage);
+    podium.appendChild(stage);
+    setTimeout(()=>{
+      stage.querySelectorAll('.podium-slot').forEach(s=>s.classList.add('reveal'));
+      launchConfetti();
+    },120);
+  }
+
   showScreen('leaderboard');
 
-  // Animate podium slots in with a slight delay
-  setTimeout(()=>{
-    stage.querySelectorAll('.podium-slot').forEach(s=>s.classList.add('reveal'));
-    launchConfetti();
-  },120);
-
-  // ── FULL LIST ──
+  $('final-list').style.maxWidth=showPodium?'560px':'720px';
   $('final-list').innerHTML=sorted.map((p,i)=>`
     <div class="final-row" style="animation:slideInRow .35s ease ${i*.06}s both">
-      <div class="final-rank">${i<3?medals[i]:i+1}</div>
+      <div class="final-rank">${i<3?['🥇','🥈','🥉'][i]:i+1}</div>
       <div style="font-size:1.1rem;flex-shrink:0">${p.avatar||'🙂'}</div>
       <div class="final-name">${esc(p.name)}</div>
       <div class="final-correct">${p.correctCount||0}/${room.quiz.questions.length}✓</div>
@@ -2637,15 +2639,16 @@ function showFinalLeaderboard(){
 // Also show avatars in mid-leaderboard
 function showMidLeaderboard(){
   const sorted=getSorted();
-  $('mid-lb-title').textContent='📊 After Question '+(room.currentQ+1);
-  $('mid-lb-list').innerHTML=sorted.slice(0,8).map((p,i)=>{
-    const delta=p.score-(room._prevScores[p.name]||0);
+  $('mid-lb-title').textContent='Results after Question '+(room.currentQ+1);
+  $('mid-lb-list').innerHTML=sorted.map((p,i)=>{
+    const prev=room._prevScores[p.name]||0;
+    const delta=Math.max(0,p.score-prev);
     const rc=i===0?'gold':i===1?'silver':i===2?'bronze':'';
     return `<div class="mid-lb-row" style="animation-delay:${i*.06}s">
-      <div class="mid-lb-rank ${rc}">${i===0?'👑':i+1}</div>
+      <div class="mid-lb-rank ${rc}">${i+1}</div>
       <div style="font-size:1rem">${p.avatar||'🙂'}</div>
       <div class="mid-lb-name">${esc(p.name)}</div>
-      <div class="mid-lb-score">${p.score.toLocaleString()}<span class="mid-lb-delta"> +${delta}</span></div>
+      <div class="mid-lb-score">${p.score.toLocaleString()}${delta?`<span class="mid-lb-delta"> +${delta}</span>`:''}</div>
     </div>`;}).join('');
   sorted.forEach(p=>{room._prevScores[p.name]=p.score;});
   const isLast=room.currentQ>=room.quiz.questions.length-1;
@@ -3429,13 +3432,17 @@ showHostQuestion = async function(){
   if(displayQ.type==='Type-In'){
     $('hq-ans-grid').innerHTML=`<div class="hq-typein-display" style="grid-column:1/-1"><div class="hq-typein-answers">${(displayQ.typeInAnswers||[]).filter(a=>a.trim()).map(a=>`<span class="hq-typein-tag">?</span>`).join('')}</div></div>`;
   } else {
-    const numAns=displayQ.type==='True/False'?2:4;
     const hostAnswerMedia = Array.isArray(displayQ.answerMedia) ? displayQ.answerMedia : [];
     const hostAnswers = Array.isArray(displayQ.answers) ? displayQ.answers : [];
-    $('hq-ans-grid').innerHTML=Array.from({length:numAns},(_,i)=>{
-      const am=hostAnswerMedia[i];const isV=am&&am.mimeType&&am.mimeType.startsWith('video');
+    const filledHostAnswers = displayQ.type==='True/False'
+      ? [0,1]
+      : hostAnswers.map((a,i)=>({a:(a||'').trim(),i})).filter(x=>x.a);
+    const hostIndexes = displayQ.type==='True/False' ? filledHostAnswers : filledHostAnswers.map(x=>x.i);
+    $('hq-ans-grid').innerHTML=hostIndexes.map((srcIdx,renderIdx)=>{
+      const am=hostAnswerMedia[srcIdx];const isV=am&&am.mimeType&&am.mimeType.startsWith('video');
       const med=am?(isV?`<video src="${am.dataURL}" style="max-height:44px;border-radius:5px;object-fit:cover;max-width:80px" muted autoplay loop></video>`:`<img src="${am.dataURL}" class="hq-ans-media"/>`):'';
-      return `<div class="hq-ans-btn hq-ans-btn-${i}" id="hq-ans-${i}"><span style="font-size:1.2rem">${SHAPES[i]}</span><span style="flex:1">${esc(hostAnswers[i]||(displayQ.type==='True/False'?['True','False'][i]:''))}</span>${med}</div>`;
+      const label=hostAnswers[srcIdx]||(displayQ.type==='True/False'?['True','False'][srcIdx]:'');
+      return `<div class="hq-ans-btn hq-ans-btn-${renderIdx}" id="hq-ans-${srcIdx}"><span style="font-size:1.2rem">${SHAPES[renderIdx]}</span><span style="flex:1">${esc(label)}</span>${med}</div>`;
     }).join('');
   }
   $('hq-stat-bar').innerHTML='';
@@ -3456,7 +3463,7 @@ showHostQuestion = async function(){
       await syncRoomState();
       $('hq-timer-num').textContent='0';
       $('hq-stat-bar').innerHTML += `<div class="hq-stat"><div class="hq-stat-num" style="color:#fff">Time</div><div class="hq-stat-lbl">up</div></div>`;
-      $('hq-mid-lb-btn').style.display='inline-flex';
+      $('hq-mid-lb-btn').textContent='Show Results'; $('hq-mid-lb-btn').style.display='inline-flex';
     }
   },1000);
 };
@@ -3469,8 +3476,8 @@ revealAnswer = async function(){
     const tags=(q.typeInAnswers||[]).filter(a=>a.trim()).map(a=>`<span class="hq-typein-tag" style="background:rgba(76,255,145,.25);border:1px solid rgba(76,255,145,.5)">${esc(a)}</span>`).join('');
     $('hq-ans-grid').innerHTML=`<div class="hq-typein-display" style="grid-column:1/-1"><div class="hq-typein-answers">${tags}</div></div>`;
   } else {
-    const numAns=q.type==='True/False'?2:4;
-    for(let i=0;i<numAns;i++){ const btn=$('hq-ans-'+i); if(!btn) continue; if(q.correct.includes(i)) btn.classList.add('correct-flash'); else btn.classList.add('dimmed'); }
+    const revealIndexes=q.type==='True/False' ? [0,1] : (Array.isArray(q.answers)?q.answers.map((a,i)=>({a:(a||'').trim(),i})).filter(x=>x.a).map(x=>x.i):[]);
+    revealIndexes.forEach(i=>{ const btn=$('hq-ans-'+i); if(!btn) return; if(q.correct.includes(i)) btn.classList.add('correct-flash'); else btn.classList.add('dimmed'); });
   }
   const correct=(room.players||[]).filter(p=>p.lastCorrect).length;
   const wrong=(room.players||[]).filter(p=>p.answered&&!p.lastCorrect).length;
