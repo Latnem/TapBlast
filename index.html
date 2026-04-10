@@ -3264,9 +3264,18 @@ async function resumeHostedGame(){
 async function endHostedGame(){
   if(!room) return;
   clearInterval(timerInterval);
-  room.phase='gameover';
-  await syncRoomState();
-  showFinalLeaderboard();
+  try{
+    room.phase='gameover';
+    await syncRoomState();
+  }catch(err){ console.error(err); }
+  stopHostRoomListener();
+  clearActiveHostRoom();
+  hidePinBadge();
+  room=null;
+  window.__room=null;
+  showScreen('library');
+  renderLibrary();
+  toast('Game ended.');
 }
 async function restoreHostedRoomIfAny(){
   const code=getRememberedHostRoomCode();
@@ -3612,18 +3621,28 @@ revealAnswer = async function(){
   clearInterval(timerInterval);
   await finalizeQuestionScoring();
   const q=room.quiz.questions[room.currentQ];
+  showScreen('host-question');
+  $('hq-q-label').textContent='CORRECT ANSWER';
   if(q.type==='Type-In'){
     const tags=(q.typeInAnswers||[]).filter(a=>a.trim()).map(a=>`<span class="hq-typein-tag" style="background:rgba(76,255,145,.25);border:1px solid rgba(76,255,145,.5)">${esc(a)}</span>`).join('');
-    $('hq-ans-grid').innerHTML=`<div class="hq-typein-display" style="grid-column:1/-1"><div class="hq-typein-answers">${tags}</div></div>`;
+    $('hq-ans-grid').innerHTML=`<div class="hq-typein-display" style="grid-column:1/-1"><div style="font-size:.8rem;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.7);font-weight:800;margin-bottom:8px">Accepted answers</div><div class="hq-typein-answers">${tags}</div></div>`;
   } else {
     const revealIndexes=q.type==='True/False' ? [0,1] : (Array.isArray(q.answers)?q.answers.map((a,i)=>({a:(a||'').trim(),i})).filter(x=>x.a).map(x=>x.i):[]);
-    revealIndexes.forEach(i=>{ const btn=$('hq-ans-'+i); if(!btn) return; if(q.correct.includes(i)) btn.classList.add('correct-flash'); else btn.classList.add('dimmed'); });
+    revealIndexes.forEach(i=>{ const btn=$('hq-ans-'+i); if(!btn) return; if((q.correct||[]).includes(i)) btn.classList.add('correct-flash'); else btn.classList.add('dimmed'); });
   }
   const correct=(room.players||[]).filter(p=>p.lastCorrect).length;
   const wrong=(room.players||[]).filter(p=>p.answered&&!p.lastCorrect).length;
   const noAns=(room.players||[]).filter(p=>!p.answered).length;
   $('hq-stat-bar').innerHTML=`<div class="hq-stat"><div class="hq-stat-num" style="color:#4cff91">${correct}</div><div class="hq-stat-lbl">correct</div></div><div class="hq-stat"><div class="hq-stat-num" style="color:#ff6b6b">${wrong}</div><div class="hq-stat-lbl">wrong</div></div><div class="hq-stat"><div class="hq-stat-num">${noAns}</div><div class="hq-stat-lbl">no answer</div></div>`;
-  showMidLeaderboard();
+  if($('hq-next-btn')) $('hq-next-btn').style.display='none';
+  if($('hq-mid-lb-btn')) $('hq-mid-lb-btn').style.display='none';
+  if($('hq-pause-btn')) $('hq-pause-btn').style.display='none';
+  if($('hq-resume-btn')) $('hq-resume-btn').style.display='none';
+  if($('hq-end-btn')) $('hq-end-btn').style.display='inline-flex';
+  clearTimeout(window.__tbRevealToBoard);
+  window.__tbRevealToBoard=setTimeout(()=>{
+    if(room && room.phase==='revealed') showMidLeaderboard();
+  }, 1700);
 };
 nextQuestion = async function(){
   if(!room) return;
