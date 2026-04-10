@@ -593,7 +593,7 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
     <div class="hq-stat-bar" id="hq-stat-bar"></div>
     <div style="text-align:center;margin-top:14px;display:flex;gap:9px;flex-wrap:wrap;justify-content:center" id="hq-btn-row">
       <button class="btn btn-kahoot" id="hq-next-btn" onclick="nextQuestion()" style="display:none">Next</button>
-      <button class="btn btn-kahoot" id="hq-mid-lb-btn" onclick="revealAnswer()" style="display:none">Show Results</button>
+      <button class="btn btn-kahoot" id="hq-mid-lb-btn" onclick="showResultsFlow()" style="display:none">Show Results</button>
       <button class="btn btn-outline" id="hq-pause-btn" onclick="pauseHostedGame()" style="display:none;background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.35)">Pause</button>
       <button class="btn btn-outline" id="hq-resume-btn" onclick="resumeHostedGame()" style="display:none;background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.35)">Resume</button>
       <button class="btn" id="hq-end-btn" onclick="endHostedGame()" style="display:none;background:#b3342f;color:#fff">End Game</button>
@@ -2411,7 +2411,7 @@ function studentAnswer(idx){
 }
 
 function showStudentReveal(){
-  const r=window.__room,q=r.quiz.questions[r.currentQ],player=studentState.playerRef;
+  const r=window.__room,q=r.quiz.questions[r.currentQ],player=(r.players||[]).find(p=>p.id===studentState.playerId||p.name===studentState.name)||{};
   const fb=$('sp-feedback');
   const pts=player.lastPts||0;
   const streakTxt=player.streak>=5?` 🔥×${player.streak} streak!`:player.streak>=3?` 🔥 streak!`:'';
@@ -2644,6 +2644,7 @@ function showFinalLeaderboard(){
 // Also show avatars in mid-leaderboard
 function showMidLeaderboard(){
   const sorted=getSorted();
+  room.phase='leaderboard';
   $('mid-lb-title').textContent='Results after Question '+(room.currentQ+1);
   $('mid-lb-list').innerHTML=sorted.map((p,i)=>{
     const prev=room._prevScores[p.name]||0;
@@ -2659,7 +2660,7 @@ function showMidLeaderboard(){
   const isLast=room.currentQ>=room.quiz.questions.length-1;
   $('mid-lb-next-btn').style.display=isLast?'none':'inline-flex';
   $('mid-lb-final-btn').style.display=isLast?'inline-flex':'none';
-  setHostActionButtons('revealed');
+  setHostActionButtons('leaderboard');
   showScreen('mid-leaderboard');
 }
 
@@ -3190,12 +3191,14 @@ function setHostActionButtons(state){
   }else if(state==='paused'){
     map.resume=true; map.end=true;
   }else if(state==='revealed'){
+    map.end=true;
+  }else if(state==='leaderboard'){
     map.next=true; map.end=true;
   }else if(state==='gameover'){
     map.final=true;
   }
   if($('hq-next-btn')) $('hq-next-btn').style.display=map.next?'inline-flex':'none';
-  if($('hq-mid-lb-btn')) $('hq-mid-lb-btn').style.display=map.results?'inline-flex':'none';
+  if($('hq-mid-lb-btn')) $('hq-mid-lb-btn').style.display=map.results?'inline-flex':'none'; if($('hq-mid-lb-btn')) $('hq-mid-lb-btn').textContent='Show Results';
   if($('hq-pause-btn')) $('hq-pause-btn').style.display=map.pause?'inline-flex':'none';
   if($('hq-resume-btn')) $('hq-resume-btn').style.display=map.resume?'inline-flex':'none';
   if($('hq-end-btn')) $('hq-end-btn').style.display=map.end?'inline-flex':'none';
@@ -3232,6 +3235,9 @@ function renderHostFromRoomState(){
     return;
   }
   if(room.phase==='revealed'){
+    return;
+  }
+  if(room.phase==='leaderboard'){
     showMidLeaderboard();
     return;
   }
@@ -3241,6 +3247,8 @@ function renderHostFromRoomState(){
   }
   if(room.phase==='question-ended'){
     showScreen('host-question');
+    $('hq-q-label').textContent='TIME IS UP';
+    if($('hq-stat-bar')) $('hq-stat-bar').innerHTML += `<div class="hq-stat"><div class="hq-stat-num" style="color:#fff">Reveal</div><div class="hq-stat-lbl">click Show Results</div></div>`;
     setHostActionButtons('question-ended');
     return;
   }
@@ -3424,6 +3432,8 @@ function listenStudentRoom(code){
       studentState.lastPhase='paused'; $('sp-waiting').style.display='block'; $('sp-question-view').style.display='none'; $('sp-waiting-msg').textContent='Game paused'; $('sp-room-info').textContent='Waiting for teacher to resume';
     }else if(phase==='revealed'&&studentState.lastPhase!=='revealed'){
       studentState.lastPhase='revealed'; showStudentReveal();
+    }else if(phase==='leaderboard'&&studentState.lastPhase!=='leaderboard'){
+      studentState.lastPhase='leaderboard'; $('sp-waiting').style.display='block'; $('sp-question-view').style.display='none'; $('sp-waiting-msg').textContent='Leaderboard updated'; $('sp-room-info').textContent='Waiting for next question';
     }else if(phase==='gameover'&&studentState.lastPhase!=='gameover'){
       studentState.lastPhase='gameover'; showStudentGameOver();
     }
@@ -3524,8 +3534,6 @@ async function finalizeQuestionScoring(){
       p.lastPts=0;
     }
   });
-  room.phase='revealed';
-  await syncRoomState();
 }
 
 function showStudentCountdown(sec){
@@ -3611,15 +3619,46 @@ showHostQuestion = async function(resume=false){
       room.phase='question-ended';
       await syncRoomState();
       $('hq-timer-num').textContent='0';
-      $('hq-stat-bar').innerHTML += `<div class="hq-stat"><div class="hq-stat-num" style="color:#fff">Time</div><div class="hq-stat-lbl">up</div></div>`;
+      $('hq-q-label').textContent='TIME IS UP';
+      $('hq-stat-bar').innerHTML += `<div class="hq-stat"><div class="hq-stat-num" style="color:#fff">Time</div><div class="hq-stat-lbl">up</div></div><div class="hq-stat"><div class="hq-stat-num" style="color:#fff">Reveal</div><div class="hq-stat-lbl">click Show Results</div></div>`;
       setHostActionButtons('question-ended');
     }
   },1000);
 };
+async function showResultsFlow(){
+  if(!room) return;
+  if(room.phase==='question' && Number(room._currentTimer||0) <= 0){
+    room.phase='question-ended';
+    await syncRoomState();
+    setHostActionButtons('question-ended');
+  }
+  if(room.phase==='question-ended'){
+    await revealAnswer();
+    return;
+  }
+  if(room.phase==='revealed'){
+    clearTimeout(window.__tbRevealToBoard);
+    room.phase='leaderboard';
+    await syncRoomState();
+    showMidLeaderboard();
+    return;
+  }
+  if(room.phase==='leaderboard'){
+    showMidLeaderboard();
+  }
+}
+
 revealAnswer = async function(){
-  if(!room || room.phase!=='question-ended') return;
+  if(!room) return;
+  if(room.phase==='question'){
+    if(Number(room._currentTimer||0) > 0) return;
+    room.phase='question-ended';
+  }
+  if(room.phase!=='question-ended') return;
   clearInterval(timerInterval);
   await finalizeQuestionScoring();
+  room.phase='revealed';
+  await syncRoomState();
   const q=room.quiz.questions[room.currentQ];
   showScreen('host-question');
   $('hq-q-label').textContent='CORRECT ANSWER';
@@ -3639,13 +3678,18 @@ revealAnswer = async function(){
   if($('hq-pause-btn')) $('hq-pause-btn').style.display='none';
   if($('hq-resume-btn')) $('hq-resume-btn').style.display='none';
   if($('hq-end-btn')) $('hq-end-btn').style.display='inline-flex';
+  setHostActionButtons('revealed');
   clearTimeout(window.__tbRevealToBoard);
-  window.__tbRevealToBoard=setTimeout(()=>{
-    if(room && room.phase==='revealed') showMidLeaderboard();
+  window.__tbRevealToBoard=setTimeout(async ()=>{
+    if(room && room.phase==='revealed'){
+      room.phase='leaderboard';
+      await syncRoomState();
+      showMidLeaderboard();
+    }
   }, 1700);
 };
 nextQuestion = async function(){
-  if(!room) return;
+  if(!room || (room.phase!=='leaderboard' && room.phase!=='revealed')) return;
   room.currentQ += 1;
   if(room.currentQ >= room.quiz.questions.length){ return showFinalLeaderboard(); }
   await startQuestionCountdown();
