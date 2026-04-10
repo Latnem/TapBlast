@@ -2129,7 +2129,7 @@ function getJoinUrl(code){
   return window.location.origin + rootPath + 'join/?code=' + encodeURIComponent(code||'');
 }
 function updateJoinLobbyUI(code){
-  const joinUrl=getJoinUrl(code||$('lobby-code').textContent.trim());
+  const joinUrl='https://latnem.github.io/TapBlast/join/index.html';
   const qr=$('join-qr-img');
   const label=$('join-url-label');
   if(qr){
