@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- TapBlast student join v5: paired with teacher v12 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -27,7 +26,6 @@ input:focus{border-color:#3f6db5;box-shadow:0 0 0 3px rgba(63,109,181,.12)}
 .btn-primary{width:100%;background:#3f6db5;color:#fff}
 .btn-primary:hover{filter:brightness(1.05)}
 @media(max-width:860px){.panel{grid-template-columns:1fr}.hero{padding:30px;min-height:auto}.form-side{padding:24px}}
-.hint{font-size:.82rem;color:#6d7285;line-height:1.5;margin-top:10px}
 </style>
 </head>
 <body>
@@ -45,43 +43,23 @@ input:focus{border-color:#3f6db5;box-shadow:0 0 0 3px rgba(63,109,181,.12)}
         <label for="nickname">Nickname</label>
         <input id="nickname" type="text" placeholder="Your nickname" maxlength="20"/>
         <button class="btn btn-primary" onclick="goJoin()">Join Game</button>
-        
       </div>
     </section>
   </div>
 </div>
 <script>
 (function prefillFromUrl(){
-  const params = new URLSearchParams(location.search);
-  const savedCode = localStorage.getItem('tapblast_last_room_code') || '';
-  const savedName = localStorage.getItem('tapblast_last_nickname') || '';
-  const code = (params.get('code') || savedCode || '').replace(/\D/g,'').slice(0,6);
-  const name = (params.get('name') || savedName || '').slice(0,20);
-  if(code) document.getElementById('roomCode').value = code;
-  if(name) document.getElementById('nickname').value = name;
+  const params=new URLSearchParams(location.search);
+  if(params.get('code')) document.getElementById('roomCode').value=(params.get('code')||'').replace(/\D/g,'').slice(0,6);
+  if(params.get('name')) document.getElementById('nickname').value=(params.get('name')||'').slice(0,20);
 })();
-
-['roomCode','nickname'].forEach(id=>{
-  const el = document.getElementById(id);
-  if(!el) return;
-  el.addEventListener('keydown', e=>{
-    if(e.key === 'Enter') goJoin();
-  });
-});
-
 function goJoin(){
   const code=(document.getElementById('roomCode').value||'').replace(/\D/g,'').slice(0,6);
   const name=(document.getElementById('nickname').value||'').trim().slice(0,20);
-  if(!code || !name){
-    alert('Enter room code and nickname.');
-    return;
-  }
-  localStorage.setItem('tapblast_last_room_code', code);
-  localStorage.setItem('tapblast_last_nickname', name);
   const q=new URLSearchParams();
-  q.set('code',code);
-  q.set('name',name);
-  location.href='./index_teacher_TapBlast_SYNC_PACK_v11.html'+(q.toString()?'?'+q.toString():'')+'#student-join';
+  if(code) q.set('code',code);
+  if(name) q.set('name',name);
+  location.href='https://latnem.github.io/TapBlast/index.html'+(q.toString()?'?'+q.toString():'')+'#student-join';
 }
 </script>
 </body>
