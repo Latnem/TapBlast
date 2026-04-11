@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- TapBlast teacher full file with Google login hardening -->
 <!-- TapBlast teacher v12: cleaned active gameplay handlers, legacy duplicates disabled -->
 <html lang="en">
 <head>
@@ -459,8 +460,8 @@ label{font-size:.78rem;color:var(--text2);font-weight:700;margin-bottom:4px;disp
     
     <h2 style="font-size:1.45rem;margin-bottom:8px">Create and Host Quizzes</h2>
     <p style="color:var(--text3);line-height:1.6;margin-bottom:22px">Teachers can manage folders, build quizzes, and host live games.<br><br>Players join separately without an account.</p>
-    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:10px;padding:14px 18px;font-size:.96rem" onclick="signInTeacher('google')">Continue with Google</button>
-    <button class="btn btn-outline" style="width:100%;justify-content:center;margin-bottom:12px;padding:14px 18px;font-size:.96rem" onclick="signInTeacher('microsoft')">Continue with Microsoft</button>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:10px;padding:14px 18px;font-size:.96rem" type="button" onclick="signInTeacher('google')">Continue with Google</button>
+    <button class="btn btn-outline" style="width:100%;justify-content:center;margin-bottom:12px;padding:14px 18px;font-size:.96rem" type="button" onclick="signInTeacher('microsoft')">Continue with Microsoft</button>
     
         
     
@@ -2129,7 +2130,7 @@ function getJoinUrl(code){
   return window.location.origin + rootPath + 'join/?code=' + encodeURIComponent(code||'');
 }
 function updateJoinLobbyUI(code){
-  const joinUrl='https://latnem.github.io/TapBlast/join/index.html';
+  const joinUrl=getJoinUrl(code||$('lobby-code').textContent.trim());
   const qr=$('join-qr-img');
   const label=$('join-url-label');
   if(qr){
@@ -3362,14 +3363,28 @@ async function afterTeacherSignIn(){
   if(!resumed) showScreen('library');
 }
 signInTeacher = async function(provider='google'){
-  if(!initFirebaseIfNeeded()){ toast('Add Firebase config first. Cloud mode is required here.','error'); return; }
+  if(!initFirebaseIfNeeded()){ toast('Firebase is not ready.','error'); return; }
   try{
+    if(fbAuth && fbAuth.setPersistence){
+      await fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    }
     let prov;
-    if(provider==='google') prov=new firebase.auth.GoogleAuthProvider();
-    else if(provider==='microsoft') prov=new firebase.auth.OAuthProvider('microsoft.com');
-    else { toast('Use Google or Microsoft in cloud mode.','error'); return; }
+    if(provider==='google'){
+      prov=new firebase.auth.GoogleAuthProvider();
+      if(prov.setCustomParameters) prov.setCustomParameters({prompt:'select_account'});
+    }else if(provider==='microsoft'){
+      prov=new firebase.auth.OAuthProvider('microsoft.com');
+    }else{
+      toast('Use Google or Microsoft.','error');
+      return;
+    }
     await fbAuth.signInWithPopup(prov);
-  }catch(err){ console.error(err); toast((err&&err.message)||'Sign-in failed','error'); }
+  }catch(err){
+    console.error(err);
+    const msg=(err&&err.message)||'Sign-in failed';
+    toast(msg,'error');
+    try{ alert('Login failed: '+msg); }catch(_e){}
+  }
 };
 teacherLogout = async function(){
   try{
