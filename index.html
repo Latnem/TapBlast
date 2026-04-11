@@ -2125,9 +2125,7 @@ function moveQ(i,dir){
 let room=null, timerInterval=null, lobbyPollInterval=null;
 
 function getJoinUrl(code){
-  const basePath=(window.location.pathname||'/').replace(/index\.html$/,'');
-  const rootPath=basePath.endsWith('/')?basePath:(basePath+'/');
-  return window.location.origin + rootPath + 'join/?code=' + encodeURIComponent(code||'');
+  return 'https://latnem.github.io/TapBlast/join/?code=' + encodeURIComponent(code||'');
 }
 function updateJoinLobbyUI(code){
   const joinUrl=getJoinUrl(code||$('lobby-code').textContent.trim());
