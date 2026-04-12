@@ -2125,7 +2125,9 @@ function moveQ(i,dir){
 let room=null, timerInterval=null, lobbyPollInterval=null;
 
 function getJoinUrl(code){
-  return 'https://latnem.github.io/TapBlast/join/?code=' + encodeURIComponent(code||'');
+  const basePath=(window.location.pathname||'/').replace(/index\.html$/,'');
+  const rootPath=basePath.endsWith('/')?basePath:(basePath+'/');
+  return window.location.origin + rootPath + 'join/?code=' + encodeURIComponent(code||'');
 }
 function updateJoinLobbyUI(code){
   const joinUrl=getJoinUrl(code||$('lobby-code').textContent.trim());
@@ -4273,6 +4275,306 @@ document.addEventListener('click',()=>document.querySelectorAll('.dropdown-menu'
     if(state==='leaderboard'){
       if(q('hq-mid-lb-btn')) q('hq-mid-lb-btn').style.display='none';
       if(q('hq-next-btn')) { q('hq-next-btn').style.display='inline-flex'; q('hq-next-btn').textContent='Next Question'; }
+    }
+  };
+})();
+</script>
+
+
+<script>
+/* TapBlast v18 stability patch: auth persistence + authoritative gameplay transitions */
+(function(){
+  let __tbAuthBooting = false;
+  let __tbAuthInitialized = false;
+
+  function __tbQ(id){ return document.getElementById(id); }
+
+  const __origInitFirebaseIfNeeded = typeof initFirebaseIfNeeded === 'function' ? initFirebaseIfNeeded : null;
+  initFirebaseIfNeeded = function(){
+    const ok = __origInitFirebaseIfNeeded ? __origInitFirebaseIfNeeded() : false;
+    if(ok && fbAuth && fbAuth.setPersistence && !fbAuth.__tbPersistenceApplied){
+      fbAuth.__tbPersistenceApplied = true;
+      fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(err=>console.error('Persistence error:', err));
+    }
+    return ok;
+  };
+
+  async function __tbEnterLibraryAfterAuth(){
+    if(!currentTeacher) return;
+    updateTeacherBadge();
+    await loadLibrary();
+    renderLibrary();
+    const resumed = await restoreHostedRoomIfAny();
+    if(!resumed) showScreen('library');
+  }
+
+  signInTeacher = async function(provider='google'){
+    if(!initFirebaseIfNeeded()){ toast('Firebase is not ready.','error'); return; }
+    try{
+      if(fbAuth.currentUser){
+        currentTeacher = fbAuth.currentUser;
+        await __tbEnterLibraryAfterAuth();
+        return;
+      }
+      let prov;
+      if(provider==='google'){
+        prov = new firebase.auth.GoogleAuthProvider();
+        if(prov.setCustomParameters) prov.setCustomParameters({prompt:'select_account'});
+      }else if(provider==='microsoft'){
+        prov = new firebase.auth.OAuthProvider('microsoft.com');
+      }else{
+        toast('Use Google or Microsoft.','error');
+        return;
+      }
+      await fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+      const res = await fbAuth.signInWithPopup(prov);
+      currentTeacher = res.user || fbAuth.currentUser || null;
+      if(currentTeacher) await __tbEnterLibraryAfterAuth();
+      else showScreen('login-screen');
+    }catch(err){
+      console.error('LOGIN ERROR', err);
+      const msg = (err && err.message) || 'Sign-in failed';
+      toast(msg,'error');
+      try{ alert('Login failed: '+msg); }catch(_e){}
+      showScreen('login-screen');
+    }
+  };
+
+  teacherLogout = async function(){
+    try{
+      stopHostRoomListener();
+      stopStudentRoomListener();
+      clearActiveHostRoom();
+      hidePinBadge();
+      if(initFirebaseIfNeeded() && fbAuth) await fbAuth.signOut();
+      currentTeacher = null;
+      room = null;
+      window.__room = null;
+      showScreen('login-screen');
+      toast('Signed out.');
+    }catch(err){
+      console.error(err);
+      toast('Sign-out failed','error');
+    }
+  };
+
+  bootApp = function(){
+    initAvatarGrid();
+    const params = new URLSearchParams(location.search);
+    if(location.hash==='#student-join'){
+      if(params.get('code')) __tbQ('s-code-input').value=params.get('code');
+      if(params.get('name')) __tbQ('s-name-input').value=params.get('name');
+      showScreen('student-join');
+      if(cloudReady()) initFirebaseIfNeeded();
+      return;
+    }
+    if(!initFirebaseIfNeeded()){
+      showScreen('login-screen');
+      updateTeacherBadge();
+      return;
+    }
+    if(__tbAuthInitialized) return;
+    __tbAuthInitialized = true;
+    __tbAuthBooting = true;
+
+    const existing = fbAuth.currentUser;
+    if(existing){
+      currentTeacher = existing;
+      __tbEnterLibraryAfterAuth().finally(()=>{ __tbAuthBooting = false; });
+    }else{
+      showScreen('login-screen');
+    }
+
+    fbAuth.onAuthStateChanged(async user=>{
+      currentTeacher = user || null;
+      updateTeacherBadge();
+      try{
+        if(currentTeacher) await __tbEnterLibraryAfterAuth();
+        else if(!__tbAuthBooting) showScreen('login-screen');
+      }finally{
+        __tbAuthBooting = false;
+      }
+    });
+  };
+
+  // Gameplay helpers
+  function __tbSortedPlayers(){
+    return [...(room?.players||[])].sort((a,b)=>
+      ((b.score||0)-(a.score||0)) ||
+      ((b.correctCount||0)-(a.correctCount||0)) ||
+      String(a.name||'').localeCompare(String(b.name||''))
+    );
+  }
+
+  function __tbRenderAllPlayersScoreboard(){
+    const sorted = __tbSortedPlayers();
+    __tbQ('mid-lb-title').textContent = 'Scoreboard after Question ' + (room.currentQ + 1);
+    __tbQ('mid-lb-list').innerHTML = sorted.map((p,i)=>{
+      const key = p.id || p.name;
+      const prev = (room._prevScores||{})[key] || 0;
+      const delta = Math.max(0, (p.score||0) - prev);
+      return `<div class="mid-lb-row" style="animation-delay:${i*.05}s">
+        <div class="mid-lb-rank">${i+1}</div>
+        <div style="font-size:1rem">${p.avatar||'🙂'}</div>
+        <div class="mid-lb-name">${escHtml(p.name||'Player')}</div>
+        <div class="mid-lb-score">${(p.score||0).toLocaleString()}${delta ? `<span class="mid-lb-delta"> +${delta}</span>` : ''}</div>
+      </div>`;
+    }).join('');
+    room._prevScores = room._prevScores || {};
+    sorted.forEach(p=>{ room._prevScores[p.id||p.name] = p.score||0; });
+    const isLast = room.currentQ >= room.quiz.questions.length - 1;
+    __tbQ('mid-lb-next-btn').style.display = isLast ? 'none' : 'inline-flex';
+    __tbQ('mid-lb-final-btn').style.display = isLast ? 'inline-flex' : 'none';
+    showScreen('mid-leaderboard');
+    setHostActionButtons('leaderboard');
+  }
+
+  showMidLeaderboard = async function(){
+    if(!room) return;
+    room.phase = 'leaderboard';
+    await syncRoomState();
+    __tbRenderAllPlayersScoreboard();
+  };
+
+  revealAnswer = async function(){
+    if(!room) return;
+    if(room.phase === 'question' && Number(room._currentTimer||0) > 0) return;
+    if(room.phase === 'question') room.phase = 'question-ended';
+    if(room.phase !== 'question-ended') return;
+
+    clearInterval(window.__tbHostTimer);
+    await finalizeQuestionScoring();
+    room.phase = 'revealed';
+    await syncRoomState();
+
+    const question = room.quiz.questions[room.currentQ];
+    showScreen('host-question');
+    setupHostQuestionScreen(question);
+    __tbQ('hq-q-label').textContent = 'CORRECT ANSWER';
+
+    if(question.type==='Type-In'){
+      const tags=(question.typeInAnswers||[]).filter(a=>a.trim()).map(a=>`<span class="hq-typein-tag" style="background:rgba(76,255,145,.25);border:1px solid rgba(76,255,145,.5)">${escHtml(a)}</span>`).join('');
+      __tbQ('hq-ans-grid').innerHTML=`<div class="hq-typein-display" style="grid-column:1/-1"><div style="font-size:.8rem;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.7);font-weight:800;margin-bottom:8px">Accepted answers</div><div class="hq-typein-answers">${tags}</div></div>`;
+    }else{
+      renderHostAnswerGrid(question);
+      getVisibleAnswerIndexes(question).forEach(i=>{
+        const btn=__tbQ('hq-ans-'+i);
+        if(!btn) return;
+        if((question.correct||[]).includes(i)) btn.classList.add('correct-flash');
+        else btn.classList.add('dimmed');
+      });
+    }
+
+    const correct=(room.players||[]).filter(p=>p.lastCorrect).length;
+    const wrong=(room.players||[]).filter(p=>p.answered&&!p.lastCorrect).length;
+    const noAns=(room.players||[]).filter(p=>!p.answered).length;
+    __tbQ('hq-stat-bar').innerHTML=`<div class="hq-stat"><div class="hq-stat-num" style="color:#4cff91">${correct}</div><div class="hq-stat-lbl">correct</div></div><div class="hq-stat"><div class="hq-stat-num" style="color:#ff6b6b">${wrong}</div><div class="hq-stat-lbl">wrong</div></div><div class="hq-stat"><div class="hq-stat-num">${noAns}</div><div class="hq-stat-lbl">no answer</div></div>`;
+    if(__tbQ('hq-mid-lb-btn')) __tbQ('hq-mid-lb-btn').style.display='none';
+    if(__tbQ('hq-next-btn')) __tbQ('hq-next-btn').style.display='none';
+    if(__tbQ('hq-end-btn')) __tbQ('hq-end-btn').style.display='inline-flex';
+
+    setTimeout(async ()=>{
+      if(room && room.phase==='revealed'){
+        await showMidLeaderboard();
+      }
+    }, 1400);
+  };
+
+  showResultsFlow = async function(){
+    if(!room) return;
+    if(room.phase === 'question' && Number(room._currentTimer||0) <= 0){
+      room.phase = 'question-ended';
+      await syncRoomState();
+    }
+    if(room.phase === 'question-ended' || room.phase === 'question'){
+      await revealAnswer();
+      return;
+    }
+    if(room.phase === 'revealed'){
+      await showMidLeaderboard();
+      return;
+    }
+    if(room.phase === 'leaderboard'){
+      __tbRenderAllPlayersScoreboard();
+      return;
+    }
+  };
+
+  nextQuestion = async function(){
+    if(!room) return;
+    if(room.phase === 'revealed'){
+      await showMidLeaderboard();
+      return;
+    }
+    if(room.phase !== 'leaderboard') return;
+    room.currentQ += 1;
+    room._scoredQ = null;
+    room._answersVisible = false;
+    room._currentTimer = room.quiz.timePerQ || 20;
+    if(room.currentQ >= room.quiz.questions.length){
+      return showFinalLeaderboard();
+    }
+    await startQuestionCountdown(false);
+  };
+  proceedFromMidLB = function(){ nextQuestion(); };
+
+  renderHostFromRoomState = function(){
+    if(!room || hostRenderLock) return;
+    const activeHost=__tbQ('host-lobby').classList.contains('active') || __tbQ('host-question').classList.contains('active') || __tbQ('mid-leaderboard').classList.contains('active') || __tbQ('leaderboard').classList.contains('active');
+    if(!activeHost) return;
+    if(room.phase==='lobby'){
+      __tbQ('lobby-quiz-title').textContent=room.quiz?.title||'Quiz';
+      __tbQ('lobby-code').textContent=room.code||'----';
+      updateJoinLobbyUI(room.code||'');
+      updateLobby();
+      showScreen('host-lobby');
+      return;
+    }
+    if(room.phase==='paused'){ renderPausedHostView(); return; }
+    if(room.phase==='countdown'){ return; }
+    if(room.phase==='question'){ showHostQuestion(true); return; }
+    if(room.phase==='question-ended'){
+      showScreen('host-question');
+      __tbQ('hq-q-label').textContent='TIME IS UP';
+      setHostActionButtons('question-ended');
+      return;
+    }
+    if(room.phase==='revealed'){ return; }
+    if(room.phase==='leaderboard'){ __tbRenderAllPlayersScoreboard(); return; }
+    if(room.phase==='gameover' || room.phase==='ended'){ clearActiveHostRoom(); hidePinBadge(); showFinalLeaderboard(); return; }
+  };
+
+  endHostedGame = async function(){
+    if(!room) return;
+    clearInterval(window.__tbHostTimer);
+    try{
+      room.phase='ended';
+      await syncRoomState();
+      if(room.code && initFirebaseIfNeeded()) await roomDbRef(room.code).remove();
+    }catch(e){ console.error(e); }
+    clearActiveHostRoom();
+    hidePinBadge();
+    stopHostRoomListener();
+    room=null; window.__room=null;
+    showScreen('library');
+    renderLibrary();
+    toast('Game ended.');
+  };
+
+  const __origSetHostActionButtons2 = setHostActionButtons;
+  setHostActionButtons = function(state){
+    __origSetHostActionButtons2(state);
+    if(state==='countdown' || state==='question'){
+      if(__tbQ('hq-mid-lb-btn')) __tbQ('hq-mid-lb-btn').style.display='none';
+      if(__tbQ('hq-next-btn')) __tbQ('hq-next-btn').style.display='none';
+    }
+    if(state==='question-ended'){
+      if(__tbQ('hq-mid-lb-btn')) { __tbQ('hq-mid-lb-btn').style.display='inline-flex'; __tbQ('hq-mid-lb-btn').textContent='Show Results'; }
+      if(__tbQ('hq-next-btn')) __tbQ('hq-next-btn').style.display='none';
+    }
+    if(state==='leaderboard'){
+      if(__tbQ('hq-mid-lb-btn')) __tbQ('hq-mid-lb-btn').style.display='none';
+      if(__tbQ('hq-next-btn')) { __tbQ('hq-next-btn').style.display='inline-flex'; __tbQ('hq-next-btn').textContent='Next Question'; }
     }
   };
 })();
