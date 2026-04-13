@@ -3808,7 +3808,7 @@ bootApp = function(){
 // INIT
 // =============================================
 initAvatarGrid();
-bootApp();
+/* bootApp deferred to final stability patch */
 document.addEventListener('click',()=>document.querySelectorAll('.dropdown-menu').forEach(d=>d.remove()));
 // Add PWA manifest dynamically
 (()=>{
@@ -3823,6 +3823,8 @@ document.addEventListener('click',()=>document.querySelectorAll('.dropdown-menu'
   const meta=document.createElement('meta');
   meta.name='theme-color';meta.content='#46178f';
   document.head.appendChild(meta);
+  // Run patched boot only after all overrides are in place
+  try{ bootApp(); }catch(err){ console.error('BOOT ERROR', err); showScreen('login-screen'); }
 })();
 </script>
 
@@ -4301,11 +4303,18 @@ document.addEventListener('click',()=>document.querySelectorAll('.dropdown-menu'
 
   async function __tbEnterLibraryAfterAuth(){
     if(!currentTeacher) return;
-    updateTeacherBadge();
-    await loadLibrary();
-    renderLibrary();
-    const resumed = await restoreHostedRoomIfAny();
-    if(!resumed) showScreen('library');
+    try{
+      updateTeacherBadge();
+      await loadLibrary();
+      renderLibrary();
+      const resumed = await restoreHostedRoomIfAny();
+      if(!resumed) showScreen('library');
+    }catch(err){
+      console.error('AUTH RESTORE ERROR', err);
+      try{ renderLibrary(); }catch(_e){}
+      showScreen('library');
+      toast('Signed in.','success');
+    }
   }
 
   signInTeacher = async function(provider='google'){
@@ -4382,6 +4391,7 @@ document.addEventListener('click',()=>document.querySelectorAll('.dropdown-menu'
       currentTeacher = existing;
       __tbEnterLibraryAfterAuth().finally(()=>{ __tbAuthBooting = false; });
     }else{
+      // wait for auth state callback instead of forcing a premature login loop
       showScreen('login-screen');
     }
 
