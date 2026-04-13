@@ -2199,7 +2199,7 @@ function shuffle(arr){
   return arr;
 }
 
-function showHostQuestion(){
+function legacy_showHostQuestion(){
   clearInterval(timerInterval);
   const q=room.quiz.questions[room.currentQ];
   // Apply answer shuffle per question
@@ -2267,7 +2267,7 @@ function updateArc(t,max){
   $('hq-arc').style.stroke=t>max*.4?'#fff':t>max*.2?'var(--yellow-bg)':'#e21b3c';
 }
 
-function revealAnswer(){
+function legacy_revealAnswer(){
   clearInterval(timerInterval);room.phase='revealed';
   const q=room.quiz.questions[room.currentQ];
   if(q.type==='Type-In'){
@@ -2315,7 +2315,7 @@ function studentPoll(){
   if(phase==='lobby')$('sp-room-info').textContent=r.players.length+' player'+(r.players.length!==1?'s':'')+' in room';
 }
 
-function showStudentQuestion(){
+function legacy_showStudentQuestion(){
   const r=window.__room,q=r.quiz.questions[r.currentQ];
   if(!q) return;
   const numAns=q.type==='True/False'?2:4;
@@ -2352,7 +2352,7 @@ function showStudentQuestion(){
   }
 }
 
-function studentTypeInSubmit(){
+function legacy_studentTypeInSubmit(){
   if(!studentState||studentState.answered)return;
   const r=window.__room;if(!r||r.phase!=='question')return;
   const field=$('sp-typein-field');
@@ -2385,7 +2385,7 @@ function studentTypeInSubmit(){
   $('sp-feedback').style.display='block';
 }
 
-function studentAnswer(idx){
+function legacy_studentAnswer(idx){
   if(!studentState||studentState.answered)return;
   const r=window.__room;if(!r||r.phase!=='question')return;
   studentState.answered=true;
@@ -2644,7 +2644,7 @@ function showFinalLeaderboard(){
 }
 
 // Also show avatars in mid-leaderboard
-function showMidLeaderboard(){
+function legacy_showMidLeaderboard(){
   const sorted=getSorted();
   room.phase='leaderboard';
   $('mid-lb-title').textContent='Results after Question '+(room.currentQ+1);
@@ -3182,7 +3182,7 @@ function getRememberedHostRoomCode(){
     return parsed.code || '';
   }catch(e){ return ''; }
 }
-function setHostActionButtons(state){
+function legacy_setHostActionButtons(state){
   const map={
     next:false,results:false,pause:false,resume:false,end:false,final:false
   };
@@ -3220,7 +3220,7 @@ function renderPausedHostView(){
   updateArc(Math.max(room._currentTimer||0,0), Math.max(room.quiz.timePerQ||20,1));
   setHostActionButtons('paused');
 }
-function renderHostFromRoomState(){
+function legacy_renderHostFromRoomState(){
   if(!room || hostRenderLock) return;
   const activeHost=$('host-lobby').classList.contains('active') || $('host-question').classList.contains('active') || $('mid-leaderboard').classList.contains('active') || $('leaderboard').classList.contains('active');
   if(!activeHost) return;
@@ -3362,7 +3362,7 @@ async function afterTeacherSignIn(){
   const resumed = await restoreHostedRoomIfAny();
   if(!resumed) showScreen('library');
 }
-signInTeacher = async function(provider='google'){
+legacy_signInTeacher = async function(provider='google'){
   if(!initFirebaseIfNeeded()){ toast('Firebase is not ready.','error'); return; }
   try{
     if(fbAuth && fbAuth.setPersistence){
@@ -3386,7 +3386,7 @@ signInTeacher = async function(provider='google'){
     try{ alert('Login failed: '+msg); }catch(_e){}
   }
 };
-teacherLogout = async function(){
+legacy_teacherLogout = async function(){
   try{
     stopHostRoomListener();
     stopStudentRoomListener();
@@ -3496,7 +3496,7 @@ hostQuiz = async function(id){
 
 function getPlayerById(arr,id){ return (arr||[]).find(p=>p.id===id); }
 
-async function startQuestionCountdown(resume=false){
+async function legacy_startQuestionCountdown(resume=false){
   if(!room) return;
   clearInterval(timerInterval);
   room.phase='countdown';
@@ -3526,7 +3526,7 @@ async function startQuestionCountdown(resume=false){
   },1000);
 }
 
-async function finalizeQuestionScoring(){
+async function legacy_finalizeQuestionScoring(){
   const q=room.quiz.questions[room.currentQ];
   (room.players||[]).forEach(p=>{
     const answered=!!p.answered;
@@ -3640,7 +3640,7 @@ legacy_showHostQuestion = async function(resume=false){
     }
   },1000);
 };
-async function showResultsFlow(){
+async function legacy_showResultsFlow(){
   if(!room) return;
   if(room.phase==='question' && Number(room._currentTimer||0) <= 0){
     room.phase='question-ended';
@@ -3783,7 +3783,7 @@ showStudentGameOver = function(){
   const rank=sorted.findIndex(p=>p.id===studentState.playerId)+1;
   $('sp-final-rank').textContent=`#${rank} out of ${sorted.length} players`;
 };
-bootApp = function(){
+legacy_bootApp = function(){
   initAvatarGrid();
   const params=new URLSearchParams(location.search);
   if(location.hash==='#student-join'){
@@ -4043,7 +4043,7 @@ document.addEventListener('click',()=>document.querySelectorAll('.dropdown-menu'
     await syncRoomState();
   };
 
-  showResultsFlow = async function(){
+  legacy_showResultsFlow = async function(){
     if(!room) return;
     if(room.phase==='question' && Number(room._currentTimer||0)<=0){
       room.phase='question-ended';
@@ -4063,7 +4063,7 @@ document.addEventListener('click',()=>document.querySelectorAll('.dropdown-menu'
     }
   };
 
-  revealAnswer = async function(){
+  legacy_revealAnswer = async function(){
     if(!room) return;
     if(room.phase==='question'){
       if(Number(room._currentTimer||0)>0) return;
@@ -4102,7 +4102,7 @@ document.addEventListener('click',()=>document.querySelectorAll('.dropdown-menu'
     }, 1800);
   };
 
-  showMidLeaderboard = async function(){
+  legacy_showMidLeaderboard = async function(){
     if(!room) return;
     room.phase='leaderboard';
     await syncRoomState();
@@ -4123,7 +4123,7 @@ document.addEventListener('click',()=>document.querySelectorAll('.dropdown-menu'
     setHostActionButtons('leaderboard');
   };
 
-  nextQuestion = async function(){
+  legacy_nextQuestion = async function(){
     if(!room || (room.phase!=='leaderboard' && room.phase!=='revealed')) return;
     room.currentQ += 1;
     room._scoredQ = null;
@@ -4133,7 +4133,7 @@ document.addEventListener('click',()=>document.querySelectorAll('.dropdown-menu'
     }
     await startQuestionCountdown(false);
   };
-  proceedFromMidLB = function(){ nextQuestion(); };
+  legacy_proceedFromMidLB = function(){ nextQuestion(); };
 
   showStudentQuestion = function(){
     const r = window.__room, question = r.quiz.questions[r.currentQ];
@@ -4220,7 +4220,7 @@ document.addEventListener('click',()=>document.querySelectorAll('.dropdown-menu'
     q('sp-feedback').style.display='block';
   };
 
-  renderHostFromRoomState = function(){
+  legacy_renderHostFromRoomState = function(){
     if(!room || hostRenderLock) return;
     const activeHost=q('host-lobby').classList.contains('active') || q('host-question').classList.contains('active') || q('mid-leaderboard').classList.contains('active') || q('leaderboard').classList.contains('active');
     if(!activeHost) return;
@@ -4264,7 +4264,7 @@ document.addEventListener('click',()=>document.querySelectorAll('.dropdown-menu'
   };
 
   const origSetHostActionButtons = setHostActionButtons;
-  setHostActionButtons = function(state){
+  legacy_setHostActionButtons = function(state){
     origSetHostActionButtons(state);
     if(state==='countdown' || state==='question'){
       if(q('hq-mid-lb-btn')) q('hq-mid-lb-btn').style.display='none';
