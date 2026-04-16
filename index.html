@@ -12,7 +12,9 @@
 *{box-sizing:border-box}
 :root{--purple:#3f6db5;--purple-dark:#1f2f57;--bg:#f5f6f8;--surface:#fff;--surface2:#f7f9fc;--border:#d8dee8;--text:#1f2f57;--text2:#5b6278;--danger:#b3342f;--success:#1f8f3a;--red:#e21b3c;--blue:#1368ce;--yellow:#d89e00;--green:#26890c}
 body{margin:0;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}button,input,textarea{font:inherit}
-.screen{display:none;min-height:100vh}.screen.active{display:flex}.center-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.screen{display:none;min-height:100vh}.screen.active{display:flex}
+#login-screen.active{display:block}
+#login-screen .center-wrap{width:100%}.center-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:24px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
 .btn{border:none;border-radius:14px;padding:12px 18px;font-weight:800;cursor:pointer}.btn-primary{background:var(--purple);color:#fff}.btn-outline{background:#fff;color:var(--text);border:2px solid var(--border)}.btn-danger{background:var(--danger);color:#fff}.btn-ghost{background:transparent;color:var(--text2)}.btn:disabled{opacity:.55;cursor:default}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 24px;background:linear-gradient(135deg,var(--purple-dark),var(--purple));color:#fff;max-width:1400px;margin:0 auto}.brand{font-size:1.8rem;font-weight:900}.brand em{font-style:normal;color:#f0b323}.sub{opacity:.8;font-size:.88rem}.wrap{max-width:1400px;margin:0 auto;padding:20px}
@@ -57,7 +59,7 @@ body{margin:0;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--t
 </style>
 </head>
 <body>
-<div id="login-screen" class="screen active"><div class="center-wrap"><div class="card" style="width:100%;max-width:440px;padding:34px 28px;text-align:center"><div class="brand">Tap<em>Blast</em></div><div style="margin:10px 0 16px;font-size:1.35rem;font-weight:900">Create and Host Quizzes</div><div style="color:var(--text2);line-height:1.6;margin-bottom:20px">Teachers sign in with Google. Students join with room code only.</div><button id="googleLoginBtn" class="btn btn-primary" type="button" style="width:100%;margin-bottom:10px">Continue with Google</button><div id="loginStatus" style="min-height:22px;color:var(--text2);font-weight:700">Checking session…</div></div></div></div>
+<div id="login-screen" class="screen active"><div class="center-wrap"><div class="card" style="width:100%;max-width:440px;padding:34px 28px;text-align:center"><div class="brand">Tap<em>Blast</em></div><div style="margin:10px 0 16px;font-size:1.35rem;font-weight:900">Create and Host Quizzes</div><button id="googleLoginBtn" class="btn btn-primary" type="button" style="width:100%;margin-bottom:10px">Continue with Google</button><div id="loginStatus" style="min-height:0;color:var(--text2);font-weight:700"></div></div></div></div>
 <div id="library-screen" class="screen"><div style="width:100%">
 <div class="topbar"><div><div class="brand">Tap<em>Blast</em></div><div class="sub">Teacher library</div></div><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div id="teacherName" style="font-weight:800"></div><button class="btn btn-primary" id="newQuizBtn" type="button">New Quiz</button><button class="btn btn-outline" id="logoutBtn" type="button">Sign Out</button></div></div>
 <div class="library-shell">
