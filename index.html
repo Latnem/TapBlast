@@ -239,8 +239,7 @@ async function duplicateQuizById(id){
 }
 async function moveQuizToFolder(id){
   const q = quizzes.find(q=>q.id===id); if(!q || !currentTeacher) return;
-  const choices = getFolderChoices().filter(f=>f.id!=='all').map((f,i)=>`${i+1}. ${f.name}`).join('
-');
+  const choices = getFolderChoices().filter(f=>f.id!=='all').map((f,i)=>`${i+1}. ${f.name}`).join('\n');
   const ans = prompt(`Move "${q.title}" to which folder?
 ${choices}`);
   if(!ans) return;
@@ -257,7 +256,19 @@ async function renameQuizById(id){
   await quizRef(currentTeacher.uid).child(id).update({title:name.trim()||'Untitled Quiz', updatedAt:Date.now()});
   await loadQuizzes();
 }
-function openEditor(id){{editorQuiz=deepClone(quizzes.find(q=>q.id===id)||defaultQuiz()); selectedQIndex=0; renderEditor(); showScreen('editor-screen')} function createNewQuiz(){editorQuiz=defaultQuiz(); editorQuiz.folderId = selectedFolderId==='all' || selectedFolderId==='unsorted' ? null : selectedFolderId; selectedQIndex=0; renderEditor(); showScreen('editor-screen')}
+function openEditor(id){
+  editorQuiz=deepClone(quizzes.find(q=>q.id===id)||defaultQuiz());
+  selectedQIndex=0;
+  renderEditor();
+  showScreen('editor-screen');
+}
+function createNewQuiz(){
+  editorQuiz=defaultQuiz();
+  editorQuiz.folderId = selectedFolderId==='all' || selectedFolderId==='unsorted' ? null : selectedFolderId;
+  selectedQIndex=0;
+  renderEditor();
+  showScreen('editor-screen');
+}
 function renderEditor(){ $('quizTitle').value=editorQuiz.title||''; const list=$('questionList'); list.innerHTML=editorQuiz.questions.map((q,i)=>`<div class="q-card ${i===selectedQIndex?'active':''}" data-qindex="${i}"><div style="font-weight:900;margin-bottom:4px">Q${i+1}</div><div style="font-size:.9rem">${esc(q.text||'Untitled question')}</div></div>`).join(''); list.querySelectorAll('[data-qindex]').forEach(el=>el.addEventListener('click',()=>{saveCurrentQuestion(); selectedQIndex=parseInt(el.dataset.qindex,10); renderEditor()})); renderQuestionForm()}
 function renderQuestionForm(){const q=editorQuiz.questions[selectedQIndex]; $('quizTitle').value=editorQuiz.title||''; $('questionText').value=q.text||''; $('questionSeconds').value=q.seconds||20; ['a0','a1','a2','a3'].forEach((id,i)=>$(id).value=(q.answers||[])[i]||''); document.querySelectorAll('input[name="correctAnswer"]').forEach(r=>r.checked=parseInt(r.value,10)===(q.correctIndex||0)); renderMediaPreview(q.media); renderCoverPreview(editorQuiz.coverImage); renderAnswerMediaPreviews(q.answerMedia||[null,null,null,null])}
 function saveCurrentQuestion(){if(!editorQuiz)return; editorQuiz.title=$('quizTitle').value.trim()||'Untitled Quiz'; const q=editorQuiz.questions[selectedQIndex]; q.text=$('questionText').value.trim(); q.seconds=Math.max(5,parseInt($('questionSeconds').value||'20',10)||20); q.answers=['a0','a1','a2','a3'].map(id=>$(id).value.trim()); q.answerMedia=['a0','a1','a2','a3'].map((id,i)=>(editorQuiz.questions[selectedQIndex].answerMedia||[null,null,null,null])[i]||null); const checked=document.querySelector('input[name="correctAnswer"]:checked'); q.correctIndex=checked?parseInt(checked.value,10):0}
