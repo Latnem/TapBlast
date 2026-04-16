@@ -15,7 +15,7 @@ body{margin:0;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--t
 .screen{display:none;min-height:100vh}.screen.active{display:flex}.center-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:24px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
 .btn{border:none;border-radius:14px;padding:12px 18px;font-weight:800;cursor:pointer}.btn-primary{background:var(--purple);color:#fff}.btn-outline{background:#fff;color:var(--text);border:2px solid var(--border)}.btn-danger{background:var(--danger);color:#fff}.btn-ghost{background:transparent;color:var(--text2)}.btn:disabled{opacity:.55;cursor:default}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 24px;background:linear-gradient(135deg,var(--purple-dark),var(--purple));color:#fff}.brand{font-size:1.8rem;font-weight:900}.brand em{font-style:normal;color:#f0b323}.sub{opacity:.8;font-size:.88rem}.wrap{max-width:1200px;margin:0 auto;padding:20px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 24px;background:linear-gradient(135deg,var(--purple-dark),var(--purple));color:#fff;max-width:1400px;margin:0 auto}.brand{font-size:1.8rem;font-weight:900}.brand em{font-style:normal;color:#f0b323}.sub{opacity:.8;font-size:.88rem}.wrap{max-width:1400px;margin:0 auto;padding:20px}
 .quiz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}.quiz-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px}.quiz-card h3{margin:0;font-size:1.05rem}.quiz-actions{display:flex;gap:8px;flex-wrap:wrap}.quiz-actions .btn{flex:1;min-width:90px}
 .editor-shell{display:grid;grid-template-columns:280px 1fr;min-height:calc(100vh - 76px)}.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:14px;display:flex;flex-direction:column;gap:10px}.sidebar-title{font-size:.75rem;color:var(--text2);font-weight:900;letter-spacing:.8px;text-transform:uppercase;padding-left:6px}.q-list{padding:6px;display:flex;flex-direction:column;gap:10px}.q-card{position:relative;background:var(--surface2);border:2px solid var(--border);border-radius:14px;padding:12px 14px 12px 18px;cursor:pointer}.q-card::before{content:'⋮⋮';position:absolute;left:6px;top:10px;font-size:13px;color:#8b92a7}.q-card.active{background:#eef3fb;border-color:var(--purple)}.editor{padding:20px}.panel{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;max-width:860px}
 .field{margin-bottom:14px}label{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.4px;color:var(--text2);font-weight:800;margin-bottom:6px}input[type=text],input[type=number],textarea{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:14px;outline:none}textarea{min-height:88px;resize:vertical}input:focus,textarea:focus{border-color:var(--purple)}
@@ -25,11 +25,57 @@ body{margin:0;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--t
 .final-shell{display:grid;grid-template-columns:320px 1fr;gap:24px;max-width:1100px;margin:24px auto;padding:0 18px 24px}.podium{display:flex;align-items:flex-end;justify-content:center;gap:10px;height:280px}.pod{display:flex;flex-direction:column;align-items:center;justify-content:flex-end}.pod .name{font-weight:900;margin-bottom:6px}.pod .block{width:88px;border-radius:16px 16px 0 0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.6rem;font-weight:900}.pod.gold .block{height:170px;background:#f0b323}.pod.silver .block{height:130px;background:#aeb5c4}.pod.bronze .block{height:96px;background:#b57945}
 .student-shell{width:100%;background:var(--purple-dark);color:#fff;min-height:100vh}.student-top{display:flex;justify-content:space-between;gap:12px;padding:12px 14px;background:rgba(0,0,0,.18);font-weight:800}.student-body{max-width:640px;margin:0 auto;padding:16px}.student-box{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);border-radius:22px;padding:16px}.student-q{font-size:1.15rem;font-weight:900;line-height:1.35;text-align:center}.student-media{display:flex;justify-content:center;margin-bottom:12px}.student-media img,.student-media video{max-width:100%;max-height:220px;border-radius:14px}.student-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.student-btn{border:none;border-radius:18px;padding:14px;color:#fff;font-weight:900;min-height:132px;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer}.student-btn.red{background:var(--red)}.student-btn.blue{background:var(--blue)}.student-btn.yellow{background:var(--yellow)}.student-btn.green{background:var(--green)}.student-btn.selected{outline:4px solid #fff;transform:scale(.98)}.student-btn.locked{opacity:.55;cursor:default}.hidden{display:none!important}.notice{text-align:center;font-weight:800;color:rgba(255,255,255,.82)}
 @media(max-width:860px){.editor-shell{grid-template-columns:1fr}.sidebar{border-right:none;border-bottom:1px solid var(--border)}.final-shell{grid-template-columns:1fr}}
+
+.library-shell{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 76px)}
+.library-sidebar{background:var(--surface);border-right:1px solid var(--border);padding:16px}
+.library-main{padding:18px}
+.library-side-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.folder-list{display:flex;flex-direction:column;gap:8px}
+.folder-row{display:flex;align-items:center;gap:8px}
+.folder-btn{flex:1;text-align:left;border:none;background:var(--surface2);padding:12px 14px;border-radius:14px;font-weight:800;color:var(--text);cursor:pointer}
+.folder-btn.active,.folder-btn:hover{background:#eef3fb}
+.folder-icon{opacity:.8;margin-right:8px}
+.icon-btn{width:36px;height:36px;border:none;border-radius:12px;background:var(--surface2);cursor:pointer;font-weight:900;color:var(--text)}
+.icon-btn:hover{background:#eef3fb}
+.library-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.library-search{min-width:260px;max-width:420px;width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:14px;outline:none}
+.library-search:focus{border-color:var(--purple)}
+.library-meta{font-weight:800;color:var(--text2)}
+.quiz-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.menu-wrap{position:relative}
+.menu-btn{width:38px;height:38px;border:none;border-radius:12px;background:var(--surface2);font-size:22px;line-height:1;cursor:pointer;color:var(--text)}
+.menu-pop{position:absolute;right:0;top:42px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:6px;box-shadow:0 12px 30px rgba(0,0,0,.12);display:none;min-width:170px;z-index:20}
+.menu-pop.show{display:block}
+.menu-item{display:block;width:100%;text-align:left;border:none;background:none;padding:10px 12px;border-radius:10px;font-weight:800;cursor:pointer;color:var(--text)}
+.menu-item:hover{background:var(--surface2)}
+.menu-item.danger{color:var(--danger)}
+@media(max-width:860px){
+  .library-shell{grid-template-columns:1fr}
+  .library-sidebar{border-right:none;border-bottom:1px solid var(--border)}
+}
+
 </style>
 </head>
 <body>
 <div id="login-screen" class="screen active"><div class="center-wrap"><div class="card" style="width:100%;max-width:440px;padding:34px 28px;text-align:center"><div class="brand">Tap<em>Blast</em></div><div style="margin:10px 0 16px;font-size:1.35rem;font-weight:900">Create and Host Quizzes</div><div style="color:var(--text2);line-height:1.6;margin-bottom:20px">Teachers sign in with Google. Students join with room code only.</div><button id="googleLoginBtn" class="btn btn-primary" type="button" style="width:100%;margin-bottom:10px">Continue with Google</button><div id="loginStatus" style="min-height:22px;color:var(--text2);font-weight:700">Checking session…</div></div></div></div>
-<div id="library-screen" class="screen"><div style="width:100%"><div class="topbar"><div><div class="brand">Tap<em>Blast</em></div><div class="sub">Teacher library</div></div><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div id="teacherName" style="font-weight:800"></div><button class="btn btn-primary" id="newQuizBtn" type="button">New Quiz</button><button class="btn btn-outline" id="logoutBtn" type="button">Sign Out</button></div></div><div class="wrap"><div id="libraryGrid" class="quiz-grid"></div></div></div></div>
+<div id="library-screen" class="screen"><div style="width:100%">
+<div class="topbar"><div><div class="brand">Tap<em>Blast</em></div><div class="sub">Teacher library</div></div><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div id="teacherName" style="font-weight:800"></div><button class="btn btn-primary" id="newQuizBtn" type="button">New Quiz</button><button class="btn btn-outline" id="logoutBtn" type="button">Sign Out</button></div></div>
+<div class="library-shell">
+  <aside class="library-sidebar">
+    <div class="library-side-head">
+      <div class="sidebar-title" style="margin:0">Folders</div>
+      <button class="icon-btn" id="newFolderBtn" type="button" title="New Folder">+</button>
+    </div>
+    <div id="folderList" class="folder-list"></div>
+  </aside>
+  <main class="library-main">
+    <div class="library-toolbar">
+      <input id="librarySearch" class="library-search" type="text" placeholder="Search quizzes"/>
+      <div id="libraryMeta" class="library-meta"></div>
+    </div>
+    <div id="libraryGrid" class="quiz-grid"></div>
+  </main>
+</div></div></div>
 <div id="editor-screen" class="screen"><div style="width:100%"><div class="topbar"><div><div class="brand">Tap<em>Blast</em></div><div class="sub">Quiz editor</div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-outline" id="backToLibraryBtn" type="button">Library</button><button class="btn btn-primary" id="saveQuizBtn" type="button">Save Quiz</button></div></div><div class="editor-shell"><div class="sidebar"><div class="sidebar-title">Questions</div><div id="questionList" class="q-list"></div><button class="btn btn-primary" id="addQuestionBtn" type="button">Add Question</button></div><div class="editor"><div class="panel"><div class="field"><label for="quizTitle">Quiz Title</label><input id="quizTitle" type="text" placeholder="Quiz title"/></div><div class="field"><label>Quiz Cover</label><div id="coverDrop" class="media-drop"><div>Click or drag cover image here</div><input id="coverInput" type="file" accept="image/*" class="hidden"/></div><div id="coverPreview" class="cover-preview" style="margin-top:12px"></div><button id="clearCoverBtn" type="button" class="btn btn-ghost hidden" style="margin-top:8px">Remove Cover</button></div><div class="field"><label for="questionText">Question</label><textarea id="questionText" placeholder="Type question"></textarea></div><div class="field"><label>Question Media (image, gif, or video)</label><div id="mediaDrop" class="media-drop"><div>Click or drag file here</div><input id="questionMediaInput" type="file" accept="image/*,video/*" class="hidden"/></div><div id="mediaPreview" style="margin-top:12px"></div><button id="clearMediaBtn" type="button" class="btn btn-ghost hidden" style="margin-top:8px">Remove Media</button></div><div class="field"><label>Answers (up to 4, one correct)</label><div class="answers"><div class="ans-edit"><input type="radio" name="correctAnswer" value="0"/><input id="a0" type="text" placeholder="Answer 1"/><button class="mini-btn" id="a0MediaBtn" type="button">Media</button><input id="a0MediaInput" type="file" accept="image/*,video/*" class="hidden"/><button class="mini-btn hidden" id="a0MediaClear" type="button">Remove</button><div id="a0MediaPreview" class="mini-preview"></div></div><div class="ans-edit"><input type="radio" name="correctAnswer" value="1"/><input id="a1" type="text" placeholder="Answer 2"/><button class="mini-btn" id="a1MediaBtn" type="button">Media</button><input id="a1MediaInput" type="file" accept="image/*,video/*" class="hidden"/><button class="mini-btn hidden" id="a1MediaClear" type="button">Remove</button><div id="a1MediaPreview" class="mini-preview"></div></div><div class="ans-edit"><input type="radio" name="correctAnswer" value="2"/><input id="a2" type="text" placeholder="Answer 3"/><button class="mini-btn" id="a2MediaBtn" type="button">Media</button><input id="a2MediaInput" type="file" accept="image/*,video/*" class="hidden"/><button class="mini-btn hidden" id="a2MediaClear" type="button">Remove</button><div id="a2MediaPreview" class="mini-preview"></div></div><div class="ans-edit"><input type="radio" name="correctAnswer" value="3"/><input id="a3" type="text" placeholder="Answer 4"/><button class="mini-btn" id="a3MediaBtn" type="button">Media</button><input id="a3MediaInput" type="file" accept="image/*,video/*" class="hidden"/><button class="mini-btn hidden" id="a3MediaClear" type="button">Remove</button><div id="a3MediaPreview" class="mini-preview"></div></div></div></div><div class="field"><label for="questionSeconds">Seconds</label><input id="questionSeconds" type="number" min="5" max="120" value="20"/></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-outline" id="moveUpBtn" type="button">Move Up</button><button class="btn btn-outline" id="moveDownBtn" type="button">Move Down</button><button class="btn btn-danger" id="deleteQuestionBtn" type="button">Delete Question</button></div></div></div></div></div></div>
 <div id="host-screen" class="screen host-wrap"><div style="width:100%"><div class="host-top"><div class="progress"><div id="hostProgressFill"></div></div><div id="hostTimer" class="timer">20</div></div><div id="hostLobby" class="lobby-card"><div style="font-size:1.3rem;font-weight:900;margin-bottom:8px" id="lobbyTitle"></div><div style="opacity:.75;font-weight:800;margin-bottom:8px">Room Code</div><div id="roomCodeDisplay" class="room-code">----</div><div style="display:flex;justify-content:center;margin-top:12px"><img id="qrImg" alt="Join QR" style="width:180px;height:180px;border-radius:14px;background:#fff;padding:10px"/></div><div style="margin-top:8px;font-weight:800" id="joinUrlLabel"></div><div style="margin-top:16px;font-weight:900" id="playerCountLabel">0 players joined</div><div id="playerChips" class="player-chips"></div><div class="host-controls"><button id="startQuizBtn" class="btn btn-primary" type="button">Start Quiz</button><button id="endGameFromLobbyBtn" class="btn btn-danger" type="button">End Game</button></div></div><div id="hostQuestionWrap" class="host-body hidden"><div class="phase-label" id="hostPhaseLabel">Question</div><div class="host-card"><div class="host-media" id="hostMedia"></div><div id="hostQuestionText" class="host-question"></div><div id="hostAnswers" class="host-answers"></div><div id="hostStats" class="host-stats"></div><div id="hostNotice" class="notice" style="margin-top:14px"></div><div class="host-controls"><button id="pauseBtn" class="btn btn-outline" type="button">Pause</button><button id="resumeBtn" class="btn btn-primary hidden" type="button">Resume</button><button id="showResultsBtn" class="btn btn-primary hidden" type="button">Show Results</button><button id="nextQuestionBtn" class="btn btn-primary hidden" type="button">Next Question</button><button id="endGameBtn" class="btn btn-danger" type="button">End Game</button></div></div></div></div></div>
 <div id="leaderboard-screen" class="screen"><div style="width:100%"><div class="topbar"><div><div class="brand">Tap<em>Blast</em></div><div class="sub">Scoreboard</div></div><div style="display:flex;gap:10px"><button id="lbNextBtn" class="btn btn-primary" type="button">Next Question</button><button id="lbEndBtn" class="btn btn-danger" type="button">End Game</button></div></div><div class="list-card"><div style="font-size:1.4rem;font-weight:900;margin-bottom:14px" id="lbTitle">Scoreboard</div><div id="leaderboardList"></div></div></div></div>
@@ -39,20 +85,181 @@ body{margin:0;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--t
 <script>
 const firebaseConfig={apiKey:"AIzaSyCjh16vsvzWmt9dUkH6O4brRf8hfTOhzYA",authDomain:"tapblast-8e13a.firebaseapp.com",projectId:"tapblast-8e13a",storageBucket:"tapblast-8e13a.firebasestorage.app",messagingSenderId:"1069456061706",appId:"1:1069456061706:web:0fc650dfac4de09de536f3",measurementId:"G-QLTZFNLH2X"};if(!firebase.apps.length){firebase.initializeApp(firebaseConfig)}const auth=firebase.auth(),db=firebase.database();auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
 const $=id=>document.getElementById(id),showScreen=id=>document.querySelectorAll('.screen').forEach(el=>el.classList.toggle('active',el.id===id)),uid=()=> 'id_'+Math.random().toString(36).slice(2,10),esc=s=>String(s||'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])),answerClasses=['red','blue','yellow','green'];
-let currentTeacher=null,quizzes=[],editorQuiz=null,selectedQIndex=0,room=null,roomUnsub=null,timerHandle=null,studentPlayerId=null,studentRoomUnsub=null,revealTimeout=null;
-const roomsRef=()=>db.ref('tapblast/rooms'),roomRef=code=>roomsRef().child(code),quizRef=uid=>db.ref('tapblast/quizzes/'+uid),hostSessionRef=uid=>db.ref('tapblast/hostSessions/'+uid);
+let currentTeacher=null,quizzes=[],folders=[],selectedFolderId='all',librarySearchTerm='',editorQuiz=null,selectedQIndex=0,room=null,roomUnsub=null,timerHandle=null,studentPlayerId=null,studentRoomUnsub=null,revealTimeout=null;
+const roomsRef=()=>db.ref('tapblast/rooms'),roomRef=code=>roomsRef().child(code),quizRef=uid=>db.ref('tapblast/quizzes/'+uid),folderRef=uid=>db.ref('tapblast/folders/'+uid),hostSessionRef=uid=>db.ref('tapblast/hostSessions/'+uid);
 function getJoinUrl(code){return 'https://latnem.github.io/TapBlast/join/?code='+encodeURIComponent(code||'')}function generateRoomCode(){return String(Math.floor(100000+Math.random()*900000))}function deepClone(obj){return JSON.parse(JSON.stringify(obj))}function defaultQuestion(){return{id:uid(),text:'',answers:['','','',''],answerMedia:[null,null,null,null],correctIndex:0,seconds:20,media:null}}function defaultQuiz(){return{id:uid(),title:'Untitled Quiz',coverImage:null,questions:[defaultQuestion()],updatedAt:Date.now()}}
 async function enterTeacherApp(){if(!currentTeacher)return; $('teacherName').textContent=currentTeacher.displayName||currentTeacher.email||'Teacher'; await loadQuizzes(); const resumed=await tryResumeHostedRoom(); if(!resumed) showScreen('library-screen')}
 async function signInTeacher(){ $('googleLoginBtn').disabled=true; $('loginStatus').textContent='Opening Google sign-in…'; try{await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); const provider=new firebase.auth.GoogleAuthProvider(); provider.setCustomParameters({prompt:'select_account'}); const result=await auth.signInWithPopup(provider); currentTeacher=result.user||auth.currentUser; await enterTeacherApp()}catch(err){console.error(err); $('loginStatus').textContent='Login failed: '+(err.message||'Unknown error')}finally{$('googleLoginBtn').disabled=false}}
 async function teacherLogout(){try{await auth.signOut()}catch(err){console.error(err)}}
 auth.onAuthStateChanged(async user=>{currentTeacher=user||null; if(currentTeacher){$('loginStatus').textContent=''; await enterTeacherApp()}else{showScreen('login-screen'); $('loginStatus').textContent=''}});
-async function loadQuizzes(){if(!currentTeacher)return; const snap=await quizRef(currentTeacher.uid).get(); quizzes=[]; if(snap.exists()){quizzes=Object.values(snap.val()||{}).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0))} renderLibrary()}
-function renderLibrary(){const grid=$('libraryGrid'); if(!quizzes.length){grid.innerHTML='<div class="quiz-card"><h3>No quizzes yet</h3><div>Create your first quiz.</div></div>';return} grid.innerHTML=quizzes.map(q=>`<div class="quiz-card"><div class="cover-tile">${q.coverImage?`<img src="${q.coverImage}" alt="Cover">`:''}</div><h3>${esc(q.title)}</h3><div style="color:var(--text2);font-weight:700">${(q.questions||[]).length} question${(q.questions||[]).length===1?'':'s'}</div><div class="quiz-actions"><button class="btn btn-outline" type="button" data-edit="${q.id}">Edit</button><button class="btn btn-primary" type="button" data-host="${q.id}">Host</button><button class="btn btn-danger" type="button" data-delete="${q.id}">Delete</button></div></div>`).join(''); grid.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>openEditor(b.dataset.edit))); grid.querySelectorAll('[data-host]').forEach(b=>b.addEventListener('click',()=>hostQuizById(b.dataset.host))); grid.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',()=>deleteQuizById(b.dataset.delete)))}
-function openEditor(id){editorQuiz=deepClone(quizzes.find(q=>q.id===id)||defaultQuiz()); selectedQIndex=0; renderEditor(); showScreen('editor-screen')} function createNewQuiz(){editorQuiz=defaultQuiz(); selectedQIndex=0; renderEditor(); showScreen('editor-screen')}
+async function loadFolders(){
+  if(!currentTeacher) return;
+  const snap = await folderRef(currentTeacher.uid).get();
+  folders = snap.exists() ? Object.values(snap.val()||{}).sort((a,b)=>(a.name||'').localeCompare(b.name||'')) : [];
+}
+async function loadQuizzes(){
+  if(!currentTeacher) return;
+  const snap = await quizRef(currentTeacher.uid).get();
+  quizzes = [];
+  if(snap.exists()){
+    quizzes = Object.values(snap.val()||{}).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  }
+  await loadFolders();
+  renderLibrary();
+}
+function getFolderChoices(){
+  return [{id:'all',name:'All Quizzes'},{id:'unsorted',name:'Unsorted'},...folders];
+}
+function folderLabel(id){
+  if(id==='all') return 'All Quizzes';
+  if(id==='unsorted' || !id) return 'Unsorted';
+  return (folders.find(f=>f.id===id)||{}).name || 'Folder';
+}
+function getFilteredQuizzes(){
+  let arr = quizzes.slice();
+  if(selectedFolderId==='unsorted'){
+    arr = arr.filter(q=>!q.folderId);
+  }else if(selectedFolderId!=='all'){
+    arr = arr.filter(q=>q.folderId===selectedFolderId);
+  }
+  if(librarySearchTerm){
+    const t = librarySearchTerm.toLowerCase();
+    arr = arr.filter(q=>(q.title||'').toLowerCase().includes(t));
+  }
+  return arr;
+}
+function renderFolders(){
+  const list = $('folderList');
+  const base = [{id:'all',name:'All Quizzes',builtin:true},{id:'unsorted',name:'Unsorted',builtin:true},...folders];
+  list.innerHTML = base.map(f=>`
+    <div class="folder-row">
+      <button class="folder-btn ${selectedFolderId===f.id?'active':''}" type="button" data-folder="${f.id}">
+        <span class="folder-icon">📁</span>${esc(f.name)}
+      </button>
+      ${f.builtin ? '' : `<button class="icon-btn" type="button" data-folder-actions="${f.id}" title="Folder actions">⋮</button>`}
+    </div>
+  `).join('');
+  list.querySelectorAll('[data-folder]').forEach(btn=>btn.addEventListener('click',()=>{
+    selectedFolderId = btn.dataset.folder;
+    renderLibrary();
+  }));
+  list.querySelectorAll('[data-folder-actions]').forEach(btn=>btn.addEventListener('click',()=>folderActions(btn.dataset.folderActions)));
+}
+function renderLibrary(){
+  renderFolders();
+  const grid = $('libraryGrid');
+  const arr = getFilteredQuizzes();
+  $('libraryMeta').textContent = `${arr.length} quiz${arr.length===1?'':'zes'} in ${folderLabel(selectedFolderId)}`;
+  if(!arr.length){
+    grid.innerHTML = '<div class="quiz-card"><h3>No quizzes here</h3><div>Create or move a quiz into this folder.</div></div>';
+    return;
+  }
+  grid.innerHTML = arr.map(q=>`
+    <div class="quiz-card">
+      <div class="quiz-card-top">
+        <div style="flex:1;min-width:0">
+          <div class="cover-tile">${q.coverImage?`<img src="${q.coverImage}" alt="Cover">`:''}</div>
+          <h3>${esc(q.title)}</h3>
+          <div style="color:var(--text2);font-weight:700">${(q.questions||[]).length} question${(q.questions||[]).length===1?'':'s'}</div>
+          <div style="font-size:.82rem;color:var(--text2);font-weight:800;margin-top:4px">${esc(folderLabel(q.folderId||'unsorted'))}</div>
+        </div>
+        <div class="menu-wrap">
+          <button class="menu-btn" type="button" data-menu-btn="${q.id}" aria-label="More actions">⋮</button>
+          <div class="menu-pop" data-menu-pop="${q.id}">
+            <button class="menu-item" type="button" data-duplicate="${q.id}">Duplicate Quiz</button>
+            <button class="menu-item" type="button" data-move="${q.id}">Move to Folder</button>
+            <button class="menu-item" type="button" data-rename="${q.id}">Rename Quiz</button>
+            <button class="menu-item danger" type="button" data-delete="${q.id}">Delete Quiz</button>
+          </div>
+        </div>
+      </div>
+      <div class="quiz-actions">
+        <button class="btn btn-outline" type="button" data-edit="${q.id}">Edit</button>
+        <button class="btn btn-primary" type="button" data-host="${q.id}">Host</button>
+      </div>
+    </div>
+  `).join('');
+  grid.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>openEditor(b.dataset.edit)));
+  grid.querySelectorAll('[data-host]').forEach(b=>b.addEventListener('click',()=>hostQuizById(b.dataset.host)));
+  grid.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',()=>deleteQuizById(b.dataset.delete)));
+  grid.querySelectorAll('[data-duplicate]').forEach(b=>b.addEventListener('click',()=>duplicateQuizById(b.dataset.duplicate)));
+  grid.querySelectorAll('[data-move]').forEach(b=>b.addEventListener('click',()=>moveQuizToFolder(b.dataset.move)));
+  grid.querySelectorAll('[data-rename]').forEach(b=>b.addEventListener('click',()=>renameQuizById(b.dataset.rename)));
+  grid.querySelectorAll('[data-menu-btn]').forEach(btn=>btn.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    const pop = grid.querySelector(`[data-menu-pop="${btn.dataset.menuBtn}"]`);
+    grid.querySelectorAll('.menu-pop.show').forEach(el=>{ if(el!==pop) el.classList.remove('show'); });
+    pop.classList.toggle('show');
+  }));
+  document.addEventListener('click', closeAllMenus, {once:true});
+}
+function closeAllMenus(){ document.querySelectorAll('.menu-pop.show').forEach(el=>el.classList.remove('show')); }
+async function createFolder(){
+  const name = prompt('Folder name');
+  if(!name) return;
+  const trimmed = name.trim();
+  if(!trimmed) return;
+  const obj = {id:uid(), name:trimmed, updatedAt:Date.now()};
+  await folderRef(currentTeacher.uid).child(obj.id).set(obj);
+  await loadFolders();
+  selectedFolderId = obj.id;
+  renderLibrary();
+}
+async function folderActions(id){
+  const folder = folders.find(f=>f.id===id); if(!folder) return;
+  const action = prompt(`Folder: ${folder.name}
+Type: rename or delete`);
+  if(!action) return;
+  const a = action.trim().toLowerCase();
+  if(a==='rename'){
+    const name = prompt('New folder name', folder.name);
+    if(!name) return;
+    await folderRef(currentTeacher.uid).child(id).update({name:name.trim(), updatedAt:Date.now()});
+  }else if(a==='delete'){
+    const moveTo = confirm('Move quizzes in this folder to Unsorted? Press Cancel to stop.');
+    if(!moveTo) return;
+    const updates = {};
+    quizzes.filter(q=>q.folderId===id).forEach(q=>updates[q.id+'/folderId'] = null);
+    if(Object.keys(updates).length) await quizRef(currentTeacher.uid).update(updates);
+    await folderRef(currentTeacher.uid).child(id).remove();
+    if(selectedFolderId===id) selectedFolderId='all';
+  }
+  await loadQuizzes();
+}
+async function duplicateQuizById(id){
+  const q = quizzes.find(q=>q.id===id); if(!q || !currentTeacher) return;
+  const copy = deepClone(q);
+  copy.id = uid();
+  copy.title = `${q.title || 'Untitled Quiz'} Copy`;
+  copy.updatedAt = Date.now();
+  await quizRef(currentTeacher.uid).child(copy.id).set(copy);
+  await loadQuizzes();
+}
+async function moveQuizToFolder(id){
+  const q = quizzes.find(q=>q.id===id); if(!q || !currentTeacher) return;
+  const choices = getFolderChoices().filter(f=>f.id!=='all').map((f,i)=>`${i+1}. ${f.name}`).join('
+');
+  const ans = prompt(`Move "${q.title}" to which folder?
+${choices}`);
+  if(!ans) return;
+  const idx = parseInt(ans,10)-1;
+  const choice = getFolderChoices().filter(f=>f.id!=='all')[idx];
+  if(!choice) return;
+  await quizRef(currentTeacher.uid).child(id).update({folderId: choice.id==='unsorted' ? null : choice.id, updatedAt:Date.now()});
+  await loadQuizzes();
+}
+async function renameQuizById(id){
+  const q = quizzes.find(q=>q.id===id); if(!q || !currentTeacher) return;
+  const name = prompt('Rename quiz', q.title || '');
+  if(!name) return;
+  await quizRef(currentTeacher.uid).child(id).update({title:name.trim()||'Untitled Quiz', updatedAt:Date.now()});
+  await loadQuizzes();
+}
+function openEditor(id){{editorQuiz=deepClone(quizzes.find(q=>q.id===id)||defaultQuiz()); selectedQIndex=0; renderEditor(); showScreen('editor-screen')} function createNewQuiz(){editorQuiz=defaultQuiz(); editorQuiz.folderId = selectedFolderId==='all' || selectedFolderId==='unsorted' ? null : selectedFolderId; selectedQIndex=0; renderEditor(); showScreen('editor-screen')}
 function renderEditor(){ $('quizTitle').value=editorQuiz.title||''; const list=$('questionList'); list.innerHTML=editorQuiz.questions.map((q,i)=>`<div class="q-card ${i===selectedQIndex?'active':''}" data-qindex="${i}"><div style="font-weight:900;margin-bottom:4px">Q${i+1}</div><div style="font-size:.9rem">${esc(q.text||'Untitled question')}</div></div>`).join(''); list.querySelectorAll('[data-qindex]').forEach(el=>el.addEventListener('click',()=>{saveCurrentQuestion(); selectedQIndex=parseInt(el.dataset.qindex,10); renderEditor()})); renderQuestionForm()}
 function renderQuestionForm(){const q=editorQuiz.questions[selectedQIndex]; $('quizTitle').value=editorQuiz.title||''; $('questionText').value=q.text||''; $('questionSeconds').value=q.seconds||20; ['a0','a1','a2','a3'].forEach((id,i)=>$(id).value=(q.answers||[])[i]||''); document.querySelectorAll('input[name="correctAnswer"]').forEach(r=>r.checked=parseInt(r.value,10)===(q.correctIndex||0)); renderMediaPreview(q.media); renderCoverPreview(editorQuiz.coverImage); renderAnswerMediaPreviews(q.answerMedia||[null,null,null,null])}
 function saveCurrentQuestion(){if(!editorQuiz)return; editorQuiz.title=$('quizTitle').value.trim()||'Untitled Quiz'; const q=editorQuiz.questions[selectedQIndex]; q.text=$('questionText').value.trim(); q.seconds=Math.max(5,parseInt($('questionSeconds').value||'20',10)||20); q.answers=['a0','a1','a2','a3'].map(id=>$(id).value.trim()); q.answerMedia=['a0','a1','a2','a3'].map((id,i)=>(editorQuiz.questions[selectedQIndex].answerMedia||[null,null,null,null])[i]||null); const checked=document.querySelector('input[name="correctAnswer"]:checked'); q.correctIndex=checked?parseInt(checked.value,10):0}
-async function saveQuiz(){if(!currentTeacher||!editorQuiz)return; saveCurrentQuestion(); editorQuiz.updatedAt=Date.now(); await quizRef(currentTeacher.uid).child(editorQuiz.id).set(editorQuiz); await loadQuizzes(); showScreen('library-screen')}
+async function saveQuiz(){if(!currentTeacher||!editorQuiz)return; saveCurrentQuestion(); editorQuiz.updatedAt=Date.now(); if(editorQuiz.folderId===undefined) editorQuiz.folderId = null; await quizRef(currentTeacher.uid).child(editorQuiz.id).set(editorQuiz); await loadQuizzes(); showScreen('library-screen')}
 async function deleteQuizById(id){if(!currentTeacher)return; await quizRef(currentTeacher.uid).child(id).remove(); await loadQuizzes()} function moveQuestion(delta){saveCurrentQuestion(); const from=selectedQIndex,to=from+delta; if(to<0||to>=editorQuiz.questions.length)return; const arr=editorQuiz.questions; [arr[from],arr[to]]=[arr[to],arr[from]]; selectedQIndex=to; renderEditor()} function deleteCurrentQuestion(){if(editorQuiz.questions.length===1)return; editorQuiz.questions.splice(selectedQIndex,1); selectedQIndex=Math.max(0,selectedQIndex-1); renderEditor()} function addQuestion(){saveCurrentQuestion(); editorQuiz.questions.push(defaultQuestion()); selectedQIndex=editorQuiz.questions.length-1; renderEditor()}
 function renderMediaPreview(media){const box=$('mediaPreview'),clearBtn=$('clearMediaBtn'); if(!media){box.innerHTML=''; clearBtn.classList.add('hidden'); return} clearBtn.classList.remove('hidden'); box.innerHTML=media.type==='video'?`<video src="${media.dataUrl}" controls style="max-width:100%;max-height:220px;border-radius:14px"></video>`:`<img src="${media.dataUrl}" style="max-width:100%;max-height:220px;border-radius:14px"/>`}
 function renderCoverPreview(dataUrl){const box=$('coverPreview'),clearBtn=$('clearCoverBtn'); if(!dataUrl){box.innerHTML=''; clearBtn.classList.add('hidden'); return} clearBtn.classList.remove('hidden'); box.innerHTML=`<img src="${dataUrl}" alt="Cover">`}
@@ -87,7 +294,7 @@ async function studentJoin(){const code=($('studentCode').value||'').replace(/\D
 function startStudentListener(code,pid){if(studentRoomUnsub)studentRoomUnsub(); const ref=roomRef(code); const cb=snap=>{if(!snap.exists()){renderStudentEnded('Game ended'); return} const r=snap.val(); const player=(r.players||{})[pid]; if(!player){renderStudentEnded('Game ended'); return} renderStudent(r,player)}; ref.on('value',cb); studentRoomUnsub=()=>ref.off('value',cb)}
 function renderStudentEnded(msg){showScreen('student-screen'); $('studentPhaseNotice').textContent=msg; $('studentMedia').innerHTML=''; $('studentQuestion').textContent=''; $('studentAnswerGrid').innerHTML=''; $('studentResultNotice').textContent=''}
 function renderStudent(r,p){showScreen('student-screen'); $('studentTopName').textContent=p.name||'Player'; $('studentTopScore').textContent=String(p.score||0); if(r.phase==='ended'){renderStudentEnded('Game ended'); return} if(r.phase==='leaderboard'){ $('studentPhaseNotice').textContent='Scoreboard updated'; $('studentMedia').innerHTML=''; $('studentQuestion').textContent='Waiting for next question'; $('studentAnswerGrid').innerHTML=''; $('studentResultNotice').textContent=p.lastDelta?`+${p.lastDelta}`:''; return } if(r.phase==='final'){ $('studentPhaseNotice').textContent='Final results'; $('studentMedia').innerHTML=''; $('studentQuestion').textContent=`Final score: ${p.score||0}`; $('studentAnswerGrid').innerHTML=''; $('studentResultNotice').textContent=''; return } if(r.phase==='countdown'){ $('studentPhaseNotice').textContent='Get ready'; $('studentMedia').innerHTML=''; $('studentQuestion').textContent='Next question starting'; $('studentAnswerGrid').innerHTML=''; $('studentResultNotice').textContent=''; return } const q=r.quiz.questions[r.currentQ]; if(!q)return; $('studentQuestion').textContent=q.text||''; $('studentMedia').innerHTML=''; if(q.media){ $('studentMedia').innerHTML=q.media.type==='video'?`<video src="${q.media.dataUrl}" ${r.phase==='question_media'?'autoplay controls':''}></video>`:`<img src="${q.media.dataUrl}" alt="Question media"/>` } const answers=nonBlankAnswers(q); if(r.phase==='question_media'){ $('studentPhaseNotice').textContent='Watch the question'; $('studentAnswerGrid').innerHTML=''; $('studentResultNotice').textContent=''; return } if(['question_answers','paused','locked','answer_results'].includes(r.phase)){ $('studentPhaseNotice').textContent=r.phase==='paused'?'Question paused':r.phase==='locked'?'Time is up — waiting for results…':r.phase==='answer_results'?(p.lastCorrect?'Correct answer revealed':'Answer revealed'):'Choose your answer'; $('studentAnswerGrid').innerHTML=''; answers.forEach((a,visIndex)=>{const btn=document.createElement('button'); btn.type='button'; btn.className=`student-btn ${answerClasses[visIndex%4]}`; btn.innerHTML=`<div class="answer-media">${a.media?(a.media.type==='video'?`<video src="${a.media.dataUrl}" muted loop autoplay playsinline></video>`:`<img src="${a.media.dataUrl}" alt="Answer media">`):''}${a.text?`<div>${esc(a.text)}</div>`:''}</div>`; const selected=p.answerQ===r.currentQ&&p.currentAnswerIndex===a.index; if(selected)btn.classList.add('selected'); if(r.phase!=='question_answers')btn.classList.add('locked'); if(r.phase==='answer_results'&&a.index===q.correctIndex)btn.classList.add('selected'); btn.addEventListener('click',async()=>{if(r.phase!=='question_answers')return; await roomRef(r.code).child('players').child(studentPlayerId).update({currentAnswerIndex:a.index,answerAt:Date.now(),answerQ:r.currentQ})}); $('studentAnswerGrid').appendChild(btn)}); $('studentResultNotice').textContent=r.phase==='answer_results'?((p.lastDelta?('+'+p.lastDelta+' '):'')+(p.streakMsg||'')):''; return } $('studentPhaseNotice').textContent='Waiting for host…'; $('studentAnswerGrid').innerHTML=''; $('studentResultNotice').textContent=''}
-document.addEventListener('DOMContentLoaded',()=>{$('googleLoginBtn').addEventListener('click',signInTeacher); $('logoutBtn').addEventListener('click',teacherLogout); $('newQuizBtn').addEventListener('click',createNewQuiz); $('backToLibraryBtn').addEventListener('click',()=>showScreen('library-screen')); $('saveQuizBtn').addEventListener('click',saveQuiz); $('addQuestionBtn').addEventListener('click',addQuestion); $('moveUpBtn').addEventListener('click',()=>moveQuestion(-1)); $('moveDownBtn').addEventListener('click',()=>moveQuestion(1)); $('deleteQuestionBtn').addEventListener('click',deleteCurrentQuestion); $('clearCoverBtn').addEventListener('click',()=>{editorQuiz.coverImage=null; renderQuestionForm()}); $('coverInput').addEventListener('change',e=>setCoverFromFile((e.target.files||[])[0])); $('coverDrop').addEventListener('click',()=>$('coverInput').click()); ['dragenter','dragover'].forEach(evt=>$('coverDrop').addEventListener(evt,e=>{e.preventDefault(); $('coverDrop').classList.add('drag')})); ['dragleave','drop'].forEach(evt=>$('coverDrop').addEventListener(evt,e=>{e.preventDefault(); $('coverDrop').classList.remove('drag')})); $('coverDrop').addEventListener('drop',e=>setCoverFromFile((e.dataTransfer.files||[])[0])); $('clearMediaBtn').addEventListener('click',()=>{editorQuiz.questions[selectedQIndex].media=null; renderQuestionForm()}); $('questionMediaInput').addEventListener('change',e=>setQuestionMediaFromFile((e.target.files||[])[0])); $('mediaDrop').addEventListener('click',()=>$('questionMediaInput').click()); ['dragenter','dragover'].forEach(evt=>$('mediaDrop').addEventListener(evt,e=>{e.preventDefault(); $('mediaDrop').classList.add('drag')})); ['dragleave','drop'].forEach(evt=>$('mediaDrop').addEventListener(evt,e=>{e.preventDefault(); $('mediaDrop').classList.remove('drag')})); $('mediaDrop').addEventListener('drop',e=>setQuestionMediaFromFile((e.dataTransfer.files||[])[0])); ['a0','a1','a2','a3'].forEach((id,i)=>{$(id+'MediaBtn').addEventListener('click',()=>$(id+'MediaInput').click()); $(id+'MediaInput').addEventListener('change',e=>setAnswerMediaFromFile(i,(e.target.files||[])[0])); $(id+'MediaClear').addEventListener('click',()=>{const q=editorQuiz.questions[selectedQIndex]; if(!q.answerMedia) q.answerMedia=[null,null,null,null]; q.answerMedia[i]=null; renderQuestionForm()})}); $('startQuizBtn').addEventListener('click',startQuiz); $('pauseBtn').addEventListener('click',pauseGame); $('resumeBtn').addEventListener('click',resumeGame); $('showResultsBtn').addEventListener('click',showResults); $('nextQuestionBtn').addEventListener('click',nextQuestion); $('lbNextBtn').addEventListener('click',nextQuestion); $('lbEndBtn').addEventListener('click',endGame); $('endGameBtn').addEventListener('click',endGame); $('endGameFromLobbyBtn').addEventListener('click',endGame); $('finalBackBtn').addEventListener('click',()=>endHostToLibrary(true)); $('studentJoinBtn').addEventListener('click',studentJoin); $('studentName').addEventListener('keydown',e=>{if(e.key==='Enter')studentJoin()}); $('studentCode').addEventListener('keydown',e=>{if(e.key==='Enter')studentJoin()}); maybeBootStudentMode()});
+document.addEventListener('DOMContentLoaded',()=>{$('googleLoginBtn').addEventListener('click',signInTeacher); $('logoutBtn').addEventListener('click',teacherLogout); $('newQuizBtn').addEventListener('click',createNewQuiz); $('newFolderBtn').addEventListener('click',createFolder); $('librarySearch').addEventListener('input',e=>{librarySearchTerm=(e.target.value||'').trim().toLowerCase(); renderLibrary()}); $('backToLibraryBtn').addEventListener('click',()=>showScreen('library-screen')); $('saveQuizBtn').addEventListener('click',saveQuiz); $('addQuestionBtn').addEventListener('click',addQuestion); $('moveUpBtn').addEventListener('click',()=>moveQuestion(-1)); $('moveDownBtn').addEventListener('click',()=>moveQuestion(1)); $('deleteQuestionBtn').addEventListener('click',deleteCurrentQuestion); $('clearCoverBtn').addEventListener('click',()=>{editorQuiz.coverImage=null; renderQuestionForm()}); $('coverInput').addEventListener('change',e=>setCoverFromFile((e.target.files||[])[0])); $('coverDrop').addEventListener('click',()=>$('coverInput').click()); ['dragenter','dragover'].forEach(evt=>$('coverDrop').addEventListener(evt,e=>{e.preventDefault(); $('coverDrop').classList.add('drag')})); ['dragleave','drop'].forEach(evt=>$('coverDrop').addEventListener(evt,e=>{e.preventDefault(); $('coverDrop').classList.remove('drag')})); $('coverDrop').addEventListener('drop',e=>setCoverFromFile((e.dataTransfer.files||[])[0])); $('clearMediaBtn').addEventListener('click',()=>{editorQuiz.questions[selectedQIndex].media=null; renderQuestionForm()}); $('questionMediaInput').addEventListener('change',e=>setQuestionMediaFromFile((e.target.files||[])[0])); $('mediaDrop').addEventListener('click',()=>$('questionMediaInput').click()); ['dragenter','dragover'].forEach(evt=>$('mediaDrop').addEventListener(evt,e=>{e.preventDefault(); $('mediaDrop').classList.add('drag')})); ['dragleave','drop'].forEach(evt=>$('mediaDrop').addEventListener(evt,e=>{e.preventDefault(); $('mediaDrop').classList.remove('drag')})); $('mediaDrop').addEventListener('drop',e=>setQuestionMediaFromFile((e.dataTransfer.files||[])[0])); ['a0','a1','a2','a3'].forEach((id,i)=>{$(id+'MediaBtn').addEventListener('click',()=>$(id+'MediaInput').click()); $(id+'MediaInput').addEventListener('change',e=>setAnswerMediaFromFile(i,(e.target.files||[])[0])); $(id+'MediaClear').addEventListener('click',()=>{const q=editorQuiz.questions[selectedQIndex]; if(!q.answerMedia) q.answerMedia=[null,null,null,null]; q.answerMedia[i]=null; renderQuestionForm()})}); $('startQuizBtn').addEventListener('click',startQuiz); $('pauseBtn').addEventListener('click',pauseGame); $('resumeBtn').addEventListener('click',resumeGame); $('showResultsBtn').addEventListener('click',showResults); $('nextQuestionBtn').addEventListener('click',nextQuestion); $('lbNextBtn').addEventListener('click',nextQuestion); $('lbEndBtn').addEventListener('click',endGame); $('endGameBtn').addEventListener('click',endGame); $('endGameFromLobbyBtn').addEventListener('click',endGame); $('finalBackBtn').addEventListener('click',()=>endHostToLibrary(true)); $('studentJoinBtn').addEventListener('click',studentJoin); $('studentName').addEventListener('keydown',e=>{if(e.key==='Enter')studentJoin()}); $('studentCode').addEventListener('keydown',e=>{if(e.key==='Enter')studentJoin()}); maybeBootStudentMode()});
 </script>
 </body>
 </html>
