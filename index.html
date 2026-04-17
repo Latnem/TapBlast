@@ -56,6 +56,17 @@ body{margin:0;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--t
   .library-sidebar{border-right:none;border-bottom:1px solid var(--border)}
 }
 
+
+.folder.drop-target{background:#e8f0ff;border:1px dashed #3f6db5}
+.quiz-card.dragging{opacity:.55}
+.modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.38);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
+.modal-backdrop.show{display:flex}
+.modal-card{background:#fff;border:1px solid #e5e7eb;border-radius:20px;box-shadow:0 18px 48px rgba(0,0,0,.16);padding:20px;max-width:420px;width:100%}
+.modal-title{font-size:1.1rem;font-weight:800;margin-bottom:12px}
+.folder-option{padding:12px 14px;border:1px solid #e5e7eb;border-radius:14px;cursor:pointer;margin-bottom:8px;background:#fff}
+.folder-option:hover{background:#f5f8ff;border-color:#c9d8ff}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}
+
 </style>
 </head>
 <body>
@@ -84,6 +95,17 @@ body{margin:0;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--t
 <div id="final-screen" class="screen"><div style="width:100%"><div class="topbar"><div><div class="brand">Tap<em>Blast</em></div><div class="sub">Final results</div></div><div><button id="finalBackBtn" class="btn btn-primary" type="button">Back to Library</button></div></div><div class="final-shell"><div id="podiumWrap" class="list-card"><div style="font-size:1.3rem;font-weight:900;margin-bottom:8px">Podium</div><div id="podium" class="podium"></div></div><div class="list-card"><div style="font-size:1.3rem;font-weight:900;margin-bottom:8px">All Players</div><div id="finalList"></div></div></div></div></div>
 <div id="student-join-screen" class="screen"><div class="center-wrap"><div class="card" style="width:100%;max-width:420px;padding:28px"><div style="font-size:1.5rem;font-weight:900;margin-bottom:14px;text-align:center">Join Game</div><div class="field"><label>Room Code</label><input id="studentCode" type="text" maxlength="6" inputmode="numeric"/></div><div class="field"><label>Nickname</label><input id="studentName" type="text" maxlength="20"/></div><button id="studentJoinBtn" class="btn btn-primary" type="button" style="width:100%">Join</button><div id="studentJoinErr" style="margin-top:12px;color:var(--danger);font-weight:800"></div></div></div></div>
 <div id="student-screen" class="screen student-shell"><div class="student-top"><div id="studentTopName">Player</div><div id="studentTopScore">0</div></div><div class="student-body"><div class="student-box"><div id="studentPhaseNotice" class="notice" style="margin-bottom:12px">Waiting for host…</div><div id="studentMedia" class="student-media"></div><div id="studentQuestion" class="student-q"></div><div id="studentAnswerGrid" class="student-grid"></div><div id="studentResultNotice" class="notice" style="margin-top:14px"></div></div></div></div>
+
+<div id="folderMoveModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-title">Move Quiz to Folder</div>
+    <div id="folderMoveOptions"></div>
+    <div class="modal-actions">
+      <button id="folderMoveCancelBtn" class="btn small" type="button">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const firebaseConfig={apiKey:"AIzaSyCjh16vsvzWmt9dUkH6O4brRf8hfTOhzYA",authDomain:"tapblast-8e13a.firebaseapp.com",projectId:"tapblast-8e13a",storageBucket:"tapblast-8e13a.firebasestorage.app",messagingSenderId:"1069456061706",appId:"1:1069456061706:web:0fc650dfac4de09de536f3",measurementId:"G-QLTZFNLH2X"};if(!firebase.apps.length){firebase.initializeApp(firebaseConfig)}const auth=firebase.auth(),db=firebase.database();auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
 const $=id=>document.getElementById(id),showScreen=id=>document.querySelectorAll('.screen').forEach(el=>el.classList.toggle('active',el.id===id)),uid=()=> 'id_'+Math.random().toString(36).slice(2,10),esc=s=>String(s||'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])),answerClasses=['red','blue','yellow','green'];
