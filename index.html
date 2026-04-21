@@ -1094,59 +1094,26 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   .content-wrap{padding:18px}
   .topbar{padding:16px 18px;flex-wrap:wrap}
   .quiz-grid{grid-template-columns:1fr}
-}
-
-/* ===== ENHANCED RESPONSIVE PATCH ===== */
-html,body{overflow-x:hidden}
-img,video,canvas{max-width:100%;height:auto}
-.left-pane,.main-pane,.editor-left,.content-wrap,.join-card,.join-hero,.lobby-card,.host-card,.lb-card,.panel{min-width:0}
-@media(max-width:1200px){
-  .app-container{max-width:100%;}
-  .code{font-size:4.1rem;letter-spacing:14px}
-  .final-wrap{grid-template-columns:300px 1fr}
-}
-@media(max-width:980px){
-  .topbar{padding:16px 18px;flex-wrap:wrap}
-  .content-wrap{padding:18px 16px}
-  .editor-left,.left-pane{padding:14px}
-  .final-wrap{grid-template-columns:1fr}
-  .join-shell{max-width:760px;margin:0 auto}
-  .join-card{padding:26px}
-  .student-main{padding:16px}
-}
-@media(max-width:760px){
-  .quiz-grid,.student-grid,.host-answers,.answers-grid,.answer-dist{grid-template-columns:1fr}
-  .search-row,.folder-head,.control-row,.stat-row,.quiz-actions{flex-wrap:wrap}
-  .code{font-size:3rem;letter-spacing:8px;padding-left:8px}
+  .student-grid{grid-template-columns:1fr}
+  .student-main{padding:14px}
   .join-wrap{padding:14px}
-  .join-card{padding:22px;border-radius:22px}
-  .join-hero{display:none}
-  .join-shell{max-width:520px}
-  #studentCode{font-size:1.6rem;letter-spacing:6px}
-  .student-answer{min-height:96px;padding:14px 12px 14px 44px}
-  .host-question{font-size:1.35rem}
+  .join-card{padding:22px}
+  .join-hero{padding:22px}
+  .student-answer{min-height:92px;font-size:.96rem}
+  .code{font-size:2.8rem;letter-spacing:6px;padding-left:6px}
+  #studentCode{font-size:1.45rem;letter-spacing:4px}
 }
-@media(max-width:520px){
-  .login-wrap,.join-wrap{padding:12px}
-  .login-card,.join-card,.panel,.lobby-card,.host-card,.lb-card{padding:18px;border-radius:20px}
+@media(max-width:420px){
   .topbar{padding:14px 12px}
-  .brand{font-size:1.45rem}
-  .boot-mark,.join-brand{font-size:2rem}
-  .code{font-size:2.35rem;letter-spacing:4px}
-  .quiz-card{border-radius:16px}
-  .btn{min-height:44px}
-  input[type=text],input[type=number],input[type=email],input[type=password],textarea,select{font-size:16px}
-  .student-main{padding:12px}
-  .student-card{padding:16px;border-radius:18px}
-  .student-top{padding:10px 12px}
-  .host-content,.lb-shell,.final-wrap{padding-left:12px;padding-right:12px}
+  .content-wrap{padding:14px 12px}
+  .left-pane,.editor-left{padding:14px 12px}
+  .panel,.student-card,.host-card,.join-card,.lobby-card,.lb-card{padding:16px}
+  .code{font-size:2.1rem;letter-spacing:4px;padding-left:4px}
+  .join-brand,.boot-mark{font-size:1.9rem}
+  .login-card{padding:28px 20px 24px}
+  .join-card-title,.lb-title,.lobby-title{font-size:1.2rem}
+  .student-question,.host-question{font-size:1.12rem}
 }
-@media(max-width:400px){
-  .code{font-size:2rem;letter-spacing:3px}
-  .player-chip{font-size:.82rem;padding:7px 11px}
-  #studentCode{font-size:1.35rem;letter-spacing:4px}
-}
-
 </style>
 </head>
 <body>
@@ -1420,10 +1387,11 @@ img,video,canvas{max-width:100%;height:auto}
     <div class="join-shell">
       <section class="join-hero">
         <div class="join-brand">Tap<em>Blast</em></div>
-        
+        <div class="join-hero-copy">Enter the room code your teacher shared, pick a nickname, and get ready to play.</div>
       </section>
       <section class="join-card">
-        
+        <div class="join-card-title">Join Game</div>
+        <div class="join-card-sub">Fast, fun, and no sign-up needed.</div>
         <div class="field">
           <label for="studentCode">Room Code</label>
           <input id="studentCode" type="text" maxlength="6" inputmode="numeric" placeholder="123456">
@@ -1499,6 +1467,20 @@ if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
+
+auth.getRedirectResult().catch(err=>{
+  console.error(err);
+  const loginError = document.getElementById('loginError');
+  if(loginError){
+    if(err && err.code === 'auth/unauthorized-domain'){
+      loginError.textContent = 'This web address is not authorized in Firebase yet. Add this domain in Firebase Authentication > Settings > Authorized domains.';
+    }else if(err && err.code === 'auth/operation-not-allowed'){
+      loginError.textContent = 'Google sign-in is not enabled in Firebase Authentication > Sign-in method.';
+    }else{
+      loginError.textContent = (err && err.message) || 'Google sign-in failed';
+    }
+  }
+});
 const ROOT='tapblast_clean_v1';
 const $ = id => document.getElementById(id);
 const answerColors=['blue','green','orange','yellow'];
@@ -1612,14 +1594,47 @@ function readDataUrl(file, cb){if(!file) return; const fr=new FileReader(); fr.o
    AUTH
    ========================================================= */
 async function signInTeacher(){
+  const loginBtn = $('googleLoginBtn');
   $('loginError').textContent='';
   try{
     const provider=new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({prompt:'select_account'});
+    loginBtn.disabled = true;
+    loginBtn.style.opacity = '.7';
     await auth.signInWithPopup(provider);
   }catch(err){
     console.error(err);
-    $('loginError').textContent=err.message||'Login failed';
+
+    const popupCodes = [
+      'auth/popup-blocked',
+      'auth/popup-closed-by-user',
+      'auth/cancelled-popup-request'
+    ];
+
+    if(popupCodes.includes(err && err.code)){
+      try{
+        $('loginError').textContent='Opening Google sign-in…';
+        const provider=new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({prompt:'select_account'});
+        await auth.signInWithRedirect(provider);
+        return;
+      }catch(err2){
+        console.error(err2);
+        $('loginError').textContent = err2.message || 'Google sign-in failed';
+        return;
+      }
+    }
+
+    if(err && err.code === 'auth/unauthorized-domain'){
+      $('loginError').textContent = 'This web address is not authorized in Firebase yet. Add this domain in Firebase Authentication > Settings > Authorized domains.';
+    }else if(err && err.code === 'auth/operation-not-allowed'){
+      $('loginError').textContent = 'Google sign-in is not enabled in Firebase Authentication > Sign-in method.';
+    }else{
+      $('loginError').textContent = (err && err.message) || 'Login failed';
+    }
+  }finally{
+    loginBtn.disabled = false;
+    loginBtn.style.opacity = '';
   }
 }
 async function logoutTeacher(){try{await auth.signOut();}catch(err){console.error(err);}}
