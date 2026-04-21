@@ -6,46 +6,108 @@
 <title>TapBlast Join</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,800;0,9..144,900;1,9..144,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Fraunces:opsz,wght@9..144,800;9..144,900&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box} :root{--royal-950:#0b1733;--royal-900:#0f2050;--royal-700:#1e3a8a;--royal-600:#2447a8;--sky-500:#3b82f6;--sun-400:#facc15;--ink-900:#0b1431;--ink-500:#55618a;--line:#e3e8f4;--bg:#eef3fb} html,body{min-height:100%} body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:radial-gradient(900px 500px at 15% 15%, rgba(59,130,246,.2), transparent 60%),radial-gradient(700px 400px at 85% 85%, rgba(250,204,21,.15), transparent 60%),linear-gradient(160deg,#0b1733 0%,#15306e 55%,#1e3a8a 100%);color:#fff;display:flex;align-items:center;justify-content:center;padding:24px} .join-card{width:100%;max-width:460px;background:#fff;color:var(--ink-900);border-radius:28px;padding:34px;box-shadow:0 20px 50px rgba(0,0,0,.3)} .brand{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:900;letter-spacing:-.02em;text-align:center;margin-bottom:20px}.brand em{font-style:italic;color:var(--sun-400)} .field{margin-bottom:16px} label{display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.55px;color:var(--ink-500);margin-bottom:7px} input{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:14px;background:#fff;color:var(--ink-900);outline:none;font:inherit} input:focus{border-color:var(--sky-500);box-shadow:0 0 0 4px rgba(59,130,246,.12)} #studentCode{text-align:center;font-family:'Fraunces',serif;font-size:1.8rem;font-weight:800;letter-spacing:8px} .btn{width:100%;display:inline-flex;align-items:center;justify-content:center;border:none;border-radius:14px;padding:14px 18px;font-weight:800;font-size:1rem;cursor:pointer;background:linear-gradient(180deg,var(--sun-400),#f59e0b);color:#0b1733;box-shadow:0 4px 12px rgba(234,179,8,.35)} .error-line{margin-top:12px;color:#dc2626;font-weight:600;min-height:22px;text-align:center;font-size:.92rem} @media(max-width:760px){body{padding:14px}.join-card{padding:22px;border-radius:22px;max-width:520px}.brand{font-size:2rem} #studentCode{font-size:1.5rem;letter-spacing:6px}} @media(max-width:420px){body{padding:12px}.join-card{padding:18px;border-radius:20px}.brand{font-size:1.85rem} #studentCode{font-size:1.3rem;letter-spacing:4px} input,.btn{font-size:16px}}
+*{box-sizing:border-box}
+:root{
+  --royal-900:#0f2050;
+  --royal-700:#1e3a8a;
+  --royal-600:#2447a8;
+  --sky-100:#dbeafe;
+  --line:#e3e8f4;
+  --sun-400:#facc15;
+}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  background:
+    radial-gradient(900px 500px at 15% 15%, rgba(59,130,246,.18), transparent 60%),
+    radial-gradient(700px 400px at 85% 85%, rgba(250,204,21,.12), transparent 60%),
+    linear-gradient(160deg, #0b1733 0%, #15306e 55%, #1e3a8a 100%);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.card{
+  width:100%;
+  max-width:420px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:26px;
+  padding:28px 22px;
+  box-shadow:0 20px 50px rgba(0,0,0,.28);
+}
+.brand{
+  font-family:'Fraunces',serif;
+  font-size:2rem;
+  font-weight:900;
+  text-align:center;
+  color:var(--royal-900);
+  margin:0 0 22px;
+  letter-spacing:-.02em;
+}
+.brand em{font-style:italic;color:var(--sun-400)}
+input{
+  width:100%;
+  padding:14px 15px;
+  border:1.5px solid var(--line);
+  border-radius:14px;
+  outline:none;
+  font:inherit;
+  margin-bottom:12px;
+}
+input:focus{
+  border-color:#3b82f6;
+  box-shadow:0 0 0 4px var(--sky-100);
+}
+button{
+  width:100%;
+  border:none;
+  border-radius:14px;
+  padding:14px 16px;
+  font:inherit;
+  font-weight:800;
+  cursor:pointer;
+  color:#fff;
+  background:linear-gradient(180deg, var(--royal-600), var(--royal-700));
+}
+button:hover{filter:brightness(1.05)}
+@media(max-width:480px){
+  body{padding:12px}
+  .card{padding:22px 16px;border-radius:20px}
+  .brand{font-size:1.7rem}
+}
 </style>
 </head>
 <body>
-  <section class="join-card">
+  <div class="card">
     <div class="brand">Tap<em>Blast</em></div>
-    <div class="field">
-      <label for="studentCode">Room Code</label>
-      <input id="studentCode" type="text" maxlength="6" inputmode="numeric" placeholder="123456">
-    </div>
-    <div class="field">
-      <label for="studentName">Nickname</label>
-      <input id="studentName" type="text" maxlength="20" placeholder="Nickname">
-    </div>
-    <button id="studentJoinBtn" type="button" class="btn">Join Game</button>
-    <div id="studentJoinError" class="error-line"></div>
-  </section>
+    <input id="roomCode" type="text" placeholder="Room Code" maxlength="6" inputmode="numeric">
+    <input id="nickname" type="text" placeholder="Nickname" maxlength="20">
+    <button id="joinBtn" type="button">Join</button>
+  </div>
 <script>
-function sanitizeCode(v){return (v||'').replace(/\D/g,'').slice(0,6);}
-const codeInput=document.getElementById('studentCode');
-const nameInput=document.getElementById('studentName');
-const err=document.getElementById('studentJoinError');
-const params=new URLSearchParams(location.search);
-if(params.get('code')) codeInput.value=sanitizeCode(params.get('code'));
-if(params.get('name')) nameInput.value=(params.get('name')||'').trim().slice(0,20);
-codeInput.addEventListener('input',()=>{codeInput.value=sanitizeCode(codeInput.value);});
-function joinGame(){
- const code=sanitizeCode(codeInput.value);
- const name=(nameInput.value||'').trim().slice(0,20);
- if(code.length<4){err.textContent='Enter a valid room code.';return;}
- if(!name){err.textContent='Enter a nickname.';return;}
- err.textContent='';
- const q=new URLSearchParams(); q.set('code',code); q.set('name',name);
- location.href='https://latnem.github.io/TapBlast/join/?'+q.toString();
+(function(){
+  const p = new URLSearchParams(location.search);
+  const code = (p.get('code')||'').replace(/\D/g,'').slice(0,6);
+  const name = (p.get('name')||'').slice(0,20);
+  if(code) document.getElementById('roomCode').value = code;
+  if(name) document.getElementById('nickname').value = name;
+})();
+function goJoin(){
+  const code=(document.getElementById('roomCode').value||'').replace(/\D/g,'').slice(0,6);
+  const name=(document.getElementById('nickname').value||'').trim().slice(0,20);
+  const q=new URLSearchParams();
+  if(code) q.set('code', code);
+  if(name) q.set('name', name);
+  location.href='https://latnem.github.io/TapBlast/join/'+(q.toString()?'?'+q.toString():'');
 }
-document.getElementById('studentJoinBtn').addEventListener('click',joinGame);
-nameInput.addEventListener('keydown',e=>{if(e.key==='Enter') joinGame();});
-codeInput.addEventListener('keydown',e=>{if(e.key==='Enter') nameInput.focus();});
+document.getElementById('joinBtn').onclick = goJoin;
+document.getElementById('roomCode').onkeydown = e => { if(e.key==='Enter') goJoin(); };
+document.getElementById('nickname').onkeydown = e => { if(e.key==='Enter') goJoin(); };
 </script>
 </body>
 </html>
