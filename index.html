@@ -70,6 +70,24 @@
   --shadow-royal:0 18px 40px rgba(30,58,138,.25);
 }
 html,body{height:100%}
+body[data-screen="login-screen"] #library-screen,
+body[data-screen="login-screen"] #editor-screen,
+body[data-screen="login-screen"] #host-screen,
+body[data-screen="login-screen"] #leaderboard-screen,
+body[data-screen="login-screen"] #final-screen,
+body[data-screen="login-screen"] #student-join-screen,
+body[data-screen="login-screen"] #student-screen{
+  display:none !important;
+}
+body[data-screen="library-screen"] #login-screen,
+body[data-screen="editor-screen"] #login-screen,
+body[data-screen="host-screen"] #login-screen,
+body[data-screen="leaderboard-screen"] #login-screen,
+body[data-screen="final-screen"] #login-screen,
+body[data-screen="student-join-screen"] #login-screen,
+body[data-screen="student-screen"] #login-screen{
+  display:none !important;
+}
 body{
   margin:0;
   font-family:'Plus Jakarta Sans', system-ui, sans-serif;
@@ -1467,7 +1485,6 @@ if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
-
 auth.getRedirectResult().catch(err=>{
   console.error(err);
   const loginError = document.getElementById('loginError');
@@ -1485,7 +1502,16 @@ const ROOT='tapblast_clean_v1';
 const $ = id => document.getElementById(id);
 const answerColors=['blue','green','orange','yellow'];
 const answerShapes=['A','B','C','D'];
-const showScreen = id => document.querySelectorAll('.screen').forEach(el => el.classList.toggle('active', el.id===id));
+const showScreen = id => {
+  document.body.setAttribute('data-screen', id);
+  document.querySelectorAll('.screen').forEach(el => {
+    const isActive = el.id===id;
+    el.classList.toggle('active', isActive);
+    el.style.display = isActive ? '' : 'none';
+  });
+  const activeEl = document.getElementById(id);
+  if(activeEl) activeEl.style.display = '';
+};
 const esc = s => String(s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 const clone = obj => JSON.parse(JSON.stringify(obj));
 const genId = () => 'id_' + Math.random().toString(36).slice(2,10);
@@ -1599,18 +1625,18 @@ async function signInTeacher(){
   try{
     const provider=new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({prompt:'select_account'});
-    loginBtn.disabled = true;
-    loginBtn.style.opacity = '.7';
+    if(loginBtn){
+      loginBtn.disabled = true;
+      loginBtn.style.opacity = '.7';
+    }
     await auth.signInWithPopup(provider);
   }catch(err){
     console.error(err);
-
     const popupCodes = [
       'auth/popup-blocked',
       'auth/popup-closed-by-user',
       'auth/cancelled-popup-request'
     ];
-
     if(popupCodes.includes(err && err.code)){
       try{
         $('loginError').textContent='Opening Google sign-in…';
@@ -1624,7 +1650,6 @@ async function signInTeacher(){
         return;
       }
     }
-
     if(err && err.code === 'auth/unauthorized-domain'){
       $('loginError').textContent = 'This web address is not authorized in Firebase yet. Add this domain in Firebase Authentication > Settings > Authorized domains.';
     }else if(err && err.code === 'auth/operation-not-allowed'){
@@ -1633,8 +1658,10 @@ async function signInTeacher(){
       $('loginError').textContent = (err && err.message) || 'Login failed';
     }
   }finally{
-    loginBtn.disabled = false;
-    loginBtn.style.opacity = '';
+    if(loginBtn){
+      loginBtn.disabled = false;
+      loginBtn.style.opacity = '';
+    }
   }
 }
 async function logoutTeacher(){try{await auth.signOut();}catch(err){console.error(err);}}
@@ -1643,11 +1670,20 @@ auth.onAuthStateChanged(async user=>{
   currentTeacher=user||null;
   if(currentTeacher){
     $('teacherName').textContent=currentTeacher.displayName||currentTeacher.email||'Teacher';
-    await ensureDefaultFolders();
-    await loadFolders();
-    await loadQuizzes();
-    const resumed=await tryResumeHost();
-    if(!resumed) showScreen('library-screen');
+    try{
+      await ensureDefaultFolders();
+      await loadFolders();
+      await loadQuizzes();
+      const resumed=await tryResumeHost();
+      if(!resumed) showScreen('library-screen');
+      $('loginError').textContent='';
+    }catch(err){
+      console.error('Post-login load failed:', err);
+      $('loginError').textContent='Signed in, but teacher data could not load. Check Firebase Realtime Database rules.';
+      try{ await loadFolders(); }catch(_){}
+      try{ await loadQuizzes(); }catch(_){}
+      showScreen('library-screen');
+    }
   } else {
     showScreen('login-screen');
   }
@@ -2680,6 +2716,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   setTimeout(()=>{ try{ setBootComplete(); }catch(e){} }, 1500);
   if(maybeBootStudentMode()) setBootComplete();
 });
+</script>
+<script>
+document.body.setAttribute('data-screen','login-screen');
 </script>
 </body>
 </html>
