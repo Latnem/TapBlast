@@ -70,13 +70,6 @@
   --shadow-royal:0 18px 40px rgba(30,58,138,.25);
 }
 html,body{height:100%}
-body[data-screen="login-screen"] #library-screen,
-body[data-screen="login-screen"] #editor-screen,
-body[data-screen="login-screen"] #host-screen,
-body[data-screen="login-screen"] #leaderboard-screen,
-body[data-screen="login-screen"] #final-screen,
-body[data-screen="login-screen"] #student-join-screen,
-body[data-screen="login-screen"] #student-screen{display:none!important;}
 body{
   margin:0;
   font-family:'Plus Jakarta Sans', system-ui, sans-serif;
@@ -1478,14 +1471,7 @@ const ROOT='tapblast_clean_v1';
 const $ = id => document.getElementById(id);
 const answerColors=['blue','green','orange','yellow'];
 const answerShapes=['A','B','C','D'];
-const showScreen = id => {
-  document.body.setAttribute('data-screen', id);
-  document.querySelectorAll('.screen').forEach(el => {
-    const isActive = el.id===id;
-    el.classList.toggle('active', isActive);
-    el.style.display = isActive ? '' : 'none';
-  });
-};
+const showScreen = id => document.querySelectorAll('.screen').forEach(el => el.classList.toggle('active', el.id===id));
 const esc = s => String(s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 const clone = obj => JSON.parse(JSON.stringify(obj));
 const genId = () => 'id_' + Math.random().toString(36).slice(2,10);
@@ -1593,67 +1579,57 @@ function readDataUrl(file, cb){if(!file) return; const fr=new FileReader(); fr.o
 /* =========================================================
    AUTH
    ========================================================= */
+async function enterTeacherApp(){
+  if(!currentTeacher) return;
+  $('teacherName').textContent=currentTeacher.displayName||currentTeacher.email||'Teacher';
+  try{
+    await ensureDefaultFolders();
+    await loadFolders();
+    await loadQuizzes();
+    const resumed=await tryResumeHost();
+    if(!resumed) showScreen('library-screen');
+    $('loginError').textContent='';
+  }catch(err){
+    console.error('enterTeacherApp failed:', err);
+    // Still try to let teacher in to the library UI
+    try{ renderFolders(); }catch(e){}
+    try{ renderLibrary(); }catch(e){}
+    showScreen('library-screen');
+    $('loginError').textContent='Signed in, but some teacher data could not load.';
+  }
+}
+
 async function signInTeacher(){
   const btn = $('googleLoginBtn');
   $('loginError').textContent='';
   try{
+    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     const provider=new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({prompt:'select_account'});
     if(btn){
-      btn.disabled = true;
-      btn.style.opacity = '.7';
+      btn.disabled=true;
+      btn.style.opacity='.7';
     }
-    // Redirect flow is more reliable on GitHub Pages than popup flow.
-    await auth.signInWithRedirect(provider);
+    const result=await auth.signInWithPopup(provider);
+    currentTeacher=result.user||auth.currentUser;
+    await enterTeacherApp();
   }catch(err){
     console.error(err);
-    if(err && err.code === 'auth/unauthorized-domain'){
-      $('loginError').textContent='This GitHub Pages domain is not authorized in Firebase Authentication.';
-    }else if(err && err.code === 'auth/operation-not-allowed'){
-      $('loginError').textContent='Google sign-in is not enabled in Firebase Authentication.';
-    }else{
-      $('loginError').textContent=(err && err.message) || 'Login failed';
-    }
+    $('loginError').textContent=(err && err.message) || 'Login failed';
+  }finally{
     if(btn){
-      btn.disabled = false;
-      btn.style.opacity = '';
+      btn.disabled=false;
+      btn.style.opacity='';
     }
   }
 }
 async function logoutTeacher(){try{await auth.signOut();}catch(err){console.error(err);}}
 
-auth.getRedirectResult().then((result)=>{
-  if(result && result.user){
-    $('loginError').textContent='';
-  }
-}).catch(err=>{
-  console.error(err);
-  if(err && err.code === 'auth/unauthorized-domain'){
-    $('loginError').textContent='This GitHub Pages domain is not authorized in Firebase Authentication.';
-  }else if(err && err.code === 'auth/operation-not-allowed'){
-    $('loginError').textContent='Google sign-in is not enabled in Firebase Authentication.';
-  }else{
-    $('loginError').textContent=(err && err.message) || 'Google sign-in failed';
-  }
-});
-
 auth.onAuthStateChanged(async user=>{
   currentTeacher=user||null;
   if(currentTeacher){
-    $('teacherName').textContent=currentTeacher.displayName||currentTeacher.email||'Teacher';
-    try{
-      await ensureDefaultFolders();
-      await loadFolders();
-      await loadQuizzes();
-      const resumed=await tryResumeHost();
-      if(!resumed) showScreen('library-screen');
-      $('loginError').textContent='';
-    }catch(err){
-      console.error('Post-login load failed:', err);
-      // Still let the teacher into the library UI.
-      try{ showScreen('library-screen'); }catch(e){}
-      $('loginError').textContent='Signed in, but some teacher data could not load.';
-    }
+    $('loginError').textContent='';
+    await enterTeacherApp();
   } else {
     showScreen('login-screen');
   }
@@ -2687,6 +2663,5 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(maybeBootStudentMode()) setBootComplete();
 });
 </script>
-<script>document.body.setAttribute('data-screen','login-screen');</script>
 </body>
 </html>
