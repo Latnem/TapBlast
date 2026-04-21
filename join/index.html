@@ -1,66 +1,61 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>TapBlast – Join a Room</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet"/>
+<title>TapBlast – Join</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:'Nunito',sans-serif;background:#f5f6f8;color:#1f2f57;min-height:100vh}
+body{margin:0;font-family:Roboto,sans-serif;background:#eef2f6;color:#1f2937;min-height:100vh}
 .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-.shell{width:100%;max-width:1080px}
-.panel{display:grid;grid-template-columns:1.05fr .95fr;background:#fff;border-radius:28px;box-shadow:0 12px 38px rgba(0,0,0,.08);border:1px solid #e7e8ee;overflow:hidden}
-.hero{padding:40px 38px;background:linear-gradient(145deg,#1f2f57,#3f6db5);color:#fff;position:relative;overflow:hidden;min-height:430px;display:flex;flex-direction:column;justify-content:center}
-.hero:after{content:'';position:absolute;right:-80px;bottom:-80px;width:220px;height:220px;background:rgba(255,255,255,.08);border-radius:50%}
-.brand{font-size:2.5rem;font-weight:900;letter-spacing:-1px;margin:0 0 10px;position:relative;z-index:1}
-.brand em{color:#f0b323;font-style:normal}
-.pill{display:inline-flex;align-items:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);padding:7px 12px;border-radius:999px;font-size:.8rem;font-weight:900;margin-bottom:16px;position:relative;z-index:1;width:max-content}
-.hero h2{font-size:2rem;line-height:1.1;margin:0 0 12px;position:relative;z-index:1}
-.hero p{font-size:1rem;line-height:1.65;color:rgba(255,255,255,.82);max-width:520px;position:relative;z-index:1}
-.form-side{background:#fff;padding:34px 32px;display:flex;flex-direction:column;justify-content:center}
-label{display:block;font-size:.78rem;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#5b6278;margin-bottom:6px}
-input{width:100%;padding:15px 16px;border-radius:14px;border:2px solid #e0e2e8;font:inherit;margin-bottom:14px;outline:none}
-input:focus{border-color:#3f6db5;box-shadow:0 0 0 3px rgba(63,109,181,.12)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:14px;padding:14px 18px;font:inherit;font-weight:900;cursor:pointer;text-decoration:none}
-.btn-primary{width:100%;background:#3f6db5;color:#fff}
-.btn-primary:hover{filter:brightness(1.05)}
-@media(max-width:860px){.panel{grid-template-columns:1fr}.hero{padding:30px;min-height:auto}.form-side{padding:24px}}
+.shell{width:100%;max-width:1040px;display:grid;grid-template-columns:1.02fr .98fr;gap:24px}
+.hero,.card{background:#fff;border:1px solid #dde4ee;border-radius:28px;box-shadow:0 12px 38px rgba(15,23,42,.07)}
+.hero{padding:38px;background:linear-gradient(145deg,#1f2f57,#3f6db5);color:#fff;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;right:-70px;bottom:-70px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.08)}
+.brand{font-size:2.4rem;font-weight:900;margin-bottom:12px}
+.brand em{font-style:normal;color:#F2994A}
+.card{padding:28px}
+label{display:block;font-size:.78rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#6b7280;margin-bottom:6px}
+input{width:100%;padding:14px 14px;border:1px solid #dde4ee;border-radius:14px;outline:none;margin-bottom:14px}
+input:focus{border-color:#3f6db5;box-shadow:0 0 0 3px rgba(63,109,181,.1)}
+button{width:100%;border:none;border-radius:14px;padding:13px 16px;background:#3f6db5;color:#fff;font-weight:700;cursor:pointer}
+@media(max-width:860px){.shell{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="shell">
-    <section class="panel">
-      <div class="hero">
-        <div class="brand">Tap<em>Blast</em></div>
-        <div class="pill">No account needed for players</div>
-        <h2>Join a live room fast.</h2>
-      </div>
-      <div class="form-side">
-        <label for="roomCode">Room Code</label>
-        <input id="roomCode" type="text" placeholder="Enter room code" maxlength="6" inputmode="numeric"/>
-        <label for="nickname">Nickname</label>
-        <input id="nickname" type="text" placeholder="Your nickname" maxlength="20"/>
-        <button class="btn btn-primary" onclick="goJoin()">Join Game</button>
-      </div>
+    <section class="hero"><div class="brand">Tap<em>Blast</em></div></section>
+    <section class="card">
+      <label for="roomCode">Room Code</label>
+      <input id="roomCode" type="text" maxlength="6" inputmode="numeric">
+      <label for="nickname">Nickname</label>
+      <input id="nickname" type="text" maxlength="20">
+      <button id="joinBtn" type="button">Join</button>
     </section>
   </div>
 </div>
 <script>
-(function prefillFromUrl(){
-  const params=new URLSearchParams(location.search);
-  if(params.get('code')) document.getElementById('roomCode').value=(params.get('code')||'').replace(/\D/g,'').slice(0,6);
-  if(params.get('name')) document.getElementById('nickname').value=(params.get('name')||'').slice(0,20);
+(function prefill(){
+  const params = new URLSearchParams(location.search);
+  const code = (params.get('code') || '').replace(/\D/g,'').slice(0,6);
+  const name = (params.get('name') || '').slice(0,20);
+  if(code) document.getElementById('roomCode').value = code;
+  if(name) document.getElementById('nickname').value = name;
 })();
 function goJoin(){
-  const code=(document.getElementById('roomCode').value||'').replace(/\D/g,'').slice(0,6);
-  const name=(document.getElementById('nickname').value||'').trim().slice(0,20);
-  const q=new URLSearchParams();
-  if(code) q.set('code',code);
-  if(name) q.set('name',name);
-  location.href='https://latnem.github.io/TapBlast/index.html'+(q.toString()?'?'+q.toString():'')+'#student-join';
+  const code = (document.getElementById('roomCode').value || '').replace(/\D/g,'').slice(0,6);
+  const name = (document.getElementById('nickname').value || '').trim().slice(0,20);
+  const q = new URLSearchParams();
+  if(code) q.set('code', code);
+  if(name) q.set('name', name);
+  location.href = 'https://latnem.github.io/TapBlast/index.html' + (q.toString() ? '?' + q.toString() : '') + '#student-join';
 }
+document.getElementById('joinBtn').addEventListener('click', goJoin);
+document.getElementById('roomCode').addEventListener('keydown', e => { if(e.key === 'Enter') goJoin(); });
+document.getElementById('nickname').addEventListener('keydown', e => { if(e.key === 'Enter') goJoin(); });
 </script>
 </body>
 </html>
