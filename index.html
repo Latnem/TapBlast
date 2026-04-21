@@ -76,18 +76,7 @@ body[data-screen="login-screen"] #host-screen,
 body[data-screen="login-screen"] #leaderboard-screen,
 body[data-screen="login-screen"] #final-screen,
 body[data-screen="login-screen"] #student-join-screen,
-body[data-screen="login-screen"] #student-screen{
-  display:none !important;
-}
-body[data-screen="library-screen"] #login-screen,
-body[data-screen="editor-screen"] #login-screen,
-body[data-screen="host-screen"] #login-screen,
-body[data-screen="leaderboard-screen"] #login-screen,
-body[data-screen="final-screen"] #login-screen,
-body[data-screen="student-join-screen"] #login-screen,
-body[data-screen="student-screen"] #login-screen{
-  display:none !important;
-}
+body[data-screen="login-screen"] #student-screen{display:none!important;}
 body{
   margin:0;
   font-family:'Plus Jakarta Sans', system-ui, sans-serif;
@@ -1485,19 +1474,6 @@ if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
-auth.getRedirectResult().catch(err=>{
-  console.error(err);
-  const loginError = document.getElementById('loginError');
-  if(loginError){
-    if(err && err.code === 'auth/unauthorized-domain'){
-      loginError.textContent = 'This web address is not authorized in Firebase yet. Add this domain in Firebase Authentication > Settings > Authorized domains.';
-    }else if(err && err.code === 'auth/operation-not-allowed'){
-      loginError.textContent = 'Google sign-in is not enabled in Firebase Authentication > Sign-in method.';
-    }else{
-      loginError.textContent = (err && err.message) || 'Google sign-in failed';
-    }
-  }
-});
 const ROOT='tapblast_clean_v1';
 const $ = id => document.getElementById(id);
 const answerColors=['blue','green','orange','yellow'];
@@ -1509,8 +1485,6 @@ const showScreen = id => {
     el.classList.toggle('active', isActive);
     el.style.display = isActive ? '' : 'none';
   });
-  const activeEl = document.getElementById(id);
-  if(activeEl) activeEl.style.display = '';
 };
 const esc = s => String(s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 const clone = obj => JSON.parse(JSON.stringify(obj));
@@ -1620,51 +1594,48 @@ function readDataUrl(file, cb){if(!file) return; const fr=new FileReader(); fr.o
    AUTH
    ========================================================= */
 async function signInTeacher(){
-  const loginBtn = $('googleLoginBtn');
+  const btn = $('googleLoginBtn');
   $('loginError').textContent='';
   try{
     const provider=new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({prompt:'select_account'});
-    if(loginBtn){
-      loginBtn.disabled = true;
-      loginBtn.style.opacity = '.7';
+    if(btn){
+      btn.disabled = true;
+      btn.style.opacity = '.7';
     }
-    await auth.signInWithPopup(provider);
+    // Redirect flow is more reliable on GitHub Pages than popup flow.
+    await auth.signInWithRedirect(provider);
   }catch(err){
     console.error(err);
-    const popupCodes = [
-      'auth/popup-blocked',
-      'auth/popup-closed-by-user',
-      'auth/cancelled-popup-request'
-    ];
-    if(popupCodes.includes(err && err.code)){
-      try{
-        $('loginError').textContent='Opening Google sign-in…';
-        const provider=new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({prompt:'select_account'});
-        await auth.signInWithRedirect(provider);
-        return;
-      }catch(err2){
-        console.error(err2);
-        $('loginError').textContent = err2.message || 'Google sign-in failed';
-        return;
-      }
-    }
     if(err && err.code === 'auth/unauthorized-domain'){
-      $('loginError').textContent = 'This web address is not authorized in Firebase yet. Add this domain in Firebase Authentication > Settings > Authorized domains.';
+      $('loginError').textContent='This GitHub Pages domain is not authorized in Firebase Authentication.';
     }else if(err && err.code === 'auth/operation-not-allowed'){
-      $('loginError').textContent = 'Google sign-in is not enabled in Firebase Authentication > Sign-in method.';
+      $('loginError').textContent='Google sign-in is not enabled in Firebase Authentication.';
     }else{
-      $('loginError').textContent = (err && err.message) || 'Login failed';
+      $('loginError').textContent=(err && err.message) || 'Login failed';
     }
-  }finally{
-    if(loginBtn){
-      loginBtn.disabled = false;
-      loginBtn.style.opacity = '';
+    if(btn){
+      btn.disabled = false;
+      btn.style.opacity = '';
     }
   }
 }
 async function logoutTeacher(){try{await auth.signOut();}catch(err){console.error(err);}}
+
+auth.getRedirectResult().then((result)=>{
+  if(result && result.user){
+    $('loginError').textContent='';
+  }
+}).catch(err=>{
+  console.error(err);
+  if(err && err.code === 'auth/unauthorized-domain'){
+    $('loginError').textContent='This GitHub Pages domain is not authorized in Firebase Authentication.';
+  }else if(err && err.code === 'auth/operation-not-allowed'){
+    $('loginError').textContent='Google sign-in is not enabled in Firebase Authentication.';
+  }else{
+    $('loginError').textContent=(err && err.message) || 'Google sign-in failed';
+  }
+});
 
 auth.onAuthStateChanged(async user=>{
   currentTeacher=user||null;
@@ -1679,10 +1650,9 @@ auth.onAuthStateChanged(async user=>{
       $('loginError').textContent='';
     }catch(err){
       console.error('Post-login load failed:', err);
-      $('loginError').textContent='Signed in, but teacher data could not load. Check Firebase Realtime Database rules.';
-      try{ await loadFolders(); }catch(_){}
-      try{ await loadQuizzes(); }catch(_){}
-      showScreen('library-screen');
+      // Still let the teacher into the library UI.
+      try{ showScreen('library-screen'); }catch(e){}
+      $('loginError').textContent='Signed in, but some teacher data could not load.';
     }
   } else {
     showScreen('login-screen');
@@ -2717,8 +2687,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(maybeBootStudentMode()) setBootComplete();
 });
 </script>
-<script>
-document.body.setAttribute('data-screen','login-screen');
-</script>
+<script>document.body.setAttribute('data-screen','login-screen');</script>
 </body>
 </html>
