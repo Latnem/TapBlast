@@ -1253,6 +1253,255 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   }
 }
 
+
+/* ===== EDITOR UPGRADE ===== */
+.editor-topbar{
+  position:sticky;
+  top:0;
+  z-index:30;
+}
+.editor-top-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.editor-status{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 12px;
+  border-radius:999px;
+  font-size:.82rem;
+  font-weight:800;
+  background:rgba(255,255,255,.14);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.18);
+}
+.editor-status::before{
+  content:'';
+  width:8px;height:8px;border-radius:50%;
+  background:#fff;
+}
+.editor-status.saved::before{ background:#86efac; }
+.editor-status.dirty::before{ background:#facc15; }
+.editor-status.saving::before{ background:#93c5fd; }
+
+.editor-left{
+  position:sticky;
+  top:82px;
+  align-self:start;
+  max-height:calc(100vh - 82px);
+  overflow:auto;
+}
+.editor-left-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+.editor-sidebar-title{
+  font-weight:800;
+  font-size:.76rem;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  color:var(--ink-500);
+}
+.editor-sidebar-meta{
+  font-size:.78rem;
+  font-weight:700;
+  color:var(--ink-400);
+}
+.editor-question-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:14px;
+}
+.editor-content{
+  padding-top:24px;
+}
+.editor-panel{
+  max-width:980px;
+  display:grid;
+  gap:16px;
+}
+.editor-section{
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:18px;
+  background:linear-gradient(180deg,#fff,var(--panel-soft));
+}
+.section-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:12px;
+}
+.section-title{
+  font-family:'Fraunces', serif;
+  font-size:1.1rem;
+  font-weight:800;
+  letter-spacing:-.01em;
+  color:var(--ink-900);
+}
+.section-copy{
+  font-size:.88rem;
+  color:var(--ink-500);
+  margin-top:3px;
+}
+.editor-grid-two{
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:14px;
+}
+.question-toolbar{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.question-time-field{
+  width:112px;
+  margin-bottom:0;
+}
+.media-details{
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#fff;
+  padding:10px 12px;
+}
+.media-details summary{
+  cursor:pointer;
+  font-weight:800;
+  color:var(--ink-800);
+  list-style:none;
+}
+.media-details summary::-webkit-details-marker{display:none}
+.media-details summary::after{
+  content:'▾';
+  float:right;
+  color:var(--ink-400);
+}
+.media-details[open] summary::after{
+  content:'▴';
+}
+.question-card{
+  padding-left:18px;
+}
+.question-card::before{
+  content:'';
+  position:absolute;
+  left:8px;top:12px;bottom:12px;
+  width:4px;border-radius:999px;
+  background:var(--line);
+}
+.question-card.active::before{
+  background:var(--royal-500);
+}
+.question-card-badges{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:8px;
+}
+.question-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:3px 8px;
+  border-radius:999px;
+  font-size:.72rem;
+  font-weight:800;
+  background:var(--line-soft);
+  color:var(--ink-600, var(--ink-700));
+}
+.question-badge.good{
+  background:#ecfdf3;
+  color:#15803d;
+}
+.question-badge.warn{
+  background:#fff7ed;
+  color:#c2410c;
+}
+.question-badge.info{
+  background:#eff6ff;
+  color:#1d4ed8;
+}
+.answer-edit{
+  box-shadow:var(--shadow-sm);
+}
+.answer-edit.correct-choice{
+  box-shadow:0 0 0 3px rgba(47,95,210,.14), var(--shadow-sm);
+  border-color:var(--royal-500)!important;
+}
+.answer-edit.complete{
+  outline:1px solid rgba(22,163,74,.18);
+}
+.answer-edit .top{
+  align-items:center;
+}
+.answer-edit input[type=text]{
+  font-weight:700;
+}
+.editor-footer-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+}
+@media(max-width:980px){
+  .editor-left{
+    position:static;
+    max-height:none;
+    overflow:visible;
+  }
+  .editor-question-actions{
+    grid-template-columns:1fr 1fr;
+  }
+  .editor-grid-two{
+    grid-template-columns:1fr;
+  }
+  .section-head{
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .question-toolbar{
+    justify-content:flex-start;
+  }
+  .question-list{
+    display:flex;
+    gap:8px;
+    overflow:auto;
+    padding-bottom:6px;
+  }
+  .question-card{
+    min-width:220px;
+    flex:0 0 auto;
+  }
+}
+@media(max-width:640px){
+  .editor-topbar .editor-top-actions{
+    width:100%;
+    justify-content:flex-start;
+  }
+  .editor-status{
+    order:-1;
+  }
+  .editor-question-actions{
+    grid-template-columns:1fr;
+  }
+  .question-card{
+    min-width:180px;
+  }
+  .editor-section{
+    padding:14px;
+  }
+  .answer-edit{
+    padding:12px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1337,12 +1586,13 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 <!-- ============ EDITOR ============ -->
 <div id="editor-screen" class="screen">
   <div style="width:100%">
-    <div class="topbar">
+    <div class="topbar editor-topbar">
       <div>
         <div class="brand">Tap<em>Blast</em></div>
         <div class="subtle">Quiz Editor</div>
       </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <div class="editor-top-actions">
+        <div id="editorStatus" class="editor-status saved">Saved</div>
         <button id="editorBackBtn" type="button" class="btn outline">
           <span class="material-symbols-outlined">arrow_back</span>Library
         </button>
@@ -1355,56 +1605,97 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
     <div class="app-shell">
       <div class="app-container editor-shell" style="max-width:1440px">
         <aside class="editor-left">
-          <div style="font-weight:800;font-size:.76rem;text-transform:uppercase;letter-spacing:.8px;color:var(--ink-500);margin-bottom:12px">Questions</div>
+          <div class="editor-left-head">
+            <div class="editor-sidebar-title">Questions</div>
+            <div id="questionSummary" class="editor-sidebar-meta">1 question</div>
+          </div>
           <div id="questionList" class="question-list"></div>
-          <button id="addQuestionBtn" class="btn primary" type="button" style="width:100%;margin-top:14px">
-            <span class="material-symbols-outlined">add</span>Add Question
-          </button>
+          <div class="editor-question-actions">
+            <button id="addQuestionBtn" class="btn primary" type="button">
+              <span class="material-symbols-outlined">add</span>Add Question
+            </button>
+            <button id="duplicateQuestionBtn" class="btn outline" type="button">
+              <span class="material-symbols-outlined">content_copy</span>Duplicate
+            </button>
+          </div>
         </aside>
-        <main class="content-wrap">
-          <div class="panel" style="max-width:900px">
-            <div class="field">
-              <label for="quizTitle">Quiz Title</label>
-              <input id="quizTitle" type="text" placeholder="e.g., Fractions Fundamentals">
-            </div>
-            <div class="field">
-              <label for="quizFolderSelect">Folder</label>
-              <select id="quizFolderSelect"></select>
-            </div>
-            <div class="field">
-              <label>Quiz Cover</label>
-              <div id="coverDrop" class="media-drop">
-                <span class="material-symbols-outlined" style="font-size:32px;color:var(--sky-500)">image</span>
-                <div style="margin-top:6px">Click or drag image here</div>
-                <input id="coverInput" type="file" accept="image/*" class="hidden">
+        <main class="content-wrap editor-content">
+          <div class="panel editor-panel">
+            <section class="editor-section">
+              <div class="section-head">
+                <div>
+                  <div class="section-title">Quiz settings</div>
+                  <div class="section-copy">Name your quiz, choose a folder, and optionally add a cover.</div>
+                </div>
               </div>
-              <div id="coverPreview" class="media-preview"></div>
-              <button id="clearCoverBtn" type="button" class="btn ghost hidden" style="margin-top:8px">Remove Cover</button>
-            </div>
-            <hr style="border:none;border-top:1px solid var(--line);margin:22px 0">
-            <div class="field">
-              <label for="questionText">Question</label>
-              <textarea id="questionText" placeholder="Type your question…"></textarea>
-            </div>
-            <div class="field">
-              <label>Question Media</label>
-              <div id="questionMediaDrop" class="media-drop">
-                <span class="material-symbols-outlined" style="font-size:32px;color:var(--sky-500)">perm_media</span>
-                <div style="margin-top:6px">Click or drag image, GIF, or video here</div>
-                <input id="questionMediaInput" type="file" accept="image/*,video/*" class="hidden">
+              <div class="editor-grid-two">
+                <div class="field">
+                  <label for="quizTitle">Quiz Title</label>
+                  <input id="quizTitle" type="text" placeholder="e.g., Fractions Fundamentals">
+                </div>
+                <div class="field">
+                  <label for="quizFolderSelect">Folder</label>
+                  <select id="quizFolderSelect"></select>
+                </div>
               </div>
-              <div id="questionMediaPreview" class="media-preview"></div>
-              <button id="clearQuestionMediaBtn" type="button" class="btn ghost hidden" style="margin-top:8px">Remove Media</button>
-            </div>
-            <div class="field">
-              <label>Answers (tick the correct one)</label>
-              <div id="answersGrid" class="answers-grid"></div>
-            </div>
-            <div class="field" style="max-width:200px">
-              <label for="questionSeconds">Time limit (seconds)</label>
-              <input id="questionSeconds" type="number" min="5" max="120" value="20">
-            </div>
-            <div style="display:flex;justify-content:flex-end;gap:10px">
+              <details class="media-details" open>
+                <summary>Quiz cover</summary>
+                <div class="field" style="margin-top:12px">
+                  <div id="coverDrop" class="media-drop">
+                    <span class="material-symbols-outlined" style="font-size:32px;color:var(--sky-500)">image</span>
+                    <div style="margin-top:6px">Click or drag image here</div>
+                    <input id="coverInput" type="file" accept="image/*" class="hidden">
+                  </div>
+                  <div id="coverPreview" class="media-preview"></div>
+                  <button id="clearCoverBtn" type="button" class="btn ghost hidden" style="margin-top:8px">Remove Cover</button>
+                </div>
+              </details>
+            </section>
+
+            <section class="editor-section">
+              <div class="section-head">
+                <div>
+                  <div class="section-title">Current question</div>
+                  <div class="section-copy" id="questionProgressText">Question 1</div>
+                </div>
+                <div class="question-toolbar">
+                  <div class="field question-time-field">
+                    <label for="questionSeconds">Time</label>
+                    <input id="questionSeconds" type="number" min="5" max="120" value="20">
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <label for="questionText">Question</label>
+                <textarea id="questionText" placeholder="Type your question…"></textarea>
+              </div>
+              <details class="media-details">
+                <summary>Question media</summary>
+                <div class="field" style="margin-top:12px">
+                  <div id="questionMediaDrop" class="media-drop">
+                    <span class="material-symbols-outlined" style="font-size:32px;color:var(--sky-500)">perm_media</span>
+                    <div style="margin-top:6px">Click or drag image, GIF, or video here</div>
+                    <input id="questionMediaInput" type="file" accept="image/*,video/*" class="hidden">
+                  </div>
+                  <div id="questionMediaPreview" class="media-preview"></div>
+                  <button id="clearQuestionMediaBtn" type="button" class="btn ghost hidden" style="margin-top:8px">Remove Media</button>
+                </div>
+              </details>
+            </section>
+
+            <section class="editor-section">
+              <div class="section-head">
+                <div>
+                  <div class="section-title">Answers</div>
+                  <div class="section-copy">Fill all four choices and tick the correct answer.</div>
+                </div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <div id="answersGrid" class="answers-grid"></div>
+              </div>
+            </section>
+
+            <div class="editor-footer-actions">
               <button id="deleteQuestionBtn" type="button" class="btn danger">
                 <span class="material-symbols-outlined">delete</span>Delete Question
               </button>
@@ -1952,38 +2243,76 @@ function openEditor(quizId){
   editorQuiz=clone(found||defaultQuiz());
   selectedQuestionId=editorQuiz.questions[0]?.id||null;
   renderEditor();
+  markEditorSaved();
   showScreen('editor-screen');
 }
 function createNewQuiz(){
   editorQuiz=defaultQuiz();
   selectedQuestionId=editorQuiz.questions[0].id;
   renderEditor();
+  markEditorSaved();
   showScreen('editor-screen');
 }
 function currentQuestion(){ return editorQuiz.questions.find(q=>q.id===selectedQuestionId)||editorQuiz.questions[0]; }
+
+function setEditorStatus(label, state){
+  const el = $('editorStatus');
+  if(!el) return;
+  el.textContent = label;
+  el.classList.remove('saved','dirty','saving');
+  if(state) el.classList.add(state);
+}
+function markEditorDirty(){
+  editorDirty = true;
+  setEditorStatus('Unsaved changes','dirty');
+}
+function markEditorSaved(){
+  editorDirty = false;
+  setEditorStatus('Saved','saved');
+}
+function answerCompletionCount(q){
+  return (q.answers||[]).filter(a => (a.text||'').trim()).length;
+}
+function questionHasMedia(q){
+  if(q.media) return true;
+  return (q.answers||[]).some(a => !!a.media);
+}
+
 function renderEditor(){
   $('quizTitle').value=editorQuiz.title||'';
   renderFolderSelect();
   renderQuestionList();
   renderCoverPreview();
   renderQuestionForm();
+  $('questionSummary').textContent = `${editorQuiz.questions.length} question${editorQuiz.questions.length===1?'':'s'}`;
 }
 function renderFolderSelect(){
   $('quizFolderSelect').innerHTML=`<option value="">Unsorted</option>`+folders.map(f=>`<option value="${f.id}" ${editorQuiz.folderId===f.id?'selected':''}>${esc(f.name)}</option>`).join('');
 }
 function renderQuestionList(){
-  $('questionList').innerHTML=editorQuiz.questions.map((q,i)=>`
+  $('questionList').innerHTML=editorQuiz.questions.map((q,i)=>{
+    const completeAnswers = answerCompletionCount(q);
+    const badges = [
+      `<span class="question-badge ${q.text?'good':'warn'}">${q.text?'Question ready':'Needs text'}</span>`,
+      `<span class="question-badge ${completeAnswers===4?'good':'warn'}">${completeAnswers}/4 answers</span>`,
+      `<span class="question-badge info">${q.seconds||20}s</span>`,
+      questionHasMedia(q)?`<span class="question-badge good">Media</span>`:''
+    ].filter(Boolean).join('');
+    return `
     <div class="question-card ${q.id===selectedQuestionId?'active':''}" draggable="true" data-qid="${q.id}">
       <div class="question-card-num">QUESTION ${i+1}</div>
       <div class="question-card-preview">${esc((q.text||'').slice(0,80)||'Untitled question')}</div>
-    </div>`).join('');
+      <div class="question-card-badges">${badges}</div>
+    </div>`;
+  }).join('');
   document.querySelectorAll('.question-card').forEach(card=>{
-    card.onclick=()=>{ saveQuestionForm(); selectedQuestionId=card.dataset.qid; renderEditor(); };
+    card.onclick=()=>{ saveQuestionForm(); selectedQuestionId=card.dataset.qid; markEditorSaved(); renderEditor(); };
     card.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain', card.dataset.qid));
     card.addEventListener('dragover',e=>e.preventDefault());
     card.addEventListener('drop',e=>{
       e.preventDefault();
       reorderQuestions(e.dataTransfer.getData('text/plain'), card.dataset.qid);
+      markEditorDirty();
     });
   });
 }
@@ -2003,6 +2332,8 @@ function renderCoverPreview(){
 }
 function renderQuestionForm(){
   const q=currentQuestion();
+  const idx = Math.max(0, editorQuiz.questions.findIndex(item => item.id===q.id));
+  $('questionProgressText').textContent = `Question ${idx+1} of ${editorQuiz.questions.length}`;
   $('questionText').value=q.text||'';
   $('questionSeconds').value=q.seconds||20;
   renderQuestionMediaPreview(q.media);
@@ -2014,7 +2345,7 @@ function renderQuestionMediaPreview(media){
 }
 function renderAnswersEditor(q){
   $('answersGrid').innerHTML=(q.answers||[]).map((ans,i)=>`
-    <div class="answer-edit" data-color="${i}">
+    <div class="answer-edit ${q.correctIndex===i?'correct-choice':''} ${((ans.text||'').trim()||ans.media)?'complete':''}" data-color="${i}">
       <div class="answer-letter">${answerShapes[i]}</div>
       <div class="top">
         <input type="radio" name="correctAnswer" value="${i}" ${q.correctIndex===i?'checked':''}>
@@ -2023,7 +2354,7 @@ function renderAnswersEditor(q){
       <div class="answer-media-preview">
         ${ans.media?(ans.media.type==='video'?`<video src="${ans.media.dataUrl}" controls></video>`:`<img src="${ans.media.dataUrl}">`):''}
       </div>
-      <div style="display:flex;gap:8px;margin-top:10px">
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
         <button type="button" class="btn outline" data-answer-media-btn="${i}" style="padding:6px 12px;font-size:.82rem">
           <span class="material-symbols-outlined" style="font-size:16px">image</span>Media
         </button>
@@ -2037,13 +2368,20 @@ function renderAnswersEditor(q){
     const file=(e.target.files||[])[0]; if(!file) return;
     readDataUrl(file,dataUrl=>{
       currentQuestion().answers[idx].media={type:file.type.startsWith('video/')?'video':'image',dataUrl};
+      markEditorDirty();
       renderAnswersEditor(currentQuestion());
+      renderQuestionList();
     });
   });
   $('answersGrid').querySelectorAll('[data-answer-media-clear]').forEach(btn=>btn.onclick=()=>{
     const idx=parseInt(btn.dataset.answerMediaClear,10);
     currentQuestion().answers[idx].media=null;
+    markEditorDirty();
     renderAnswersEditor(currentQuestion());
+    renderQuestionList();
+  });
+  $('answersGrid').querySelectorAll('input[name="correctAnswer"]').forEach(input=>{
+    input.onchange=()=>{ markEditorDirty(); saveQuestionForm(); renderAnswersEditor(currentQuestion()); renderQuestionList(); };
   });
 }
 function saveQuestionForm(){
@@ -2063,6 +2401,7 @@ async function saveQuiz(){
   const btn = $('saveQuizBtn');
   const oldHtml = btn ? btn.innerHTML : '';
   try{
+    setEditorStatus('Saving…','saving');
     if(btn){
       btn.disabled = true;
       btn.innerHTML = 'Saving...';
@@ -2072,6 +2411,7 @@ async function saveQuiz(){
     await qRef(currentTeacher.uid).child(editorQuiz.id).set(editorQuiz);
     showScreen('library-screen');
     await loadQuizzes();
+    markEditorSaved();
   }finally{
     if(btn){
       btn.disabled = false;
@@ -2084,6 +2424,19 @@ function deleteCurrentQuestion(){
   const idx=editorQuiz.questions.findIndex(q=>q.id===selectedQuestionId);
   editorQuiz.questions.splice(idx,1);
   selectedQuestionId=editorQuiz.questions[Math.max(0,idx-1)].id;
+  markEditorDirty();
+  renderEditor();
+}
+function duplicateCurrentQuestion(){
+  saveQuestionForm();
+  const source = currentQuestion();
+  const clone = JSON.parse(JSON.stringify(source));
+  clone.id = genId();
+  clone.answers = (clone.answers||[]).map(ans => ({...ans, id: genId()}));
+  const idx = editorQuiz.questions.findIndex(q => q.id===source.id);
+  editorQuiz.questions.splice(idx+1, 0, clone);
+  selectedQuestionId = clone.id;
+  markEditorDirty();
   renderEditor();
 }
 function addQuestion(){
@@ -2091,10 +2444,11 @@ function addQuestion(){
   const q=defaultQuestion();
   editorQuiz.questions.push(q);
   selectedQuestionId=q.id;
+  markEditorDirty();
   renderEditor();
 }
-function clearCover(){ editorQuiz.cover=null; renderCoverPreview(); }
-function clearQuestionMedia(){ currentQuestion().media=null; renderQuestionMediaPreview(null); }
+function clearCover(){ editorQuiz.cover=null; markEditorDirty(); renderCoverPreview(); }
+function clearQuestionMedia(){ currentQuestion().media=null; markEditorDirty(); renderQuestionMediaPreview(null); renderQuestionList(); }
 function bindDropZone(dropId,inputId,onData){
   const drop=$(dropId), input=$(inputId);
   drop.onclick=()=>input.click();
@@ -2626,6 +2980,7 @@ function bindEvents(){
   $('previewQuizBtn').onclick=startPreviewHost;
   $('saveQuizBtn').onclick=saveQuiz;
   $('addQuestionBtn').onclick=addQuestion;
+  $('duplicateQuestionBtn').onclick=duplicateCurrentQuestion;
   $('deleteQuestionBtn').onclick=deleteCurrentQuestion;
   $('clearCoverBtn').onclick=clearCover;
   $('clearQuestionMediaBtn').onclick=clearQuestionMedia;
@@ -2640,11 +2995,25 @@ function bindEvents(){
   $('endGameBtn').onclick=()=>{ if(previewMode) previewEndGame(); else endGame(); };
   $('finalLibraryBtn').onclick=()=>{ if(previewMode) previewEndGame(); else endHostToLibrary(true); };
   $('searchInput').oninput=e=>{ searchTerm=e.target.value||''; renderLibrary(); };
-  bindDropZone('coverDrop','coverInput', file=>readDataUrl(file,data=>{ editorQuiz.cover=data; renderCoverPreview(); }));
+  bindDropZone('coverDrop','coverInput', file=>readDataUrl(file,data=>{ editorQuiz.cover=data; markEditorDirty(); renderCoverPreview(); }));
+
+  ['quizTitle','quizFolderSelect','questionText','questionSeconds'].forEach(id=>{
+    const el = $(id);
+    if(!el) return;
+    const evt = id==='quizFolderSelect' ? 'change' : 'input';
+    el.addEventListener(evt, ()=>{
+      markEditorDirty();
+      saveQuestionForm();
+      if(id==='questionText' || id==='questionSeconds') renderQuestionList();
+    });
+  });
+
   bindDropZone('questionMediaDrop','questionMediaInput', file=>{
     readDataUrl(file,data=>{
       currentQuestion().media={type:file.type.startsWith('video/')?'video':'image',dataUrl:data};
+      markEditorDirty();
       renderQuestionMediaPreview(currentQuestion().media);
+      renderQuestionList();
     });
   });
 }
