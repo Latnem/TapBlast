@@ -372,7 +372,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   background:#fff;
   border:1px solid var(--line);
   border-radius:18px;
-  overflow:hidden;
+  overflow:visible;
   box-shadow:var(--shadow-sm);
   transition:all .22s cubic-bezier(.2,.9,.3,1.1);
   position:relative;
@@ -390,6 +390,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
     linear-gradient(135deg, var(--sky-100) 0%, var(--sky-50) 100%);
   display:flex;align-items:center;justify-content:center;overflow:hidden;
   position:relative;
+  border-radius:18px 18px 0 0;
 }
 .quiz-cover::after{
   content:'';position:absolute;inset:0;
@@ -416,7 +417,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 .quiz-meta .dot-sep{width:3px;height:3px;border-radius:50%;background:var(--ink-300)}
 .quiz-actions{display:flex;gap:8px;margin-top:auto}
 .quiz-actions .btn{flex:1;padding:9px 12px;font-size:.88rem}
-.menu-wrap{position:relative}
+.menu-wrap{position:relative;overflow:visible}
 .menu-btn{
   width:34px;height:34px;border:none;border-radius:9px;
   background:transparent;color:var(--ink-500);cursor:pointer;
@@ -425,16 +426,17 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 }
 .menu-btn:hover{background:var(--sky-50);color:var(--royal-700)}
 .menu-pop{
-  position:absolute;right:0;top:40px;
+  position:absolute;right:0;top:auto;bottom:calc(100% - 2px);
   background:#fff;
   border:1px solid var(--line);
   border-radius:14px;
-  min-width:200px;
+  min-width:210px;
+  max-width:min(260px, calc(100vw - 32px));
   box-shadow:var(--shadow-lg);
-  padding:6px;z-index:50;
-  animation:menuPop .14s ease-out;
+  padding:6px;z-index:90;
+  animation:menuPopUp .14s ease-out;
 }
-@keyframes menuPop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes menuPopUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .menu-pop button{
   display:flex;align-items:center;gap:10px;width:100%;
   border:none;background:transparent;
@@ -1196,7 +1198,62 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
     padding:2px 6px;
     font-size:.72rem;
   }
-}</style>
+}
+@media(max-width:980px){
+  .mobile-folders-pane .folder-list{
+    align-items:flex-start;
+  }
+  .mobile-folders-pane .folder-item{
+    width:auto;
+    min-width:fit-content;
+    max-width:100%;
+    display:inline-flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:8px;
+  }
+  .mobile-folders-pane .folder-name{
+    flex:0 1 auto;
+  }
+}
+@media(max-width:640px){
+  .app-shell{
+    display:block;
+  }
+  .app-container{
+    box-shadow:none;
+  }
+  .main-pane{
+    width:100%;
+  }
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:20;
+  }
+  .topbar > div:first-child{
+    min-width:0;
+  }
+  .topbar > div:last-child{
+    width:100%;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .topbar > div:last-child .btn{
+    flex:0 0 auto;
+  }
+  .quiz-card{
+    border-radius:16px;
+  }
+  .menu-pop{
+    right:0;
+    left:auto;
+    bottom:calc(100% - 4px);
+  }
+}
+
+</style>
 </head>
 <body>
 <!-- ============ BOOT ============ -->
@@ -2003,11 +2060,24 @@ function saveQuestionForm(){
   });
 }
 async function saveQuiz(){
-  saveQuestionForm();
-  editorQuiz.updatedAt=Date.now();
-  await qRef(currentTeacher.uid).child(editorQuiz.id).set(editorQuiz);
-  await loadQuizzes();
-  showScreen('library-screen');
+  const btn = $('saveQuizBtn');
+  const oldHtml = btn ? btn.innerHTML : '';
+  try{
+    if(btn){
+      btn.disabled = true;
+      btn.innerHTML = 'Saving...';
+    }
+    saveQuestionForm();
+    editorQuiz.updatedAt=Date.now();
+    await qRef(currentTeacher.uid).child(editorQuiz.id).set(editorQuiz);
+    showScreen('library-screen');
+    await loadQuizzes();
+  }finally{
+    if(btn){
+      btn.disabled = false;
+      btn.innerHTML = oldHtml || 'Save Quiz';
+    }
+  }
 }
 function deleteCurrentQuestion(){
   if(editorQuiz.questions.length===1) return;
@@ -2449,6 +2519,96 @@ function syncMobileFoldersPane(){
   }
 }
 
+function stopPreviewMode(){ previewMode = false; }
+function buildPreviewRoom(){
+  saveQuestionForm();
+  return {
+    code:'PREVIEW',
+    hostUid: currentTeacher ? currentTeacher.uid : '',
+    hostName: currentTeacher ? (currentTeacher.displayName || currentTeacher.email || 'Teacher') : 'Teacher',
+    quiz: clone(editorQuiz),
+    currentQ: 0, phase: 'lobby',
+    currentQuestionEndsAt: 0, currentRemainingMs: 0, paused: false,
+    players: {}, updatedAt: Date.now()
+  };
+}
+function startPreviewHost(){
+  if(!editorQuiz) return;
+  cleanupHost();
+  previewMode = true;
+  hostRoom = buildPreviewRoom();
+  showScreen('host-screen');
+  renderHost();
+}
+function previewStartQuiz(){
+  if(!hostRoom) return;
+  previewMode = true;
+  hostRoom.phase = 'countdown'; hostRoom.updatedAt = Date.now();
+  renderHost();
+}
+function previewBeginAnswerPhase(){
+  const q = hostRoom.quiz.questions[hostRoom.currentQ];
+  hostRoom.phase = 'question_answers'; hostRoom.paused = false;
+  hostRoom.currentRemainingMs = 0;
+  hostRoom.currentQuestionEndsAt = Date.now() + ((q.seconds || 20) * 1000);
+  hostRoom.updatedAt = Date.now();
+  renderHost();
+}
+function previewLockQuestion(){
+  hostRoom.phase = 'locked'; hostRoom.paused = false; hostRoom.currentRemainingMs = 0;
+  hostRoom.updatedAt = Date.now();
+  renderHost();
+}
+function previewPauseQuestion(){
+  if(!hostRoom || hostRoom.phase !== 'question_answers') return;
+  hostRoom.phase = 'paused'; hostRoom.paused = true;
+  hostRoom.currentRemainingMs = Math.max(0, (hostRoom.currentQuestionEndsAt || 0) - Date.now());
+  hostRoom.updatedAt = Date.now();
+  renderHost();
+}
+function previewResumeQuestion(){
+  if(!hostRoom || hostRoom.phase !== 'paused') return;
+  hostRoom.phase = 'question_answers'; hostRoom.paused = false;
+  hostRoom.currentQuestionEndsAt = Date.now() + (hostRoom.currentRemainingMs || 0);
+  hostRoom.updatedAt = Date.now();
+  renderHost();
+}
+function previewShowResults(){
+  if(!hostRoom || hostRoom.phase !== 'locked') return;
+  hostRoom.phase = 'answer_results'; hostRoom.updatedAt = Date.now();
+  renderHost();
+  if(revealHandle) clearTimeout(revealHandle);
+  revealHandle = setTimeout(() => {
+    if(hostRoom && hostRoom.phase === 'answer_results'){
+      hostRoom.phase = 'leaderboard'; hostRoom.updatedAt = Date.now();
+      renderLeaderboard();
+    }
+  }, 2400);
+}
+function previewNextQuestion(){
+  if(!hostRoom) return;
+  const next = (hostRoom.currentQ || 0) + 1;
+  if(next >= (hostRoom.quiz.questions || []).length){
+    hostRoom.phase = 'final'; hostRoom.updatedAt = Date.now();
+    renderFinal();
+    return;
+  }
+  hostRoom.currentQ = next;
+  hostRoom.phase = 'countdown'; hostRoom.paused = false;
+  hostRoom.currentRemainingMs = 0; hostRoom.currentQuestionEndsAt = 0;
+  hostRoom.updatedAt = Date.now();
+  showScreen('host-screen');
+  renderHost();
+}
+function previewEndGame(){
+  cleanupHost();
+  hostRoom = null;
+  stopPreviewMode();
+  showScreen('editor-screen');
+}
+
+
+
 function bindEvents(){
   $('googleLoginBtn').onclick=signInTeacher;
   $('logoutBtn').onclick=logoutTeacher;
@@ -2458,7 +2618,11 @@ function bindEvents(){
   $('folderNameInput').onkeydown=e=>{ if(e.key==='Enter') commitFolderModal(); };
   $('moveQuizCancel').onclick=closeMoveQuizModal;
   $('newQuizBtn').onclick=createNewQuiz;
-  $('editorBackBtn').onclick=async()=>{ await loadQuizzes(); showScreen('library-screen'); };
+  $('editorBackBtn').onclick=async()=>{
+    saveQuestionForm();
+    showScreen('library-screen');
+    try{ await loadQuizzes(); }catch(err){ console.error(err); }
+  };
   $('previewQuizBtn').onclick=startPreviewHost;
   $('saveQuizBtn').onclick=saveQuiz;
   $('addQuestionBtn').onclick=addQuestion;
