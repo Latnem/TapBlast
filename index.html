@@ -1112,6 +1112,74 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   .lb-title,.lobby-title{font-size:1.2rem}
   .host-question{font-size:1.12rem}
 }
+
+/* ===== MOBILE SIDEBAR / FOLDERS FIX ===== */
+@media(max-width:980px){
+  .app-container{
+    grid-template-columns:1fr;
+    min-height:auto;
+  }
+  .left-pane{
+    border-right:none;
+    border-bottom:1px solid var(--line);
+    padding:12px 12px 10px;
+    background:#fff;
+  }
+  .folder-head{
+    margin-bottom:10px;
+    padding:0;
+  }
+  .folder-list{
+    display:flex;
+    flex-direction:row;
+    gap:8px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    padding-bottom:4px;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+  .folder-list::-webkit-scrollbar{
+    display:none;
+  }
+  .folder-item{
+    flex:0 0 auto;
+    min-width:max-content;
+    padding:10px 12px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:#fff;
+    white-space:nowrap;
+  }
+  .folder-item.active{
+    background:linear-gradient(90deg, var(--sky-100), var(--sky-50));
+  }
+  .folder-item .folder-count{
+    margin-left:2px;
+  }
+  .main-pane{
+    min-width:0;
+  }
+}
+
+@media(max-width:640px){
+  .topbar > div:last-child{
+    width:100%;
+    justify-content:flex-start;
+  }
+  .topbar .btn{
+    padding:10px 14px;
+  }
+  .content-wrap{
+    padding:14px 12px;
+  }
+  .library-header-title{
+    font-size:1.3rem;
+  }
+  .folder-item [data-folder-menu]{
+    display:none;
+  }
+}
 </style>
 </head>
 <body>
