@@ -70,6 +70,11 @@
   --shadow-royal:0 18px 40px rgba(30,58,138,.25);
 }
 html,body{height:100%}
+html,body{overflow-x:hidden}
+body{overflow-y:auto}
+.boot-screen,.login-wrap{min-height:100svh}
+body.booting{overflow:hidden}
+body.on-login{overflow:hidden}
 body{
   margin:0;
   font-family:'Plus Jakarta Sans', system-ui, sans-serif;
@@ -80,7 +85,7 @@ body{
 }
 button,input,textarea,select{font:inherit;color:inherit}
 .hidden{display:none!important}
-.screen{display:none;min-height:100vh}
+.screen{display:none;min-height:100vh;width:100%}
 .screen.active{display:flex;width:100%}
 
 /* ===== BOOT SCREEN ===== */
@@ -1094,24 +1099,18 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   .content-wrap{padding:18px}
   .topbar{padding:16px 18px;flex-wrap:wrap}
   .quiz-grid{grid-template-columns:1fr}
-  .student-grid{grid-template-columns:1fr}
-  .student-main{padding:14px}
-  .join-wrap{padding:14px}
-  .join-card{padding:22px}
-  .join-hero{padding:22px}
-  .student-answer{min-height:92px;font-size:.96rem}
   .code{font-size:2.8rem;letter-spacing:6px;padding-left:6px}
 }
 @media(max-width:420px){
   .topbar{padding:14px 12px}
   .content-wrap{padding:14px 12px}
   .left-pane,.editor-left{padding:14px 12px}
-  .panel,.student-card,.host-card,.join-card,.lobby-card,.lb-card{padding:16px}
+  .panel,.host-card,.lobby-card,.lb-card{padding:16px}
   .code{font-size:2.1rem;letter-spacing:4px;padding-left:4px}
-  .join-brand,.boot-mark{font-size:1.9rem}
+  .boot-mark{font-size:1.9rem}
   .login-card{padding:28px 20px 24px}
-  .join-card-title,.lb-title,.lobby-title{font-size:1.2rem}
-  .student-question,.host-question{font-size:1.12rem}
+  .lb-title,.lobby-title{font-size:1.2rem}
+  .host-question{font-size:1.12rem}
 }
 </style>
 </head>
@@ -1432,6 +1431,8 @@ const showScreen = id => {
   document.querySelectorAll('.screen').forEach(el => {
     el.classList.toggle('active', el.id===id);
   });
+  document.body.classList.remove('on-login');
+  if(id==='login-screen') document.body.classList.add('on-login');
 };
 const esc = s => String(s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 const clone = obj => JSON.parse(JSON.stringify(obj));
@@ -1540,24 +1541,29 @@ function readDataUrl(file, cb){if(!file) return; const fr=new FileReader(); fr.o
 /* =========================================================
    AUTH
    ========================================================= */
-async function enterTeacherApp(){
+async function finishTeacherEntry(){
   if(!currentTeacher) return;
   $('teacherName').textContent=currentTeacher.displayName||currentTeacher.email||'Teacher';
+  // Show library immediately so auth success never looks stuck on login.
+  showScreen('library-screen');
+  setBootComplete();
   try{
     await ensureDefaultFolders();
     await loadFolders();
     await loadQuizzes();
     const resumed=await tryResumeHost();
-    if(!resumed) showScreen('library-screen');
+    if(resumed) return;
+    showScreen('library-screen');
     $('loginError').textContent='';
   }catch(err){
-    console.error('enterTeacherApp failed:', err);
+    console.error('finishTeacherEntry failed:', err);
     try{ renderFolders(); }catch(e){}
     try{ renderLibrary(); }catch(e){}
     showScreen('library-screen');
     $('loginError').textContent='Signed in, but some teacher data could not load.';
   }
 }
+
 async function signInTeacher(){
   const btn = $('googleLoginBtn');
   $('loginError').textContent='';
@@ -1566,19 +1572,19 @@ async function signInTeacher(){
     const provider=new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({prompt:'select_account'});
     if(btn){
-      btn.disabled=true;
-      btn.style.opacity='.7';
+      btn.disabled = true;
+      btn.style.opacity = '.7';
     }
-    const result=await auth.signInWithPopup(provider);
-    currentTeacher=result.user||auth.currentUser;
-    await enterTeacherApp();
+    const result = await auth.signInWithPopup(provider);
+    currentTeacher = result.user || auth.currentUser;
+    await finishTeacherEntry();
   }catch(err){
     console.error(err);
     $('loginError').textContent=(err && err.message) || 'Login failed';
   }finally{
     if(btn){
-      btn.disabled=false;
-      btn.style.opacity='';
+      btn.disabled = false;
+      btn.style.opacity = '';
     }
   }
 }
@@ -1587,11 +1593,11 @@ async function logoutTeacher(){try{await auth.signOut();}catch(err){console.erro
 auth.onAuthStateChanged(async user=>{
   currentTeacher=user||null;
   if(currentTeacher){
-    await enterTeacherApp();
+    await finishTeacherEntry();
   } else {
     showScreen('login-screen');
+    setBootComplete();
   }
-  setBootComplete();
 });
 
 async function ensureDefaultFolders(){
@@ -2373,8 +2379,15 @@ function bindEvents(){
   });
 }
 document.addEventListener('DOMContentLoaded',()=>{
+  document.body.classList.add('booting');
   bindEvents();
-  setTimeout(()=>{ try{ setBootComplete(); }catch(e){} }, 1500);
+  setTimeout(()=>{
+    try{
+      document.body.classList.remove('booting');
+      if(!currentTeacher) showScreen('login-screen');
+      setBootComplete();
+    }catch(e){}
+  }, 3000);
 });
 </script>
 </body>
