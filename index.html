@@ -1498,29 +1498,30 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 }
 
 
-/* ===== CLEAN VERTICAL LINE ===== */
+
+
+
+
+
+
+
+
+
+/* ===== CLEAN MINIMAL QUESTION LIST ===== */
 .question-card{
-  position:relative;
-  padding-left:18px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px;
+  transition:all .15s ease;
 }
 
-.question-card::before{
-  content:'';
-  position:absolute;
-  left:6px;
-  top:10px;
-  bottom:10px;
-  width:2px;
-  border-radius:2px;
-  background:#e5e7eb;
+.question-card.active{
+  border-color: var(--royal-500);
+  box-shadow: 0 0 0 2px rgba(47,95,210,.12);
 }
 
-.question-card.active::before{
-  background:#3f6db5;
-}
-
-.question-card:hover::before{
-  background:#cbd5e1;
+.question-card:hover{
+  background:var(--panel-soft);
 }
 
 </style>
