@@ -1101,7 +1101,6 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   .join-hero{padding:22px}
   .student-answer{min-height:92px;font-size:.96rem}
   .code{font-size:2.8rem;letter-spacing:6px;padding-left:6px}
-  #studentCode{font-size:1.45rem;letter-spacing:4px}
 }
 @media(max-width:420px){
   .topbar{padding:14px 12px}
@@ -1381,50 +1380,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   </div>
 </div>
 
-<!-- ============ STUDENT JOIN ============ -->
-<div id="student-join-screen" class="screen">
-  <div class="join-wrap">
-    <div class="join-shell">
-      <section class="join-hero">
-        <div class="join-brand">Tap<em>Blast</em></div>
-        <div class="join-hero-copy">Enter the room code your teacher shared, pick a nickname, and get ready to play.</div>
-      </section>
-      <section class="join-card">
-        <div class="join-card-title">Join Game</div>
-        <div class="join-card-sub">Fast, fun, and no sign-up needed.</div>
-        <div class="field">
-          <label for="studentCode">Room Code</label>
-          <input id="studentCode" type="text" maxlength="6" inputmode="numeric" placeholder="123456">
-        </div>
-        <div class="field">
-          <label for="studentName">Nickname</label>
-          <input id="studentName" type="text" maxlength="20" placeholder="e.g., AceOfSpades">
-        </div>
-        <button id="studentJoinBtn" type="button" class="btn accent lg" style="width:100%">
-          <span class="material-symbols-outlined">login</span>Join Game
-        </button>
-        <div id="studentJoinError" class="error-line"></div>
-      </section>
-    </div>
-  </div>
-</div>
 
-<!-- ============ STUDENT ============ -->
-<div id="student-screen" class="screen student-shell">
-  <div class="student-top">
-    <div id="studentTopName"></div>
-    <div id="studentTopScore" class="student-top-score">0</div>
-  </div>
-  <div class="student-main">
-    <div class="student-card">
-      <div id="studentPhase" class="student-phase"></div>
-      <div id="studentMedia" class="student-media"></div>
-      <div id="studentQuestion" class="student-question"></div>
-      <div id="studentAnswerGrid" class="student-grid"></div>
-      <div id="studentResult" class="student-result"></div>
-    </div>
-  </div>
-</div>
 
 <!-- ============ MODALS ============ -->
 <div id="folderModal" class="modal-backdrop">
@@ -1458,6 +1414,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyCjh16vsvzWmt9dUkH6O4brRf8hfTOhzYA",
   authDomain: "tapblast-8e13a.firebaseapp.com",
   projectId: "tapblast-8e13a",
+  databaseURL: "https://tapblast-8e13a-default-rtdb.firebaseio.com",
   storageBucket: "tapblast-8e13a.firebasestorage.app",
   messagingSenderId: "1069456061706",
   appId: "1:1069456061706:web:0fc650dfac4de09de536f3",
@@ -1471,7 +1428,11 @@ const ROOT='tapblast_clean_v1';
 const $ = id => document.getElementById(id);
 const answerColors=['blue','green','orange','yellow'];
 const answerShapes=['A','B','C','D'];
-const showScreen = id => document.querySelectorAll('.screen').forEach(el => el.classList.toggle('active', el.id===id));
+const showScreen = id => {
+  document.querySelectorAll('.screen').forEach(el => {
+    el.classList.toggle('active', el.id===id);
+  });
+};
 const esc = s => String(s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 const clone = obj => JSON.parse(JSON.stringify(obj));
 const genId = () => 'id_' + Math.random().toString(36).slice(2,10);
@@ -1591,14 +1552,12 @@ async function enterTeacherApp(){
     $('loginError').textContent='';
   }catch(err){
     console.error('enterTeacherApp failed:', err);
-    // Still try to let teacher in to the library UI
     try{ renderFolders(); }catch(e){}
     try{ renderLibrary(); }catch(e){}
     showScreen('library-screen');
     $('loginError').textContent='Signed in, but some teacher data could not load.';
   }
 }
-
 async function signInTeacher(){
   const btn = $('googleLoginBtn');
   $('loginError').textContent='';
@@ -1628,7 +1587,6 @@ async function logoutTeacher(){try{await auth.signOut();}catch(err){console.erro
 auth.onAuthStateChanged(async user=>{
   currentTeacher=user||null;
   if(currentTeacher){
-    $('loginError').textContent='';
     await enterTeacherApp();
   } else {
     showScreen('login-screen');
@@ -2377,248 +2335,8 @@ async function endHostToLibrary(removeSession){
 /* =========================================================
    STUDENT
    ========================================================= */
-function maybeBootStudentMode(){
-  if(location.hash!=='#student-join') return false;
-  showScreen('student-join-screen');
-  const params=new URLSearchParams(location.search);
-  $('studentCode').value=(params.get('code')||'').replace(/\D/g,'').slice(0,6);
-  $('studentName').value=(params.get('name')||'').slice(0,20);
-  return true;
-}
-async function studentJoin(){
-  const code=($('studentCode').value||'').replace(/\D/g,'').slice(0,6);
-  const name=($('studentName').value||'').trim().slice(0,20);
-  $('studentJoinError').textContent='';
-  if(!code){ $('studentJoinError').textContent='Enter the 6-digit room code'; return; }
-  if(!name){ $('studentJoinError').textContent='Pick a nickname'; return; }
-  const snap=await roomRef(code).get();
-  if(!snap.exists()){ $('studentJoinError').textContent='Room not found. Check the code and try again.'; return; }
-  const room=snap.val();
-  if(room.phase==='ended'){ $('studentJoinError').textContent='This game has ended.'; return; }
-  studentPlayerId=sessionStorage.getItem('tapblast_player_'+code)||db.ref().push().key;
-  sessionStorage.setItem('tapblast_player_'+code, studentPlayerId);
-  const existing=(room.players||{})[studentPlayerId];
-  const payload=existing||{name,score:0,joinedAt:Date.now(),currentAnswerIndex:null,answerAt:0,answerQ:-1,lastDelta:0,streak:0,streakMsg:''};
-  payload.name=name;
-  await roomRef(code).child('players').child(studentPlayerId).update(payload);
-  startStudentListener(code);
-}
-function cleanupStudent(){ if(studentRoomUnsub){studentRoomUnsub(); studentRoomUnsub=null;} }
-function startStudentListener(code){
-  cleanupStudent();
-  const ref=roomRef(code);
-  const cb=snap=>{
-    if(!snap.exists()) return renderStudentEnded('Game ended');
-    const room=snap.val();
-    const player=(room.players||{})[studentPlayerId];
-    if(!player) return renderStudentEnded('Game ended');
-    renderStudent(room,player);
-  };
-  ref.on('value',cb);
-  studentRoomUnsub=()=>ref.off('value',cb);
-  showScreen('student-screen');
-}
-function renderStudentEnded(msg){
-  showScreen('student-screen');
-  $('studentPhase').textContent=msg;
-  $('studentMedia').innerHTML='';
-  $('studentQuestion').textContent='';
-  $('studentAnswerGrid').innerHTML='';
-  $('studentResult').textContent='';
-}
-function renderStudent(room,player){
-  $('studentTopName').textContent=player.name||'Player';
-  $('studentTopScore').textContent=String(player.score||0);
-  if(room.phase==='ended') return renderStudentEnded('Game ended');
-  if(room.phase==='leaderboard'){
-    $('studentPhase').textContent='Scoreboard';
-    $('studentMedia').innerHTML='';
-    $('studentQuestion').textContent='Get ready for the next question…';
-    $('studentAnswerGrid').innerHTML='';
-    $('studentResult').textContent=player.lastDelta?'+'+player.lastDelta+' pts':'';
-    return;
-  }
-  if(room.phase==='final'){
-    $('studentPhase').textContent='🎉 Final';
-    $('studentMedia').innerHTML='';
-    $('studentQuestion').textContent=`Final score: ${player.score||0}`;
-    $('studentAnswerGrid').innerHTML='';
-    $('studentResult').textContent='';
-    return;
-  }
-  if(room.phase==='countdown'){
-    $('studentPhase').textContent='Get Ready!';
-    $('studentMedia').innerHTML='';
-    $('studentQuestion').textContent='Next question starting…';
-    $('studentAnswerGrid').innerHTML='';
-    $('studentResult').textContent='';
-    return;
-  }
-  const q=room.quiz.questions[room.currentQ];
-  if(!q) return;
-  $('studentQuestion').textContent=q.text||'';
-  $('studentMedia').innerHTML='';
-  if(q.media){
-    if(q.media.type==='video') $('studentMedia').innerHTML=`<video src="${q.media.dataUrl}" ${room.phase==='question_media'?'autoplay controls':''}></video>`;
-    else $('studentMedia').innerHTML=`<img src="${q.media.dataUrl}" alt="">`;
-  }
-  if(room.phase==='question_media'){
-    $('studentPhase').textContent='Watch';
-    $('studentAnswerGrid').innerHTML='';
-    $('studentResult').textContent='';
-    return;
-  }
-  const answers=nonBlankAnswers(q);
-  $('studentPhase').textContent=
-    room.phase==='paused'?'Paused':
-    room.phase==='locked'?"Time's up — results coming":
-    room.phase==='answer_results'?(player.lastCorrect?'✓ Correct!':'Answer revealed'):
-    'Tap your answer';
-  const hasAnswered = player.answerQ===room.currentQ && typeof player.currentAnswerIndex==='number';
-  $('studentAnswerGrid').innerHTML=answers.map((a,idx)=>{
-    const isSelected = hasAnswered && player.currentAnswerIndex===a.index;
-    const isLocked = room.phase!=='question_answers' || hasAnswered;
-    return `<button type="button" class="student-answer ${answerColors[idx%4]} ${isSelected?'selected':''} ${isLocked?'locked':''}" data-answer-index="${a.index}">
-      <span class="student-answer-shape">${answerShapes[idx]}</span>
-      ${a.media?`<span class="thumb">${a.media.type==='video'?`<video src="${a.media.dataUrl}" muted></video>`:`<img src="${a.media.dataUrl}">`}</span>`:''}
-      ${a.text?`<span>${esc(a.text)}</span>`:''}
-    </button>`;
-  }).join('');
-  $('studentAnswerGrid').querySelectorAll('[data-answer-index]').forEach(btn=>btn.onclick=async()=>{
-    if(room.phase!=='question_answers') return;
-    if(hasAnswered) return; // lock after first submit
-    const idx=parseInt(btn.dataset.answerIndex,10);
-    await roomRef(room.code).child('players').child(studentPlayerId).update({currentAnswerIndex:idx,answerAt:Date.now(),answerQ:room.currentQ});
-  });
-  $('studentResult').textContent=
-    room.phase==='answer_results'?
-      ((player.lastDelta?'+'+player.lastDelta+' pts ':'')+(player.streakMsg||''))
-      : (hasAnswered && room.phase==='question_answers' ? 'Locked in — waiting for others' : '');
-}
 
-/* =========================================================
-   PREVIEW MODE
-   ========================================================= */
-function stopPreviewMode(){ previewMode = false; }
-function buildPreviewRoom(){
-  saveQuestionForm();
-  return {
-    code:'PREVIEW',
-    hostUid: currentTeacher ? currentTeacher.uid : '',
-    hostName: currentTeacher ? (currentTeacher.displayName || currentTeacher.email || 'Teacher') : 'Teacher',
-    quiz: clone(editorQuiz),
-    currentQ: 0, phase: 'lobby',
-    currentQuestionEndsAt: 0, currentRemainingMs: 0, paused: false,
-    players: {}, updatedAt: Date.now()
-  };
-}
-function startPreviewHost(){
-  if(!editorQuiz) return;
-  cleanupHost();
-  previewMode = true;
-  hostRoom = buildPreviewRoom();
-  showScreen('host-screen');
-  renderHost();
-}
-function previewStartQuiz(){
-  if(!hostRoom) return;
-  previewMode = true;
-  hostRoom.phase = 'countdown'; hostRoom.updatedAt = Date.now();
-  renderHost();
-}
-function previewBeginAnswerPhase(){
-  const q = hostRoom.quiz.questions[hostRoom.currentQ];
-  hostRoom.phase = 'question_answers'; hostRoom.paused = false;
-  hostRoom.currentRemainingMs = 0;
-  hostRoom.currentQuestionEndsAt = Date.now() + ((q.seconds || 20) * 1000);
-  hostRoom.updatedAt = Date.now();
-  renderHost();
-}
-function previewLockQuestion(){
-  hostRoom.phase = 'locked'; hostRoom.paused = false; hostRoom.currentRemainingMs = 0;
-  hostRoom.updatedAt = Date.now();
-  renderHost();
-}
-function previewPauseQuestion(){
-  if(!hostRoom || hostRoom.phase !== 'question_answers') return;
-  hostRoom.phase = 'paused'; hostRoom.paused = true;
-  hostRoom.currentRemainingMs = Math.max(0, (hostRoom.currentQuestionEndsAt || 0) - Date.now());
-  hostRoom.updatedAt = Date.now();
-  renderHost();
-}
-function previewResumeQuestion(){
-  if(!hostRoom || hostRoom.phase !== 'paused') return;
-  hostRoom.phase = 'question_answers'; hostRoom.paused = false;
-  hostRoom.currentQuestionEndsAt = Date.now() + (hostRoom.currentRemainingMs || 0);
-  hostRoom.updatedAt = Date.now();
-  renderHost();
-}
-function previewShowResults(){
-  if(!hostRoom || hostRoom.phase !== 'locked') return;
-  hostRoom.phase = 'answer_results'; hostRoom.updatedAt = Date.now();
-  renderHost();
-  if(revealHandle) clearTimeout(revealHandle);
-  revealHandle = setTimeout(() => {
-    if(hostRoom && hostRoom.phase === 'answer_results'){
-      hostRoom.phase = 'leaderboard'; hostRoom.updatedAt = Date.now();
-      renderLeaderboard();
-    }
-  }, 2400);
-}
-function previewNextQuestion(){
-  if(!hostRoom) return;
-  const next = (hostRoom.currentQ || 0) + 1;
-  if(next >= (hostRoom.quiz.questions || []).length){
-    hostRoom.phase = 'final'; hostRoom.updatedAt = Date.now();
-    renderFinal();
-    return;
-  }
-  hostRoom.currentQ = next;
-  hostRoom.phase = 'countdown'; hostRoom.paused = false;
-  hostRoom.currentRemainingMs = 0; hostRoom.currentQuestionEndsAt = 0;
-  hostRoom.updatedAt = Date.now();
-  showScreen('host-screen');
-  renderHost();
-}
-function previewEndGame(){
-  cleanupHost();
-  hostRoom = null;
-  stopPreviewMode();
-  showScreen('editor-screen');
-}
 
-/* =========================================================
-   KEYBOARD SHORTCUTS (host only)
-   ========================================================= */
-document.addEventListener('keydown', e=>{
-  // only trigger when host or leaderboard screen is active and not typing in an input
-  const tag = (e.target.tagName||'').toLowerCase();
-  if(tag==='input' || tag==='textarea' || tag==='select') return;
-  const hostActive = $('host-screen').classList.contains('active');
-  const lbActive = $('leaderboard-screen').classList.contains('active');
-  if(!hostActive && !lbActive) return;
-  if(!hostRoom) return;
-
-  if(e.code==='Space'){
-    e.preventDefault();
-    if(hostRoom.phase==='question_answers'){
-      if(previewMode) previewPauseQuestion(); else pauseQuestion();
-    } else if(hostRoom.phase==='paused'){
-      if(previewMode) previewResumeQuestion(); else resumeQuestion();
-    }
-  } else if(e.key==='ArrowRight' || e.key==='Enter'){
-    e.preventDefault();
-    if(hostRoom.phase==='locked'){
-      if(previewMode) previewShowResults(); else showResults();
-    } else if(hostRoom.phase==='leaderboard'){
-      if(previewMode) previewNextQuestion(); else nextQuestion();
-    }
-  }
-});
-
-/* =========================================================
-   EVENT BINDING + BOOT
-   ========================================================= */
 function bindEvents(){
   $('googleLoginBtn').onclick=signInTeacher;
   $('logoutBtn').onclick=logoutTeacher;
@@ -2646,9 +2364,6 @@ function bindEvents(){
   $('endGameBtn').onclick=()=>{ if(previewMode) previewEndGame(); else endGame(); };
   $('finalLibraryBtn').onclick=()=>{ if(previewMode) previewEndGame(); else endHostToLibrary(true); };
   $('searchInput').oninput=e=>{ searchTerm=e.target.value||''; renderLibrary(); };
-  $('studentJoinBtn').onclick=studentJoin;
-  $('studentCode').onkeydown=e=>{ if(e.key==='Enter') studentJoin(); };
-  $('studentName').onkeydown=e=>{ if(e.key==='Enter') studentJoin(); };
   bindDropZone('coverDrop','coverInput', file=>readDataUrl(file,data=>{ editorQuiz.cover=data; renderCoverPreview(); }));
   bindDropZone('questionMediaDrop','questionMediaInput', file=>{
     readDataUrl(file,data=>{
@@ -2660,7 +2375,6 @@ function bindEvents(){
 document.addEventListener('DOMContentLoaded',()=>{
   bindEvents();
   setTimeout(()=>{ try{ setBootComplete(); }catch(e){} }, 1500);
-  if(maybeBootStudentMode()) setBootComplete();
 });
 </script>
 </body>
