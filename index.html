@@ -1613,11 +1613,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
           <div class="editor-question-actions">
             <button id="addQuestionBtn" class="btn primary" type="button">
               <span class="material-symbols-outlined">add</span>Add Question
-            </button>
-            <button id="duplicateQuestionBtn" class="btn outline" type="button">
-              <span class="material-symbols-outlined">content_copy</span>Duplicate
-            </button>
-          </div>
+            </button>          </div>
         </aside>
         <main class="content-wrap editor-content">
           <div class="panel editor-panel">
@@ -2292,17 +2288,11 @@ function renderFolderSelect(){
 function renderQuestionList(){
   $('questionList').innerHTML=editorQuiz.questions.map((q,i)=>{
     const completeAnswers = answerCompletionCount(q);
-    const badges = [
-      `<span class="question-badge ${q.text?'good':'warn'}">${q.text?'Question ready':'Needs text'}</span>`,
-      `<span class="question-badge ${completeAnswers===4?'good':'warn'}">${completeAnswers}/4 answers</span>`,
-      `<span class="question-badge info">${q.seconds||20}s</span>`,
-      questionHasMedia(q)?`<span class="question-badge good">Media</span>`:''
-    ].filter(Boolean).join('');
-    return `
+        return `
     <div class="question-card ${q.id===selectedQuestionId?'active':''}" draggable="true" data-qid="${q.id}">
       <div class="question-card-num">QUESTION ${i+1}</div>
       <div class="question-card-preview">${esc((q.text||'').slice(0,80)||'Untitled question')}</div>
-      <div class="question-card-badges">${badges}</div>
+      
     </div>`;
   }).join('');
   document.querySelectorAll('.question-card').forEach(card=>{
@@ -2424,18 +2414,6 @@ function deleteCurrentQuestion(){
   const idx=editorQuiz.questions.findIndex(q=>q.id===selectedQuestionId);
   editorQuiz.questions.splice(idx,1);
   selectedQuestionId=editorQuiz.questions[Math.max(0,idx-1)].id;
-  markEditorDirty();
-  renderEditor();
-}
-function duplicateCurrentQuestion(){
-  saveQuestionForm();
-  const source = currentQuestion();
-  const clone = JSON.parse(JSON.stringify(source));
-  clone.id = genId();
-  clone.answers = (clone.answers||[]).map(ans => ({...ans, id: genId()}));
-  const idx = editorQuiz.questions.findIndex(q => q.id===source.id);
-  editorQuiz.questions.splice(idx+1, 0, clone);
-  selectedQuestionId = clone.id;
   markEditorDirty();
   renderEditor();
 }
@@ -2980,7 +2958,6 @@ function bindEvents(){
   $('previewQuizBtn').onclick=startPreviewHost;
   $('saveQuizBtn').onclick=saveQuiz;
   $('addQuestionBtn').onclick=addQuestion;
-  $('duplicateQuestionBtn').onclick=duplicateCurrentQuestion;
   $('deleteQuestionBtn').onclick=deleteCurrentQuestion;
   $('clearCoverBtn').onclick=clearCover;
   $('clearQuestionMediaBtn').onclick=clearQuestionMedia;
