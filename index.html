@@ -70,11 +70,69 @@
   --shadow-royal:0 18px 40px rgba(30,58,138,.25);
 }
 html,body{height:100%}
-html,body{overflow-x:hidden}
-body{overflow-y:auto}
-.boot-screen,.login-wrap{min-height:100svh}
-body.booting{overflow:hidden}
-body.on-login{overflow:hidden}
+body[data-screen="login-screen"] #library-screen,
+body[data-screen="login-screen"] #editor-screen,
+body[data-screen="login-screen"] #host-screen,
+body[data-screen="login-screen"] #leaderboard-screen,
+body[data-screen="login-screen"] #final-screen,
+body[data-screen="login-screen"] #student-join-screen,
+body[data-screen="login-screen"] #student-screen{display:none!important;}
+
+body[data-screen="library-screen"] #login-screen,
+body[data-screen="library-screen"] #editor-screen,
+body[data-screen="library-screen"] #host-screen,
+body[data-screen="library-screen"] #leaderboard-screen,
+body[data-screen="library-screen"] #final-screen,
+body[data-screen="library-screen"] #student-join-screen,
+body[data-screen="library-screen"] #student-screen{display:none!important;}
+
+body[data-screen="editor-screen"] #login-screen,
+body[data-screen="editor-screen"] #library-screen,
+body[data-screen="editor-screen"] #host-screen,
+body[data-screen="editor-screen"] #leaderboard-screen,
+body[data-screen="editor-screen"] #final-screen,
+body[data-screen="editor-screen"] #student-join-screen,
+body[data-screen="editor-screen"] #student-screen{display:none!important;}
+
+body[data-screen="host-screen"] #login-screen,
+body[data-screen="host-screen"] #library-screen,
+body[data-screen="host-screen"] #editor-screen,
+body[data-screen="host-screen"] #leaderboard-screen,
+body[data-screen="host-screen"] #final-screen,
+body[data-screen="host-screen"] #student-join-screen,
+body[data-screen="host-screen"] #student-screen{display:none!important;}
+
+body[data-screen="leaderboard-screen"] #login-screen,
+body[data-screen="leaderboard-screen"] #library-screen,
+body[data-screen="leaderboard-screen"] #editor-screen,
+body[data-screen="leaderboard-screen"] #host-screen,
+body[data-screen="leaderboard-screen"] #final-screen,
+body[data-screen="leaderboard-screen"] #student-join-screen,
+body[data-screen="leaderboard-screen"] #student-screen{display:none!important;}
+
+body[data-screen="final-screen"] #login-screen,
+body[data-screen="final-screen"] #library-screen,
+body[data-screen="final-screen"] #editor-screen,
+body[data-screen="final-screen"] #host-screen,
+body[data-screen="final-screen"] #leaderboard-screen,
+body[data-screen="final-screen"] #student-join-screen,
+body[data-screen="final-screen"] #student-screen{display:none!important;}
+
+body[data-screen="student-join-screen"] #login-screen,
+body[data-screen="student-join-screen"] #library-screen,
+body[data-screen="student-join-screen"] #editor-screen,
+body[data-screen="student-join-screen"] #host-screen,
+body[data-screen="student-join-screen"] #leaderboard-screen,
+body[data-screen="student-join-screen"] #final-screen,
+body[data-screen="student-join-screen"] #student-screen{display:none!important;}
+
+body[data-screen="student-screen"] #login-screen,
+body[data-screen="student-screen"] #library-screen,
+body[data-screen="student-screen"] #editor-screen,
+body[data-screen="student-screen"] #host-screen,
+body[data-screen="student-screen"] #leaderboard-screen,
+body[data-screen="student-screen"] #final-screen,
+body[data-screen="student-screen"] #student-join-screen{display:none!important;}
 body{
   margin:0;
   font-family:'Plus Jakarta Sans', system-ui, sans-serif;
@@ -85,7 +143,7 @@ body{
 }
 button,input,textarea,select{font:inherit;color:inherit}
 .hidden{display:none!important}
-.screen{display:none;min-height:100vh;width:100%}
+.screen{display:none;min-height:100vh}
 .screen.active{display:flex;width:100%}
 
 /* ===== BOOT SCREEN ===== */
@@ -234,31 +292,17 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 }
 .login-card{
   width:100%;max-width:440px;
-  background:#fff;
+  background:rgba(255,255,255,.98);
+  backdrop-filter:blur(10px);
   border-radius:24px;
-  overflow:hidden;
+  padding:40px 36px 32px;
   box-shadow:0 30px 80px rgba(11,23,51,.5), 0 8px 20px rgba(11,23,51,.3);
   position:relative;z-index:1;
   animation:cardRise .5s cubic-bezier(.2,.9,.3,1.2);
-  min-height:360px;
-  display:flex;
-  flex-direction:column;
 }
 @keyframes cardRise{
   from{opacity:0;transform:translateY(20px)}
   to{opacity:1;transform:translateY(0)}
-}
-.login-card-top{
-  flex:1 1 50%;
-  background:linear-gradient(160deg, #15306e 0%, #1e3a8a 55%, #2f5fd2 100%);
-}
-.login-card-bottom{
-  flex:1 1 50%;
-  background:rgba(255,255,255,.98);
-  padding:28px 32px 30px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
 }
 .login-badge{
   display:inline-flex;align-items:center;gap:6px;
@@ -386,7 +430,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   background:#fff;
   border:1px solid var(--line);
   border-radius:18px;
-  overflow:visible;
+  overflow:hidden;
   box-shadow:var(--shadow-sm);
   transition:all .22s cubic-bezier(.2,.9,.3,1.1);
   position:relative;
@@ -404,7 +448,6 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
     linear-gradient(135deg, var(--sky-100) 0%, var(--sky-50) 100%);
   display:flex;align-items:center;justify-content:center;overflow:hidden;
   position:relative;
-  border-radius:18px 18px 0 0;
 }
 .quiz-cover::after{
   content:'';position:absolute;inset:0;
@@ -431,7 +474,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 .quiz-meta .dot-sep{width:3px;height:3px;border-radius:50%;background:var(--ink-300)}
 .quiz-actions{display:flex;gap:8px;margin-top:auto}
 .quiz-actions .btn{flex:1;padding:9px 12px;font-size:.88rem}
-.menu-wrap{position:relative;overflow:visible}
+.menu-wrap{position:relative}
 .menu-btn{
   width:34px;height:34px;border:none;border-radius:9px;
   background:transparent;color:var(--ink-500);cursor:pointer;
@@ -440,17 +483,16 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 }
 .menu-btn:hover{background:var(--sky-50);color:var(--royal-700)}
 .menu-pop{
-  position:absolute;right:0;top:auto;bottom:calc(100% - 2px);
+  position:absolute;right:0;top:40px;
   background:#fff;
   border:1px solid var(--line);
   border-radius:14px;
-  min-width:210px;
-  max-width:min(260px, calc(100vw - 32px));
+  min-width:200px;
   box-shadow:var(--shadow-lg);
-  padding:6px;z-index:90;
-  animation:menuPopUp .14s ease-out;
+  padding:6px;z-index:50;
+  animation:menuPop .14s ease-out;
 }
-@keyframes menuPopUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes menuPop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 .menu-pop button{
   display:flex;align-items:center;gap:10px;width:100%;
   border:none;background:transparent;
@@ -501,7 +543,10 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   cursor:pointer;
   transition:all .14s;
 }
-
+.question-card::before{
+  content:'⋮⋮';position:absolute;left:9px;top:50%;transform:translateY(-50%);
+  color:var(--ink-300);font-size:14px;
+}
 .question-card:hover{border-color:var(--sky-300)}
 .question-card.active{
   background:linear-gradient(90deg, var(--sky-50), #fff);
@@ -523,16 +568,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 .media-drop:hover{background:var(--sky-100);border-color:var(--sky-500)}
 .media-drop.drag{background:var(--sun-100);border-color:var(--sun-400);color:var(--ink-800)}
 .media-preview{margin-top:12px}
-.media-preview img,.media-preview video{
-  width:auto;
-  max-width:100%;
-  height:auto;
-  max-height:min(22vh, 220px);
-  display:block;
-  margin:8px auto;
-  border-radius:12px;
-  box-shadow:var(--shadow-sm);
-}
+.media-preview img,.media-preview video{max-width:100%;max-height:240px;border-radius:12px;box-shadow:var(--shadow-sm)}
 .answers-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .answer-edit{
   border:2px solid transparent;
@@ -552,15 +588,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   width:20px;height:20px;accent-color:var(--royal-600);
   cursor:pointer;flex-shrink:0;
 }
-.answer-media-preview img,.answer-media-preview video{
-  width:auto;
-  max-width:100%;
-  height:auto;
-  max-height:min(14vh, 120px);
-  display:block;
-  margin:6px auto;
-  border-radius:10px;
-}
+.answer-media-preview img,.answer-media-preview video{max-width:100%;max-height:100px;border-radius:8px}
 .answer-letter{
   position:absolute;top:-8px;left:14px;
   width:24px;height:24px;border-radius:7px;
@@ -744,14 +772,9 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 }
 .host-media{display:flex;justify-content:center;margin-bottom:16px}
 .host-media img,.host-media video{
-  width:auto;
-  max-width:100%;
-  height:auto;
-  max-height:min(70vh, 900px);
+  max-width:100%;max-height:300px;
   border-radius:16px;
   box-shadow:0 10px 30px rgba(0,0,0,.35);
-  display:block;
-  margin:20px auto;
 }
 .host-question{
   font-family:'Fraunces', serif;
@@ -1134,430 +1157,73 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   .content-wrap{padding:18px}
   .topbar{padding:16px 18px;flex-wrap:wrap}
   .quiz-grid{grid-template-columns:1fr}
-  .code{font-size:2.8rem;letter-spacing:6px;padding-left:6px}
-}
-@media(max-width:420px){
-  .topbar{padding:14px 12px}
-  .content-wrap{padding:14px 12px}
-  .left-pane,.editor-left{padding:14px 12px}
-  .panel,.host-card,.lobby-card,.lb-card{padding:16px}
-  .code{font-size:2.1rem;letter-spacing:4px;padding-left:4px}
-  .boot-mark{font-size:1.9rem}
-  .login-card{min-height:320px}.login-card-bottom{padding:22px 20px 24px}
-  .lb-title,.lobby-title{font-size:1.2rem}
-  .host-question{font-size:1.12rem}
 }
 
-/* ===== MOBILE FOLDERS PANEL ===== */
-@media(max-width:980px){
-  .app-container{
-    grid-template-columns:1fr;
-    min-height:auto;
-  }
-  .main-pane{
-    min-width:0;
-  }
-  .mobile-folders-pane{
-    margin:12px 12px 0;
-    padding:12px;
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:16px;
-    box-shadow:var(--shadow-sm);
-  }
-  .mobile-folders-pane .folder-head{
-    margin-bottom:10px;
-    padding:0;
-  }
-  .mobile-folders-pane .folder-head-title{
-    font-size:.74rem;
-  }
-  .mobile-folders-pane .folder-list{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    overflow:visible;
-    padding:0;
-  }
-  .mobile-folders-pane .folder-item{
-    flex:0 1 auto;
-    min-width:0;
-    max-width:100%;
-    padding:9px 11px;
-    border-radius:999px;
-    border:1px solid var(--line);
-    background:#fff;
-    white-space:nowrap;
-  }
-  .mobile-folders-pane .folder-item.active{
-    background:linear-gradient(90deg, var(--sky-100), var(--sky-50));
-    border-color:var(--sky-300);
-  }
-  .mobile-folders-pane .folder-item .folder-name{
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  .mobile-folders-pane .folder-item [data-folder-menu]{
-    display:none;
-  }
+/* ===== HOST/STUDENT MEDIA + ANSWER BALANCE FIX ===== */
+.host-answers,
+.student-grid{
+  grid-auto-rows:1fr;
+  align-items:stretch;
 }
-@media(max-width:640px){
-  .topbar > div:last-child{
-    width:100%;
-    justify-content:flex-start;
-  }
-  .topbar .btn{
-    padding:10px 14px;
-  }
-  .content-wrap{
-    padding:14px 12px;
-  }
-  .library-header-title{
-    font-size:1.3rem;
-  }
-  .mobile-folders-pane{
-    margin:10px 12px 0;
-    padding:10px;
-    border-radius:14px;
-  }
-  .mobile-folders-pane .folder-list{
-    gap:6px;
-  }
-  .mobile-folders-pane .folder-item{
-    padding:8px 10px;
-    font-size:.88rem;
-  }
-  .mobile-folders-pane .folder-count{
-    padding:2px 6px;
-    font-size:.72rem;
-  }
+.host-answer,
+.student-answer{
+  height:100%;
 }
-@media(max-width:980px){
-  .mobile-folders-pane .folder-list{
-    align-items:flex-start;
-  }
-  .mobile-folders-pane .folder-item{
-    width:auto;
-    min-width:fit-content;
-    max-width:100%;
-    display:inline-flex;
-    align-items:center;
-    justify-content:flex-start;
-    gap:8px;
-  }
-  .mobile-folders-pane .folder-name{
-    flex:0 1 auto;
-  }
-}
-@media(max-width:640px){
-  .app-shell{
-    display:block;
-  }
-  .app-container{
-    box-shadow:none;
-  }
-  .main-pane{
-    width:100%;
-  }
-  .topbar{
-    position:sticky;
-    top:0;
-    z-index:20;
-  }
-  .topbar > div:first-child{
-    min-width:0;
-  }
-  .topbar > div:last-child{
-    width:100%;
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-  }
-  .topbar > div:last-child .btn{
-    flex:0 0 auto;
-  }
-  .quiz-card{
-    border-radius:16px;
-  }
-  .menu-pop{
-    right:0;
-    left:auto;
-    bottom:calc(100% - 4px);
-  }
-}
-
-
-/* ===== EDITOR UPGRADE ===== */
-.editor-topbar{
-  position:sticky;
-  top:0;
-  z-index:30;
-}
-.editor-top-actions{
+.host-answer .thumb,
+.student-answer .thumb{
   display:flex;
   align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
+  justify-content:center;
+  flex:0 0 auto;
+  max-width:100%;
 }
-.editor-status{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:7px 12px;
-  border-radius:999px;
-  font-size:.82rem;
-  font-weight:800;
-  background:rgba(255,255,255,.14);
-  color:#fff;
-  border:1px solid rgba(255,255,255,.18);
+.host-answer .thumb img,
+.host-answer .thumb video{
+  display:block;
+  max-width:100%;
+  max-height:88px;
+  object-fit:contain;
+  border-radius:8px;
 }
-.editor-status::before{
-  content:'';
-  width:8px;height:8px;border-radius:50%;
-  background:#fff;
+.student-answer .thumb img,
+.student-answer .thumb video{
+  display:block;
+  max-width:100%;
+  max-height:78px;
+  object-fit:contain;
+  border-radius:8px;
 }
-.editor-status.saved::before{ background:#86efac; }
-.editor-status.dirty::before{ background:#facc15; }
-.editor-status.saving::before{ background:#93c5fd; }
-
-.editor-left{
-  position:sticky;
-  top:82px;
-  align-self:start;
-  max-height:calc(100vh - 82px);
-  overflow:auto;
+.host-media img,
+.host-media video{
+  width:auto;
+  max-width:100%;
+  height:auto;
+  max-height:min(70vh, 900px);
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+  display:block;
+  margin:20px auto;
 }
-.editor-left-head{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:12px;
-}
-.editor-sidebar-title{
-  font-weight:800;
-  font-size:.76rem;
-  text-transform:uppercase;
-  letter-spacing:.8px;
-  color:var(--ink-500);
-}
-.editor-sidebar-meta{
-  font-size:.78rem;
-  font-weight:700;
-  color:var(--ink-400);
-}
-.editor-question-actions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:14px;
-}
-.editor-content{
-  padding-top:24px;
-}
-.editor-panel{
-  max-width:980px;
-  display:grid;
-  gap:16px;
-}
-.editor-section{
-  border:1px solid var(--line);
-  border-radius:18px;
-  padding:18px;
-  background:linear-gradient(180deg,#fff,var(--panel-soft));
-}
-.section-head{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:16px;
-  margin-bottom:12px;
-}
-.section-title{
-  font-family:'Fraunces', serif;
-  font-size:1.1rem;
-  font-weight:800;
-  letter-spacing:-.01em;
-  color:var(--ink-900);
-}
-.section-copy{
-  font-size:.88rem;
-  color:var(--ink-500);
-  margin-top:3px;
-}
-.editor-grid-two{
-  display:grid;
-  grid-template-columns:1.2fr .8fr;
-  gap:14px;
-}
-.question-toolbar{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-.question-time-field{
-  width:112px;
-  margin-bottom:0;
-}
-.media-details{
-  border:1px solid var(--line);
+.student-media img,
+.student-media video{
+  width:auto;
+  max-width:100%;
+  height:auto;
+  max-height:min(50vh, 520px);
   border-radius:14px;
-  background:#fff;
-  padding:10px 12px;
-}
-.media-details summary{
-  cursor:pointer;
-  font-weight:800;
-  color:var(--ink-800);
-  list-style:none;
-}
-.media-details summary::-webkit-details-marker{display:none}
-.media-details summary::after{
-  content:'▾';
-  float:right;
-  color:var(--ink-400);
-}
-.media-details[open] summary::after{
-  content:'▴';
-}
-.question-card{
-  padding-left:18px;
-}
-
-
-.question-card-badges{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-  margin-top:8px;
-}
-.question-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:4px;
-  padding:3px 8px;
-  border-radius:999px;
-  font-size:.72rem;
-  font-weight:800;
-  background:var(--line-soft);
-  color:var(--ink-600, var(--ink-700));
-}
-.question-badge.good{
-  background:#ecfdf3;
-  color:#15803d;
-}
-.question-badge.warn{
-  background:#fff7ed;
-  color:#c2410c;
-}
-.question-badge.info{
-  background:#eff6ff;
-  color:#1d4ed8;
-}
-.answer-edit{
-  box-shadow:var(--shadow-sm);
-}
-.answer-edit.correct-choice{
-  box-shadow:0 0 0 3px rgba(47,95,210,.14), var(--shadow-sm);
-  border-color:var(--royal-500)!important;
-}
-.answer-edit.complete{
-  outline:1px solid rgba(22,163,74,.18);
-}
-.answer-edit .top{
-  align-items:center;
-}
-.answer-edit input[type=text]{
-  font-weight:700;
-}
-.editor-footer-actions{
-  display:flex;
-  justify-content:flex-end;
-  gap:10px;
-}
-@media(max-width:980px){
-  .editor-left{
-    position:static;
-    max-height:none;
-    overflow:visible;
-  }
-  .editor-question-actions{
-    grid-template-columns:1fr 1fr;
-  }
-  .editor-grid-two{
-    grid-template-columns:1fr;
-  }
-  .section-head{
-    flex-direction:column;
-    align-items:stretch;
-  }
-  .question-toolbar{
-    justify-content:flex-start;
-  }
-  .question-list{
-    display:flex;
-    gap:8px;
-    overflow:auto;
-    padding-bottom:6px;
-  }
-  .question-card{
-    min-width:220px;
-    flex:0 0 auto;
-  }
+  box-shadow:0 8px 20px rgba(0,0,0,.3);
+  display:block;
+  margin:12px auto;
 }
 @media(max-width:640px){
-  .editor-topbar .editor-top-actions{
-    width:100%;
-    justify-content:flex-start;
+  .host-answer .thumb img,
+  .host-answer .thumb video{
+    max-height:72px;
   }
-  .editor-status{
-    order:-1;
+  .student-answer .thumb img,
+  .student-answer .thumb video{
+    max-height:64px;
   }
-  .editor-question-actions{
-    grid-template-columns:1fr;
-  }
-  .question-card{
-    min-width:180px;
-  }
-  .editor-section{
-    padding:14px;
-  }
-  .answer-edit{
-    padding:12px;
-  }
-}
-
-
-.question-card.active{
-  border-color: var(--royal-500);
-  box-shadow: 0 0 0 2px rgba(47,95,210,.15);
-}
-
-
-
-
-
-
-
-
-
-
-
-/* ===== CLEAN MINIMAL QUESTION LIST ===== */
-.question-card{
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:12px;
-  transition:all .15s ease;
-}
-
-.question-card.active{
-  border-color: var(--royal-500);
-  box-shadow: 0 0 0 2px rgba(47,95,210,.12);
-}
-
-.question-card:hover{
-  background:var(--panel-soft);
 }
 
 </style>
@@ -1572,9 +1238,6 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 <div id="login-screen" class="screen active">
   <div class="login-wrap">
     <div class="login-card">
-      <div class="login-card-top"></div>
-      <div class="login-card-bottom">
-
       <div class="login-badge"><span class="dot"></span>Teacher Portal</div>
       <div class="brand">Tap<em>Blast</em></div>
       <div class="login-tagline">Build engaging quizzes. Host live games. Watch your classroom light up.</div>
@@ -1589,13 +1252,11 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
       </button>
       <div class="login-divider">Students</div>
       <div class="student-link">
-        Students join a game at <a href="https://latnem.github.io/TapBlast/join">latnem.github.io/TapBlast/join</a>
+        Students join a game at <a href="#student-join">tapblast.app/join</a>
       </div>
-      <div id="loginError" class="error-line">
-      </div>
+      <div id="loginError" class="error-line"></div>
     </div>
   </div>
-</div>
 </div>
 
 <!-- ============ LIBRARY ============ -->
@@ -1649,13 +1310,12 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 <!-- ============ EDITOR ============ -->
 <div id="editor-screen" class="screen">
   <div style="width:100%">
-    <div class="topbar editor-topbar">
+    <div class="topbar">
       <div>
         <div class="brand">Tap<em>Blast</em></div>
         <div class="subtle">Quiz Editor</div>
       </div>
-      <div class="editor-top-actions">
-        <div id="editorStatus" class="editor-status saved">Saved</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button id="editorBackBtn" type="button" class="btn outline">
           <span class="material-symbols-outlined">arrow_back</span>Library
         </button>
@@ -1668,93 +1328,56 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
     <div class="app-shell">
       <div class="app-container editor-shell" style="max-width:1440px">
         <aside class="editor-left">
-          <div class="editor-left-head">
-            <div class="editor-sidebar-title">Questions</div>
-            <div id="questionSummary" class="editor-sidebar-meta">1 question</div>
-          </div>
+          <div style="font-weight:800;font-size:.76rem;text-transform:uppercase;letter-spacing:.8px;color:var(--ink-500);margin-bottom:12px">Questions</div>
           <div id="questionList" class="question-list"></div>
-          <div class="editor-question-actions">
-            <button id="addQuestionBtn" class="btn primary" type="button">
-              <span class="material-symbols-outlined">add</span>Add Question
-            </button>          </div>
+          <button id="addQuestionBtn" class="btn primary" type="button" style="width:100%;margin-top:14px">
+            <span class="material-symbols-outlined">add</span>Add Question
+          </button>
         </aside>
-        <main class="content-wrap editor-content">
-          <div class="panel editor-panel">
-            <section class="editor-section">
-              <div class="section-head">
-                <div>
-                  <div class="section-title">Quiz settings</div>
-                  <div class="section-copy">Name your quiz, choose a folder, and optionally add a cover.</div>
-                </div>
+        <main class="content-wrap">
+          <div class="panel" style="max-width:900px">
+            <div class="field">
+              <label for="quizTitle">Quiz Title</label>
+              <input id="quizTitle" type="text" placeholder="e.g., Fractions Fundamentals">
+            </div>
+            <div class="field">
+              <label for="quizFolderSelect">Folder</label>
+              <select id="quizFolderSelect"></select>
+            </div>
+            <div class="field">
+              <label>Quiz Cover</label>
+              <div id="coverDrop" class="media-drop">
+                <span class="material-symbols-outlined" style="font-size:32px;color:var(--sky-500)">image</span>
+                <div style="margin-top:6px">Click or drag image here</div>
+                <input id="coverInput" type="file" accept="image/*" class="hidden">
               </div>
-              <div class="editor-grid-two">
-                <div class="field">
-                  <label for="quizTitle">Quiz Title</label>
-                  <input id="quizTitle" type="text" placeholder="e.g., Fractions Fundamentals">
-                </div>
-                <div class="field">
-                  <label for="quizFolderSelect">Folder</label>
-                  <select id="quizFolderSelect"></select>
-                </div>
+              <div id="coverPreview" class="media-preview"></div>
+              <button id="clearCoverBtn" type="button" class="btn ghost hidden" style="margin-top:8px">Remove Cover</button>
+            </div>
+            <hr style="border:none;border-top:1px solid var(--line);margin:22px 0">
+            <div class="field">
+              <label for="questionText">Question</label>
+              <textarea id="questionText" placeholder="Type your question…"></textarea>
+            </div>
+            <div class="field">
+              <label>Question Media</label>
+              <div id="questionMediaDrop" class="media-drop">
+                <span class="material-symbols-outlined" style="font-size:32px;color:var(--sky-500)">perm_media</span>
+                <div style="margin-top:6px">Click or drag image, GIF, or video here</div>
+                <input id="questionMediaInput" type="file" accept="image/*,video/*" class="hidden">
               </div>
-              <details class="media-details" open>
-                <summary>Quiz cover</summary>
-                <div class="field" style="margin-top:12px">
-                  <div id="coverDrop" class="media-drop">
-                    <span class="material-symbols-outlined" style="font-size:32px;color:var(--sky-500)">image</span>
-                    <div style="margin-top:6px">Click or drag image here</div>
-                    <input id="coverInput" type="file" accept="image/*" class="hidden">
-                  </div>
-                  <div id="coverPreview" class="media-preview"></div>
-                  <button id="clearCoverBtn" type="button" class="btn ghost hidden" style="margin-top:8px">Remove Cover</button>
-                </div>
-              </details>
-            </section>
-
-            <section class="editor-section">
-              <div class="section-head">
-                <div>
-                  <div class="section-title">Current question</div>
-                  <div class="section-copy" id="questionProgressText">Question 1</div>
-                </div>
-                <div class="question-toolbar">
-                  <div class="field question-time-field">
-                    <label for="questionSeconds">Time</label>
-                    <input id="questionSeconds" type="number" min="5" max="120" value="20">
-                  </div>
-                </div>
-              </div>
-              <div class="field">
-                <label for="questionText">Question</label>
-                <textarea id="questionText" placeholder="Type your question…"></textarea>
-              </div>
-              <details class="media-details">
-                <summary>Question media</summary>
-                <div class="field" style="margin-top:12px">
-                  <div id="questionMediaDrop" class="media-drop">
-                    <span class="material-symbols-outlined" style="font-size:32px;color:var(--sky-500)">perm_media</span>
-                    <div style="margin-top:6px">Click or drag image, GIF, or video here</div>
-                    <input id="questionMediaInput" type="file" accept="image/*,video/*" class="hidden">
-                  </div>
-                  <div id="questionMediaPreview" class="media-preview"></div>
-                  <button id="clearQuestionMediaBtn" type="button" class="btn ghost hidden" style="margin-top:8px">Remove Media</button>
-                </div>
-              </details>
-            </section>
-
-            <section class="editor-section">
-              <div class="section-head">
-                <div>
-                  <div class="section-title">Answers</div>
-                  <div class="section-copy">Fill all four choices and tick the correct answer.</div>
-                </div>
-              </div>
-              <div class="field" style="margin-bottom:0">
-                <div id="answersGrid" class="answers-grid"></div>
-              </div>
-            </section>
-
-            <div class="editor-footer-actions">
+              <div id="questionMediaPreview" class="media-preview"></div>
+              <button id="clearQuestionMediaBtn" type="button" class="btn ghost hidden" style="margin-top:8px">Remove Media</button>
+            </div>
+            <div class="field">
+              <label>Answers (tick the correct one)</label>
+              <div id="answersGrid" class="answers-grid"></div>
+            </div>
+            <div class="field" style="max-width:200px">
+              <label for="questionSeconds">Time limit (seconds)</label>
+              <input id="questionSeconds" type="number" min="5" max="120" value="20">
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:10px">
               <button id="deleteQuestionBtn" type="button" class="btn danger">
                 <span class="material-symbols-outlined">delete</span>Delete Question
               </button>
@@ -1870,7 +1493,50 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   </div>
 </div>
 
+<!-- ============ STUDENT JOIN ============ -->
+<div id="student-join-screen" class="screen">
+  <div class="join-wrap">
+    <div class="join-shell">
+      <section class="join-hero">
+        <div class="join-brand">Tap<em>Blast</em></div>
+        <div class="join-hero-copy">Enter the room code your teacher shared, pick a nickname, and get ready to play.</div>
+      </section>
+      <section class="join-card">
+        <div class="join-card-title">Join Game</div>
+        <div class="join-card-sub">Fast, fun, and no sign-up needed.</div>
+        <div class="field">
+          <label for="studentCode">Room Code</label>
+          <input id="studentCode" type="text" maxlength="6" inputmode="numeric" placeholder="123456">
+        </div>
+        <div class="field">
+          <label for="studentName">Nickname</label>
+          <input id="studentName" type="text" maxlength="20" placeholder="e.g., AceOfSpades">
+        </div>
+        <button id="studentJoinBtn" type="button" class="btn accent lg" style="width:100%">
+          <span class="material-symbols-outlined">login</span>Join Game
+        </button>
+        <div id="studentJoinError" class="error-line"></div>
+      </section>
+    </div>
+  </div>
+</div>
 
+<!-- ============ STUDENT ============ -->
+<div id="student-screen" class="screen student-shell">
+  <div class="student-top">
+    <div id="studentTopName"></div>
+    <div id="studentTopScore" class="student-top-score">0</div>
+  </div>
+  <div class="student-main">
+    <div class="student-card">
+      <div id="studentPhase" class="student-phase"></div>
+      <div id="studentMedia" class="student-media"></div>
+      <div id="studentQuestion" class="student-question"></div>
+      <div id="studentAnswerGrid" class="student-grid"></div>
+      <div id="studentResult" class="student-result"></div>
+    </div>
+  </div>
+</div>
 
 <!-- ============ MODALS ============ -->
 <div id="folderModal" class="modal-backdrop">
@@ -1919,11 +1585,14 @@ const $ = id => document.getElementById(id);
 const answerColors=['blue','green','orange','yellow'];
 const answerShapes=['A','B','C','D'];
 const showScreen = id => {
+  document.body.setAttribute('data-screen', id);
   document.querySelectorAll('.screen').forEach(el => {
-    el.classList.toggle('active', el.id===id);
+    const active = el.id===id;
+    el.classList.toggle('active', active);
+    el.style.display = active ? '' : 'none';
   });
-  document.body.classList.remove('on-login');
-  if(id==='login-screen') document.body.classList.add('on-login');
+  const target = document.getElementById(id);
+  if(target) target.style.display = '';
 };
 const esc = s => String(s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 const clone = obj => JSON.parse(JSON.stringify(obj));
@@ -2032,30 +1701,25 @@ function readDataUrl(file, cb){if(!file) return; const fr=new FileReader(); fr.o
 /* =========================================================
    AUTH
    ========================================================= */
-async function finishTeacherEntry(){
+async function enterTeacherApp(){
   if(!currentTeacher) return;
   $('teacherName').textContent=currentTeacher.displayName||currentTeacher.email||'Teacher';
-  // Show library immediately so auth success never looks stuck on login.
   showScreen('library-screen');
-  syncMobileFoldersPane();
-  setBootComplete();
   try{
     await ensureDefaultFolders();
     await loadFolders();
     await loadQuizzes();
     const resumed=await tryResumeHost();
-    if(resumed) return;
-    showScreen('library-screen');
+    if(!resumed) showScreen('library-screen');
     $('loginError').textContent='';
   }catch(err){
-    console.error('finishTeacherEntry failed:', err);
+    console.error('enterTeacherApp failed:', err);
     try{ renderFolders(); }catch(e){}
     try{ renderLibrary(); }catch(e){}
     showScreen('library-screen');
     $('loginError').textContent='Signed in, but some teacher data could not load.';
   }
 }
-
 async function signInTeacher(){
   const btn = $('googleLoginBtn');
   $('loginError').textContent='';
@@ -2064,19 +1728,19 @@ async function signInTeacher(){
     const provider=new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({prompt:'select_account'});
     if(btn){
-      btn.disabled = true;
-      btn.style.opacity = '.7';
+      btn.disabled=true;
+      btn.style.opacity='.7';
     }
-    const result = await auth.signInWithPopup(provider);
-    currentTeacher = result.user || auth.currentUser;
-    await finishTeacherEntry();
+    const result=await auth.signInWithPopup(provider);
+    currentTeacher=result.user||auth.currentUser;
+    await enterTeacherApp();
   }catch(err){
     console.error(err);
     $('loginError').textContent=(err && err.message) || 'Login failed';
   }finally{
     if(btn){
-      btn.disabled = false;
-      btn.style.opacity = '';
+      btn.disabled=false;
+      btn.style.opacity='';
     }
   }
 }
@@ -2085,11 +1749,12 @@ async function logoutTeacher(){try{await auth.signOut();}catch(err){console.erro
 auth.onAuthStateChanged(async user=>{
   currentTeacher=user||null;
   if(currentTeacher){
-    await finishTeacherEntry();
+    await enterTeacherApp();
   } else {
-    showScreen('login-screen');
-    setBootComplete();
+    if(location.hash==='#student-join') showScreen('student-join-screen');
+    else showScreen('login-screen');
   }
+  setBootComplete();
 });
 
 async function ensureDefaultFolders(){
@@ -2302,70 +1967,38 @@ function openEditor(quizId){
   editorQuiz=clone(found||defaultQuiz());
   selectedQuestionId=editorQuiz.questions[0]?.id||null;
   renderEditor();
-  markEditorSaved();
   showScreen('editor-screen');
 }
 function createNewQuiz(){
   editorQuiz=defaultQuiz();
   selectedQuestionId=editorQuiz.questions[0].id;
   renderEditor();
-  markEditorSaved();
   showScreen('editor-screen');
 }
 function currentQuestion(){ return editorQuiz.questions.find(q=>q.id===selectedQuestionId)||editorQuiz.questions[0]; }
-
-function setEditorStatus(label, state){
-  const el = $('editorStatus');
-  if(!el) return;
-  el.textContent = label;
-  el.classList.remove('saved','dirty','saving');
-  if(state) el.classList.add(state);
-}
-function markEditorDirty(){
-  editorDirty = true;
-  setEditorStatus('Unsaved changes','dirty');
-}
-function markEditorSaved(){
-  editorDirty = false;
-  setEditorStatus('Saved','saved');
-}
-function answerCompletionCount(q){
-  return (q.answers||[]).filter(a => (a.text||'').trim()).length;
-}
-function questionHasMedia(q){
-  if(q.media) return true;
-  return (q.answers||[]).some(a => !!a.media);
-}
-
 function renderEditor(){
   $('quizTitle').value=editorQuiz.title||'';
   renderFolderSelect();
   renderQuestionList();
   renderCoverPreview();
   renderQuestionForm();
-  $('questionSummary').textContent = `${editorQuiz.questions.length} question${editorQuiz.questions.length===1?'':'s'}`;
 }
 function renderFolderSelect(){
   $('quizFolderSelect').innerHTML=`<option value="">Unsorted</option>`+folders.map(f=>`<option value="${f.id}" ${editorQuiz.folderId===f.id?'selected':''}>${esc(f.name)}</option>`).join('');
 }
 function renderQuestionList(){
-  $('questionList').innerHTML=editorQuiz.questions.map((q,i)=>{
-    const completeAnswers = answerCompletionCount(q);
-        return `
+  $('questionList').innerHTML=editorQuiz.questions.map((q,i)=>`
     <div class="question-card ${q.id===selectedQuestionId?'active':''}" draggable="true" data-qid="${q.id}">
       <div class="question-card-num">QUESTION ${i+1}</div>
       <div class="question-card-preview">${esc((q.text||'').slice(0,80)||'Untitled question')}</div>
-      
-    </div>`;
-  }).join('');
+    </div>`).join('');
   document.querySelectorAll('.question-card').forEach(card=>{
-    card.onclick=()=>{ saveQuestionForm(); selectedQuestionId=card.dataset.qid; markEditorSaved(); renderEditor(); };
+    card.onclick=()=>{ saveQuestionForm(); selectedQuestionId=card.dataset.qid; renderEditor(); };
     card.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain', card.dataset.qid));
     card.addEventListener('dragover',e=>e.preventDefault());
     card.addEventListener('drop',e=>{
       e.preventDefault();
       reorderQuestions(e.dataTransfer.getData('text/plain'), card.dataset.qid);
-      markEditorDirty();
     });
   });
 }
@@ -2385,8 +2018,6 @@ function renderCoverPreview(){
 }
 function renderQuestionForm(){
   const q=currentQuestion();
-  const idx = Math.max(0, editorQuiz.questions.findIndex(item => item.id===q.id));
-  $('questionProgressText').textContent = `Question ${idx+1} of ${editorQuiz.questions.length}`;
   $('questionText').value=q.text||'';
   $('questionSeconds').value=q.seconds||20;
   renderQuestionMediaPreview(q.media);
@@ -2398,7 +2029,7 @@ function renderQuestionMediaPreview(media){
 }
 function renderAnswersEditor(q){
   $('answersGrid').innerHTML=(q.answers||[]).map((ans,i)=>`
-    <div class="answer-edit ${q.correctIndex===i?'correct-choice':''} ${((ans.text||'').trim()||ans.media)?'complete':''}" data-color="${i}">
+    <div class="answer-edit" data-color="${i}">
       <div class="answer-letter">${answerShapes[i]}</div>
       <div class="top">
         <input type="radio" name="correctAnswer" value="${i}" ${q.correctIndex===i?'checked':''}>
@@ -2407,7 +2038,7 @@ function renderAnswersEditor(q){
       <div class="answer-media-preview">
         ${ans.media?(ans.media.type==='video'?`<video src="${ans.media.dataUrl}" controls></video>`:`<img src="${ans.media.dataUrl}">`):''}
       </div>
-      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+      <div style="display:flex;gap:8px;margin-top:10px">
         <button type="button" class="btn outline" data-answer-media-btn="${i}" style="padding:6px 12px;font-size:.82rem">
           <span class="material-symbols-outlined" style="font-size:16px">image</span>Media
         </button>
@@ -2421,20 +2052,13 @@ function renderAnswersEditor(q){
     const file=(e.target.files||[])[0]; if(!file) return;
     readDataUrl(file,dataUrl=>{
       currentQuestion().answers[idx].media={type:file.type.startsWith('video/')?'video':'image',dataUrl};
-      markEditorDirty();
       renderAnswersEditor(currentQuestion());
-      renderQuestionList();
     });
   });
   $('answersGrid').querySelectorAll('[data-answer-media-clear]').forEach(btn=>btn.onclick=()=>{
     const idx=parseInt(btn.dataset.answerMediaClear,10);
     currentQuestion().answers[idx].media=null;
-    markEditorDirty();
     renderAnswersEditor(currentQuestion());
-    renderQuestionList();
-  });
-  $('answersGrid').querySelectorAll('input[name="correctAnswer"]').forEach(input=>{
-    input.onchange=()=>{ markEditorDirty(); saveQuestionForm(); renderAnswersEditor(currentQuestion()); renderQuestionList(); };
   });
 }
 function saveQuestionForm(){
@@ -2451,33 +2075,17 @@ function saveQuestionForm(){
   });
 }
 async function saveQuiz(){
-  const btn = $('saveQuizBtn');
-  const oldHtml = btn ? btn.innerHTML : '';
-  try{
-    setEditorStatus('Saving…','saving');
-    if(btn){
-      btn.disabled = true;
-      btn.innerHTML = 'Saving...';
-    }
-    saveQuestionForm();
-    editorQuiz.updatedAt=Date.now();
-    await qRef(currentTeacher.uid).child(editorQuiz.id).set(editorQuiz);
-    showScreen('library-screen');
-    await loadQuizzes();
-    markEditorSaved();
-  }finally{
-    if(btn){
-      btn.disabled = false;
-      btn.innerHTML = oldHtml || 'Save Quiz';
-    }
-  }
+  saveQuestionForm();
+  editorQuiz.updatedAt=Date.now();
+  await qRef(currentTeacher.uid).child(editorQuiz.id).set(editorQuiz);
+  await loadQuizzes();
+  showScreen('library-screen');
 }
 function deleteCurrentQuestion(){
   if(editorQuiz.questions.length===1) return;
   const idx=editorQuiz.questions.findIndex(q=>q.id===selectedQuestionId);
   editorQuiz.questions.splice(idx,1);
   selectedQuestionId=editorQuiz.questions[Math.max(0,idx-1)].id;
-  markEditorDirty();
   renderEditor();
 }
 function addQuestion(){
@@ -2485,11 +2093,10 @@ function addQuestion(){
   const q=defaultQuestion();
   editorQuiz.questions.push(q);
   selectedQuestionId=q.id;
-  markEditorDirty();
   renderEditor();
 }
-function clearCover(){ editorQuiz.cover=null; markEditorDirty(); renderCoverPreview(); }
-function clearQuestionMedia(){ currentQuestion().media=null; markEditorDirty(); renderQuestionMediaPreview(null); renderQuestionList(); }
+function clearCover(){ editorQuiz.cover=null; renderCoverPreview(); }
+function clearQuestionMedia(){ currentQuestion().media=null; renderQuestionMediaPreview(null); }
 function bindDropZone(dropId,inputId,onData){
   const drop=$(dropId), input=$(inputId);
   drop.onclick=()=>input.click();
@@ -2564,7 +2171,7 @@ function renderHostLobby(){
   $('hostProgressFill').style.width='100%';
 }
 function renderAnswerContent(answer, idx){
-  const media=answer.media?`<span class="thumb">${answer.media.type==='video'?`<video src="${answer.media.dataUrl}" muted></video>`:`<img src="${answer.media.dataUrl}">`}</span>`:'';
+  const media=answer.media?`<span class="thumb">${answer.media.type==='video'?`<video src="${answer.media.dataUrl}" muted playsinline></video>`:`<img src="${answer.media.dataUrl}">`}</span>`:'';
   const text=answer.text?`<span class="label-text">${esc(answer.text)}</span>`:'';
   const shape=`<span class="host-answer-shape">${answerShapes[idx%4]}</span>`;
   return shape+media+text;
@@ -2582,7 +2189,7 @@ function renderHostQuestion(){
   $('hostMedia').innerHTML='';
   if(q.media){
     if(q.media.type==='video'){
-      $('hostMedia').innerHTML=`<video id="hostVideo" src="${q.media.dataUrl}" ${hostRoom.phase==='question_media'?'autoplay':''} controls style="max-width:100%;max-height:300px;border-radius:16px"></video>`;
+      $('hostMedia').innerHTML=`<video id="hostVideo" src="${q.media.dataUrl}" ${hostRoom.phase==='question_media'?'autoplay':''} controls style="width:auto;max-width:100%;height:auto;max-height:min(70vh, 900px);border-radius:16px;display:block;margin:20px auto"></video>`;
       if(hostRoom.phase==='question_media'){
         const vid=$('hostVideo');
         vid.onended=async()=>{
@@ -2891,29 +2498,128 @@ async function endHostToLibrary(removeSession){
 /* =========================================================
    STUDENT
    ========================================================= */
-
-
-
-function syncMobileFoldersPane(){
-  const app = document.querySelector('#library-screen .app-container');
-  const left = document.querySelector('#library-screen .left-pane');
-  const main = document.querySelector('#library-screen .main-pane');
-  const content = main ? main.querySelector('.content-wrap') : null;
-  if(!app || !left || !main || !content) return;
-
-  if(window.innerWidth <= 980){
-    if(left.parentElement !== main){
-      main.insertBefore(left, content);
-    }
-    left.classList.add('mobile-folders-pane');
-  }else{
-    if(left.parentElement !== app){
-      app.insertBefore(left, main);
-    }
-    left.classList.remove('mobile-folders-pane');
+function maybeBootStudentMode(){
+  if(location.hash!=='#student-join') return false;
+  showScreen('student-join-screen');
+  const params=new URLSearchParams(location.search);
+  $('studentCode').value=(params.get('code')||'').replace(/\D/g,'').slice(0,6);
+  $('studentName').value=(params.get('name')||'').slice(0,20);
+  return true;
+}
+async function studentJoin(){
+  const code=($('studentCode').value||'').replace(/\D/g,'').slice(0,6);
+  const name=($('studentName').value||'').trim().slice(0,20);
+  $('studentJoinError').textContent='';
+  if(!code){ $('studentJoinError').textContent='Enter the 6-digit room code'; return; }
+  if(!name){ $('studentJoinError').textContent='Pick a nickname'; return; }
+  const snap=await roomRef(code).get();
+  if(!snap.exists()){ $('studentJoinError').textContent='Room not found. Check the code and try again.'; return; }
+  const room=snap.val();
+  if(room.phase==='ended'){ $('studentJoinError').textContent='This game has ended.'; return; }
+  studentPlayerId=sessionStorage.getItem('tapblast_player_'+code)||db.ref().push().key;
+  sessionStorage.setItem('tapblast_player_'+code, studentPlayerId);
+  const existing=(room.players||{})[studentPlayerId];
+  const payload=existing||{name,score:0,joinedAt:Date.now(),currentAnswerIndex:null,answerAt:0,answerQ:-1,lastDelta:0,streak:0,streakMsg:''};
+  payload.name=name;
+  await roomRef(code).child('players').child(studentPlayerId).update(payload);
+  startStudentListener(code);
+}
+function cleanupStudent(){ if(studentRoomUnsub){studentRoomUnsub(); studentRoomUnsub=null;} }
+function startStudentListener(code){
+  cleanupStudent();
+  const ref=roomRef(code);
+  const cb=snap=>{
+    if(!snap.exists()) return renderStudentEnded('Game ended');
+    const room=snap.val();
+    const player=(room.players||{})[studentPlayerId];
+    if(!player) return renderStudentEnded('Game ended');
+    renderStudent(room,player);
+  };
+  ref.on('value',cb);
+  studentRoomUnsub=()=>ref.off('value',cb);
+  showScreen('student-screen');
+}
+function renderStudentEnded(msg){
+  showScreen('student-screen');
+  $('studentPhase').textContent=msg;
+  $('studentMedia').innerHTML='';
+  $('studentQuestion').textContent='';
+  $('studentAnswerGrid').innerHTML='';
+  $('studentResult').textContent='';
+}
+function renderStudent(room,player){
+  $('studentTopName').textContent=player.name||'Player';
+  $('studentTopScore').textContent=String(player.score||0);
+  if(room.phase==='ended') return renderStudentEnded('Game ended');
+  if(room.phase==='leaderboard'){
+    $('studentPhase').textContent='Scoreboard';
+    $('studentMedia').innerHTML='';
+    $('studentQuestion').textContent='Get ready for the next question…';
+    $('studentAnswerGrid').innerHTML='';
+    $('studentResult').textContent=player.lastDelta?'+'+player.lastDelta+' pts':'';
+    return;
   }
+  if(room.phase==='final'){
+    $('studentPhase').textContent='🎉 Final';
+    $('studentMedia').innerHTML='';
+    $('studentQuestion').textContent=`Final score: ${player.score||0}`;
+    $('studentAnswerGrid').innerHTML='';
+    $('studentResult').textContent='';
+    return;
+  }
+  if(room.phase==='countdown'){
+    $('studentPhase').textContent='Get Ready!';
+    $('studentMedia').innerHTML='';
+    $('studentQuestion').textContent='Next question starting…';
+    $('studentAnswerGrid').innerHTML='';
+    $('studentResult').textContent='';
+    return;
+  }
+  const q=room.quiz.questions[room.currentQ];
+  if(!q) return;
+  $('studentQuestion').textContent=q.text||'';
+  $('studentMedia').innerHTML='';
+  if(q.media){
+    if(q.media.type==='video') $('studentMedia').innerHTML=`<video src="${q.media.dataUrl}" ${room.phase==='question_media'?'autoplay controls':''}></video>`;
+    else $('studentMedia').innerHTML=`<img src="${q.media.dataUrl}" alt="">`;
+  }
+  if(room.phase==='question_media'){
+    $('studentPhase').textContent='Watch';
+    $('studentAnswerGrid').innerHTML='';
+    $('studentResult').textContent='';
+    return;
+  }
+  const answers=nonBlankAnswers(q);
+  $('studentPhase').textContent=
+    room.phase==='paused'?'Paused':
+    room.phase==='locked'?"Time's up — results coming":
+    room.phase==='answer_results'?(player.lastCorrect?'✓ Correct!':'Answer revealed'):
+    'Tap your answer';
+  const hasAnswered = player.answerQ===room.currentQ && typeof player.currentAnswerIndex==='number';
+  $('studentAnswerGrid').innerHTML=answers.map((a,idx)=>{
+    const isSelected = hasAnswered && player.currentAnswerIndex===a.index;
+    const isLocked = room.phase!=='question_answers' || hasAnswered;
+    return `<button type="button" class="student-answer ${answerColors[idx%4]} ${isSelected?'selected':''} ${isLocked?'locked':''}" data-answer-index="${a.index}">
+      <span class="student-answer-shape">${answerShapes[idx]}</span>
+      ${a.media?`<span class="thumb">${a.media.type==='video'?`<video src="${a.media.dataUrl}" muted playsinline></video>`:`<img src="${a.media.dataUrl}">`}</span>`:''}
+      ${a.text?`<span class="label-text">${esc(a.text)}</span>`:''}
+    </button>`;
+  }).join('');
+  $('studentAnswerGrid').querySelectorAll('[data-answer-index]').forEach(btn=>btn.onclick=async()=>{
+    if(room.phase!=='question_answers') return;
+    if(hasAnswered) return; // lock after first submit
+    const idx=parseInt(btn.dataset.answerIndex,10);
+    await roomRef(room.code).child('players').child(studentPlayerId).update({currentAnswerIndex:idx,answerAt:Date.now(),answerQ:room.currentQ});
+  });
+  $('studentResult').textContent=
+    room.phase==='answer_results'?
+      ((player.lastDelta?'+'+player.lastDelta+' pts ':'')+(player.streakMsg||''))
+      : (hasAnswered && room.phase==='question_answers' ? 'Locked in — waiting for others' : '');
 }
 
+/* =========================================================
+   PREVIEW MODE
+   ========================================================= */
 function stopPreviewMode(){ previewMode = false; }
 function buildPreviewRoom(){
   saveQuestionForm();
@@ -3002,8 +2708,38 @@ function previewEndGame(){
   showScreen('editor-screen');
 }
 
+/* =========================================================
+   KEYBOARD SHORTCUTS (host only)
+   ========================================================= */
+document.addEventListener('keydown', e=>{
+  // only trigger when host or leaderboard screen is active and not typing in an input
+  const tag = (e.target.tagName||'').toLowerCase();
+  if(tag==='input' || tag==='textarea' || tag==='select') return;
+  const hostActive = $('host-screen').classList.contains('active');
+  const lbActive = $('leaderboard-screen').classList.contains('active');
+  if(!hostActive && !lbActive) return;
+  if(!hostRoom) return;
 
+  if(e.code==='Space'){
+    e.preventDefault();
+    if(hostRoom.phase==='question_answers'){
+      if(previewMode) previewPauseQuestion(); else pauseQuestion();
+    } else if(hostRoom.phase==='paused'){
+      if(previewMode) previewResumeQuestion(); else resumeQuestion();
+    }
+  } else if(e.key==='ArrowRight' || e.key==='Enter'){
+    e.preventDefault();
+    if(hostRoom.phase==='locked'){
+      if(previewMode) previewShowResults(); else showResults();
+    } else if(hostRoom.phase==='leaderboard'){
+      if(previewMode) previewNextQuestion(); else nextQuestion();
+    }
+  }
+});
 
+/* =========================================================
+   EVENT BINDING + BOOT
+   ========================================================= */
 function bindEvents(){
   $('googleLoginBtn').onclick=signInTeacher;
   $('logoutBtn').onclick=logoutTeacher;
@@ -3013,11 +2749,7 @@ function bindEvents(){
   $('folderNameInput').onkeydown=e=>{ if(e.key==='Enter') commitFolderModal(); };
   $('moveQuizCancel').onclick=closeMoveQuizModal;
   $('newQuizBtn').onclick=createNewQuiz;
-  $('editorBackBtn').onclick=async()=>{
-    saveQuestionForm();
-    showScreen('library-screen');
-    try{ await loadQuizzes(); }catch(err){ console.error(err); }
-  };
+  $('editorBackBtn').onclick=async()=>{ await loadQuizzes(); showScreen('library-screen'); };
   $('previewQuizBtn').onclick=startPreviewHost;
   $('saveQuizBtn').onclick=saveQuiz;
   $('addQuestionBtn').onclick=addQuestion;
@@ -3035,42 +2767,23 @@ function bindEvents(){
   $('endGameBtn').onclick=()=>{ if(previewMode) previewEndGame(); else endGame(); };
   $('finalLibraryBtn').onclick=()=>{ if(previewMode) previewEndGame(); else endHostToLibrary(true); };
   $('searchInput').oninput=e=>{ searchTerm=e.target.value||''; renderLibrary(); };
-  bindDropZone('coverDrop','coverInput', file=>readDataUrl(file,data=>{ editorQuiz.cover=data; markEditorDirty(); renderCoverPreview(); }));
-
-  ['quizTitle','quizFolderSelect','questionText','questionSeconds'].forEach(id=>{
-    const el = $(id);
-    if(!el) return;
-    const evt = id==='quizFolderSelect' ? 'change' : 'input';
-    el.addEventListener(evt, ()=>{
-      markEditorDirty();
-      saveQuestionForm();
-      if(id==='questionText' || id==='questionSeconds') renderQuestionList();
-    });
-  });
-
+  $('studentJoinBtn').onclick=studentJoin;
+  $('studentCode').onkeydown=e=>{ if(e.key==='Enter') studentJoin(); };
+  $('studentName').onkeydown=e=>{ if(e.key==='Enter') studentJoin(); };
+  bindDropZone('coverDrop','coverInput', file=>readDataUrl(file,data=>{ editorQuiz.cover=data; renderCoverPreview(); }));
   bindDropZone('questionMediaDrop','questionMediaInput', file=>{
     readDataUrl(file,data=>{
       currentQuestion().media={type:file.type.startsWith('video/')?'video':'image',dataUrl:data};
-      markEditorDirty();
       renderQuestionMediaPreview(currentQuestion().media);
-      renderQuestionList();
     });
   });
 }
 document.addEventListener('DOMContentLoaded',()=>{
-  document.body.classList.add('booting');
   bindEvents();
-  syncMobileFoldersPane();
-  window.addEventListener('resize', syncMobileFoldersPane);
-  setTimeout(()=>{
-    try{
-      document.body.classList.remove('booting');
-      if(!currentTeacher) showScreen('login-screen');
-      syncMobileFoldersPane();
-      setBootComplete();
-    }catch(e){}
-  }, 3000);
+  setTimeout(()=>{ try{ setBootComplete(); }catch(e){} }, 1500);
+  if(maybeBootStudentMode()) setBootComplete();
 });
 </script>
+<script>document.body.setAttribute('data-screen','login-screen');</script>
 </body>
 </html>
