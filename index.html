@@ -234,17 +234,31 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 }
 .login-card{
   width:100%;max-width:440px;
-  background:rgba(255,255,255,.98);
-  backdrop-filter:blur(10px);
+  background:#fff;
   border-radius:24px;
-  padding:40px 36px 32px;
+  overflow:hidden;
   box-shadow:0 30px 80px rgba(11,23,51,.5), 0 8px 20px rgba(11,23,51,.3);
   position:relative;z-index:1;
   animation:cardRise .5s cubic-bezier(.2,.9,.3,1.2);
+  min-height:360px;
+  display:flex;
+  flex-direction:column;
 }
 @keyframes cardRise{
   from{opacity:0;transform:translateY(20px)}
   to{opacity:1;transform:translateY(0)}
+}
+.login-card-top{
+  flex:1 1 50%;
+  background:linear-gradient(160deg, #15306e 0%, #1e3a8a 55%, #2f5fd2 100%);
+}
+.login-card-bottom{
+  flex:1 1 50%;
+  background:rgba(255,255,255,.98);
+  padding:28px 32px 30px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
 }
 .login-badge{
   display:inline-flex;align-items:center;gap:6px;
@@ -1108,7 +1122,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   .panel,.host-card,.lobby-card,.lb-card{padding:16px}
   .code{font-size:2.1rem;letter-spacing:4px;padding-left:4px}
   .boot-mark{font-size:1.9rem}
-  .login-card{padding:28px 20px 24px}
+  .login-card{min-height:320px}.login-card-bottom{padding:22px 20px 24px}
   .lb-title,.lobby-title{font-size:1.2rem}
   .host-question{font-size:1.12rem}
 }
@@ -1537,6 +1551,9 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 <div id="login-screen" class="screen active">
   <div class="login-wrap">
     <div class="login-card">
+      <div class="login-card-top"></div>
+      <div class="login-card-bottom">
+
       <div class="login-badge"><span class="dot"></span>Teacher Portal</div>
       <div class="brand">Tap<em>Blast</em></div>
       <div class="login-tagline">Build engaging quizzes. Host live games. Watch your classroom light up.</div>
@@ -1553,9 +1570,11 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
       <div class="student-link">
         Students join a game at <a href="https://latnem.github.io/TapBlast/join">latnem.github.io/TapBlast/join</a>
       </div>
-      <div id="loginError" class="error-line"></div>
+      <div id="loginError" class="error-line">
+      </div>
     </div>
   </div>
+</div>
 </div>
 
 <!-- ============ LIBRARY ============ -->
