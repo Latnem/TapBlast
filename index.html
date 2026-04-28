@@ -1970,6 +1970,28 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   width:min(760px, calc(100vw - 24px)) !important;
 }
 
+
+/* ===== V10.3 CLICKABILITY FIX ===== */
+.modal-backdrop:not(.show){
+  display:none !important;
+  pointer-events:none !important;
+}
+.modal-backdrop.show{
+  pointer-events:auto !important;
+}
+#boot-screen{
+  pointer-events:none !important;
+}
+body[data-screen="library-screen"] #boot-screen,
+body[data-screen="editor-screen"] #boot-screen,
+body[data-screen="host-screen"] #boot-screen,
+body[data-screen="leaderboard-screen"] #boot-screen,
+body[data-screen="final-screen"] #boot-screen,
+body[data-screen="student-join-screen"] #boot-screen,
+body[data-screen="student-screen"] #boot-screen{
+  display:none !important;
+}
+
 </style>
 </head>
 <body>
@@ -3856,54 +3878,74 @@ function toggleMobileFolders(){
 }
 
 function bindEvents(){
-  $('googleLoginBtn').onclick=signInTeacher;
-  $('logoutBtn').onclick=logoutTeacher;
-  $('newFolderBtn').onclick=()=>openFolderModal('new');
-  $('folderModalCancel').onclick=closeFolderModal;
-  $('folderModalSave').onclick=commitFolderModal;
-  $('folderNameInput').onkeydown=e=>{ if(e.key==='Enter') commitFolderModal(); };
-  $('moveQuizCancel').onclick=closeMoveQuizModal;
-  if($('settingsBtn')) $('settingsBtn').onclick=()=>openSettings('defaults');
-  if($('settingsCloseBtn')) $('settingsCloseBtn').onclick=closeSettings;
+  const on=(id,evt,handler)=>{
+    const el=$(id);
+    if(!el) return;
+    el[evt]=e=>{
+      try{ handler(e); }
+      catch(err){ console.error(id+' failed:', err); }
+    };
+  };
+
+  on('googleLoginBtn','onclick',signInTeacher);
+  on('logoutBtn','onclick',logoutTeacher);
+  on('newFolderBtn','onclick',()=>openFolderModal('new'));
+  on('folderModalCancel','onclick',closeFolderModal);
+  on('folderModalSave','onclick',commitFolderModal);
+  on('folderNameInput','onkeydown',e=>{ if(e.key==='Enter') commitFolderModal(); });
+  on('moveQuizCancel','onclick',closeMoveQuizModal);
+
+  on('settingsBtn','onclick',()=>openSettings('defaults'));
+  on('settingsCloseBtn','onclick',closeSettings);
   document.querySelectorAll('[data-settings-tab]').forEach(btn=>btn.onclick=()=>setSettingsTab(btn.dataset.settingsTab));
-  if($('saveDefaultsBtn')) $('saveDefaultsBtn').onclick=saveDefaultSettings;
-  if($('addWhitelistBtn')) $('addWhitelistBtn').onclick=addWhitelistEmail;
-  if($('whitelistEmailInput')) $('whitelistEmailInput').onkeydown=e=>{ if(e.key==='Enter') addWhitelistEmail(); };
-  if($('shareQuizCancelBtn')) $('shareQuizCancelBtn').onclick=closeShareQuizModal;
-  if($('shareQuizSendBtn')) $('shareQuizSendBtn').onclick=sendSharedQuiz;
-  if($('sharedPreviewCloseBtn')) $('sharedPreviewCloseBtn').onclick=closeSharedPreview;
-  if($('sharedPreviewAcceptBtn')) $('sharedPreviewAcceptBtn').onclick=()=>pendingSharedItem&&acceptSharedQuiz(pendingSharedItem.id);
-  if($('sharedPreviewDeclineBtn')) $('sharedPreviewDeclineBtn').onclick=()=>pendingSharedItem&&declineSharedQuiz(pendingSharedItem.id);
-  $('newQuizBtn').onclick=createNewQuiz;
-  $('editorBackBtn').onclick=async()=>{ await loadQuizzes(); showScreen('library-screen'); };
-  $('previewQuizBtn').onclick=startPreviewHost;
-  $('saveQuizBtn').onclick=saveQuiz;
-  $('addQuestionBtn').onclick=addQuestion;
-  $('deleteQuestionBtn').onclick=deleteCurrentQuestion;
-  $('clearCoverBtn').onclick=clearCover;
-  $('clearQuestionMediaBtn').onclick=clearQuestionMedia;
-  $('startQuizBtn').onclick=()=>{ if(previewMode) previewStartQuiz(); else startQuiz(); };
-  $('pauseBtn').onclick=()=>{ if(previewMode) previewPauseQuestion(); else pauseQuestion(); };
-  $('resumeBtn').onclick=()=>{ if(previewMode) previewResumeQuestion(); else resumeQuestion(); };
-  $('showResultsBtn').onclick=()=>{ if(previewMode) previewShowResults(); else showResults(); };
-  $('nextQuestionBtn').onclick=()=>{ if(previewMode) previewNextQuestion(); else nextQuestion(); };
-  $('leaderboardNextBtn').onclick=()=>{ if(previewMode) previewNextQuestion(); else nextQuestion(); };
-  $('leaderboardEndBtn').onclick=()=>{ if(previewMode) previewEndGame(); else endGame(); };
-  $('endLobbyBtn').onclick=()=>{ if(previewMode) previewEndGame(); else endGame(); };
-  $('endGameBtn').onclick=()=>{ if(previewMode) previewEndGame(); else endGame(); };
-  $('finalLibraryBtn').onclick=()=>{ if(previewMode) previewEndGame(); else endHostToLibrary(true); };
-  $('searchInput').oninput=e=>{ searchTerm=e.target.value||''; renderLibrary(); };
-  $('studentJoinBtn').onclick=studentJoin;
-  $('studentCode').onkeydown=e=>{ if(e.key==='Enter') studentJoin(); };
-  $('studentName').onkeydown=e=>{ if(e.key==='Enter') studentJoin(); };
-  bindDropZone('coverDrop','coverInput', file=>readDataUrl(file,data=>{ editorQuiz.cover=data; renderCoverPreview(); }));
-  bindDropZone('questionMediaDrop','questionMediaInput', file=>{
-    readDataUrl(file,data=>{
-      currentQuestion().media={type:file.type.startsWith('video/')?'video':'image',dataUrl:data};
-      renderQuestionMediaPreview(currentQuestion().media);
+  on('saveDefaultsBtn','onclick',saveDefaultSettings);
+  on('addWhitelistBtn','onclick',addWhitelistEmail);
+  on('whitelistEmailInput','onkeydown',e=>{ if(e.key==='Enter') addWhitelistEmail(); });
+  on('shareQuizCancelBtn','onclick',closeShareQuizModal);
+  on('shareQuizSendBtn','onclick',sendSharedQuiz);
+  on('sharedPreviewCloseBtn','onclick',closeSharedPreview);
+  on('sharedPreviewAcceptBtn','onclick',()=>pendingSharedItem&&acceptSharedQuiz(pendingSharedItem.id));
+  on('sharedPreviewDeclineBtn','onclick',()=>pendingSharedItem&&declineSharedQuiz(pendingSharedItem.id));
+
+  on('newQuizBtn','onclick',createNewQuiz);
+  on('editorBackBtn','onclick',async()=>{ await loadQuizzes(); showScreen('library-screen'); });
+  on('previewQuizBtn','onclick',startPreviewHost);
+  on('saveQuizBtn','onclick',saveQuiz);
+  on('addQuestionBtn','onclick',addQuestion);
+  on('deleteQuestionBtn','onclick',deleteCurrentQuestion);
+  on('clearCoverBtn','onclick',clearCover);
+  on('clearQuestionMediaBtn','onclick',clearQuestionMedia);
+
+  on('startQuizBtn','onclick',()=>{ if(previewMode) previewStartQuiz(); else startQuiz(); });
+  on('pauseBtn','onclick',()=>{ if(previewMode) previewPauseQuestion(); else pauseQuestion(); });
+  on('resumeBtn','onclick',()=>{ if(previewMode) previewResumeQuestion(); else resumeQuestion(); });
+  on('showResultsBtn','onclick',()=>{ if(previewMode) previewShowResults(); else showResults(); });
+  on('nextQuestionBtn','onclick',()=>{ if(previewMode) previewNextQuestion(); else nextQuestion(); });
+  on('leaderboardNextBtn','onclick',()=>{ if(previewMode) previewNextQuestion(); else nextQuestion(); });
+  on('leaderboardEndBtn','onclick',()=>{ if(previewMode) previewEndGame(); else endGame(); });
+  on('endLobbyBtn','onclick',()=>{ if(previewMode) previewEndGame(); else endGame(); });
+  on('endGameBtn','onclick',()=>{ if(previewMode) previewEndGame(); else endGame(); });
+  on('finalLibraryBtn','onclick',()=>{ if(previewMode) previewEndGame(); else endHostToLibrary(true); });
+
+  on('searchInput','oninput',e=>{ searchTerm=e.target.value||''; renderLibrary(); });
+  on('studentJoinBtn','onclick',studentJoin);
+  on('studentCode','onkeydown',e=>{ if(e.key==='Enter') studentJoin(); });
+  on('studentName','onkeydown',e=>{ if(e.key==='Enter') studentJoin(); });
+
+  try{
+    bindDropZone('coverDrop','coverInput', file=>readDataUrl(file,data=>{ editorQuiz.cover=data; renderCoverPreview(); }));
+  }catch(err){ console.warn('cover drop binding skipped', err); }
+
+  try{
+    bindDropZone('questionMediaDrop','questionMediaInput', file=>{
+      readDataUrl(file,data=>{
+        currentQuestion().media={type:file.type.startsWith('video/')?'video':'image',dataUrl:data};
+        renderQuestionMediaPreview(currentQuestion().media);
+      });
     });
-  });
+  }catch(err){ console.warn('question media drop binding skipped', err); }
 }
+
 document.addEventListener('DOMContentLoaded',()=>{
   bindEvents();
   setTimeout(()=>{ try{ setBootComplete(); }catch(e){} }, 1500);
@@ -3961,6 +4003,90 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(typeof closeSharedPreview==='function') closeSharedPreview();
   });
 });
+</script>
+
+
+<script>
+/* ===== V10.3 FALLBACK CLICK CONTROLLER ===== */
+(function(){
+  function callSafe(name, ...args){
+    try{
+      if(typeof window[name] === 'function') return window[name](...args);
+      // top-level function declarations may not always be own properties in some preview wrappers
+      return eval(name)(...args);
+    }catch(err){
+      console.error('Fallback action failed:', name, err);
+    }
+  }
+
+  document.addEventListener('click', function(e){
+    const el = e.target.closest('button, [data-edit], [data-host], [data-menu-btn], [data-duplicate], [data-share], [data-move], [data-rename], [data-delete], [data-folder-id], [data-question-menu], [data-question-type]');
+    if(!el) return;
+
+    const id = el.id;
+
+    const idActions = {
+      settingsBtn:()=>callSafe('openSettings','defaults'),
+      settingsCloseBtn:()=>callSafe('closeSettings'),
+      newQuizBtn:()=>callSafe('createNewQuiz'),
+      editorBackBtn:async()=>{ try{ if(typeof loadQuizzes==='function') await loadQuizzes(); }catch(err){ console.error(err); } callSafe('showScreen','library-screen'); },
+      previewQuizBtn:()=>callSafe('startPreviewHost'),
+      saveQuizBtn:()=>callSafe('saveQuiz'),
+      addQuestionBtn:()=>callSafe('addQuestion'),
+      deleteQuestionBtn:()=>callSafe('deleteCurrentQuestion'),
+      clearCoverBtn:()=>callSafe('clearCover'),
+      clearQuestionMediaBtn:()=>callSafe('clearQuestionMedia'),
+      logoutBtn:()=>callSafe('logoutTeacher'),
+      googleLoginBtn:()=>callSafe('signInTeacher'),
+      newFolderBtn:()=>callSafe('openFolderModal','new'),
+      folderModalCancel:()=>callSafe('closeFolderModal'),
+      folderModalSave:()=>callSafe('commitFolderModal'),
+      moveQuizCancel:()=>callSafe('closeMoveQuizModal'),
+      saveDefaultsBtn:()=>callSafe('saveDefaultSettings'),
+      addWhitelistBtn:()=>callSafe('addWhitelistEmail'),
+      shareQuizCancelBtn:()=>callSafe('closeShareQuizModal'),
+      shareQuizSendBtn:()=>callSafe('sendSharedQuiz'),
+      sharedPreviewCloseBtn:()=>callSafe('closeSharedPreview'),
+      sharedPreviewAcceptBtn:()=>{ try{ if(window.pendingSharedItem) callSafe('acceptSharedQuiz', pendingSharedItem.id); }catch(err){ console.error(err); } },
+      sharedPreviewDeclineBtn:()=>{ try{ if(window.pendingSharedItem) callSafe('declineSharedQuiz', pendingSharedItem.id); }catch(err){ console.error(err); } },
+      startQuizBtn:()=>{ try{ if(window.previewMode) callSafe('previewStartQuiz'); else callSafe('startQuiz'); }catch(err){ callSafe('startQuiz'); } },
+      pauseBtn:()=>{ try{ if(window.previewMode) callSafe('previewPauseQuestion'); else callSafe('pauseQuestion'); }catch(err){ callSafe('pauseQuestion'); } },
+      resumeBtn:()=>{ try{ if(window.previewMode) callSafe('previewResumeQuestion'); else callSafe('resumeQuestion'); }catch(err){ callSafe('resumeQuestion'); } },
+      showResultsBtn:()=>{ try{ if(window.previewMode) callSafe('previewShowResults'); else callSafe('showResults'); }catch(err){ callSafe('showResults'); } },
+      nextQuestionBtn:()=>{ try{ if(window.previewMode) callSafe('previewNextQuestion'); else callSafe('nextQuestion'); }catch(err){ callSafe('nextQuestion'); } },
+      leaderboardNextBtn:()=>{ try{ if(window.previewMode) callSafe('previewNextQuestion'); else callSafe('nextQuestion'); }catch(err){ callSafe('nextQuestion'); } },
+      leaderboardEndBtn:()=>{ try{ if(window.previewMode) callSafe('previewEndGame'); else callSafe('endGame'); }catch(err){ callSafe('endGame'); } },
+      endLobbyBtn:()=>{ try{ if(window.previewMode) callSafe('previewEndGame'); else callSafe('endGame'); }catch(err){ callSafe('endGame'); } },
+      endGameBtn:()=>{ try{ if(window.previewMode) callSafe('previewEndGame'); else callSafe('endGame'); }catch(err){ callSafe('endGame'); } },
+      finalLibraryBtn:()=>{ try{ if(window.previewMode) callSafe('previewEndGame'); else callSafe('endHostToLibrary',true); }catch(err){ callSafe('showScreen','library-screen'); } },
+      studentJoinBtn:()=>callSafe('studentJoin')
+    };
+
+    if(id && idActions[id]){
+      e.preventDefault();
+      e.stopPropagation();
+      idActions[id]();
+      return;
+    }
+
+    if(el.dataset.edit){ e.preventDefault(); e.stopPropagation(); callSafe('openEditor', el.dataset.edit); return; }
+    if(el.dataset.host){ e.preventDefault(); e.stopPropagation(); callSafe('startHosting', el.dataset.host); return; }
+    if(el.dataset.duplicate){ e.preventDefault(); e.stopPropagation(); callSafe('duplicateQuiz', el.dataset.duplicate); return; }
+    if(el.dataset.share){ e.preventDefault(); e.stopPropagation(); callSafe('openShareQuizModal', el.dataset.share); return; }
+    if(el.dataset.move){ e.preventDefault(); e.stopPropagation(); callSafe('openMoveQuizModal', el.dataset.move); return; }
+    if(el.dataset.rename){ e.preventDefault(); e.stopPropagation(); callSafe('renameQuiz', el.dataset.rename); return; }
+    if(el.dataset.delete){ e.preventDefault(); e.stopPropagation(); callSafe('deleteQuiz', el.dataset.delete); return; }
+  }, true);
+
+  document.addEventListener('DOMContentLoaded', function(){
+    try{
+      if(typeof bindEvents === 'function') bindEvents();
+      if(typeof setBootComplete === 'function') setBootComplete();
+    }catch(err){
+      console.error('Fallback startup binding failed:', err);
+    }
+  });
+})();
 </script>
 
 </body>
