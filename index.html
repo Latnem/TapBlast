@@ -1525,6 +1525,136 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   overflow:visible !important;
 }
 
+
+/* ===== V8 HOST GAMEPLAY FIX ===== */
+
+/* Keep the outer host page and countdown/top timer unchanged, but make question panel white. */
+#hostQuestionPanel.host-card{
+  background:#ffffff !important;
+  color:var(--ink-900) !important;
+  border:1px solid var(--line) !important;
+  box-shadow:0 18px 44px rgba(15,32,80,.16) !important;
+}
+
+#hostQuestionPanel .phase-tag{
+  color:var(--royal-700) !important;
+}
+
+#hostQuestionPanel .host-question{
+  color:var(--ink-900) !important;
+}
+
+#hostQuestionPanel .host-question.countdown{
+  color:var(--sun-500) !important;
+}
+
+#hostQuestionPanel .notice{
+  color:var(--ink-500) !important;
+}
+
+#hostQuestionPanel .stat{
+  background:var(--panel-soft) !important;
+  border:1px solid var(--line) !important;
+}
+
+#hostQuestionPanel .stat .n{
+  color:var(--royal-700) !important;
+}
+
+#hostQuestionPanel .stat-label{
+  color:var(--ink-500) !important;
+  opacity:1 !important;
+}
+
+#hostQuestionPanel .control-row .btn.outline{
+  background:#ffffff !important;
+  color:var(--ink-900) !important;
+  border-color:var(--line) !important;
+}
+
+#hostQuestionPanel .answer-dist{
+  grid-template-columns:1fr 1fr !important;
+}
+
+#hostQuestionPanel .dist-row{
+  background:var(--panel-soft) !important;
+  color:var(--ink-900) !important;
+  border:1px solid var(--line) !important;
+}
+
+#hostQuestionPanel .dist-bar{
+  background:#e5eaf4 !important;
+}
+
+.host-inline-board{
+  grid-column:1 / -1;
+  background:var(--panel-soft);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
+  margin-top:2px;
+}
+
+.host-inline-board-title{
+  font-size:.78rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.7px;
+  color:var(--ink-500);
+  margin-bottom:8px;
+}
+
+.host-score-row{
+  display:grid;
+  grid-template-columns:28px 1fr 56px 64px;
+  align-items:center;
+  gap:8px;
+  padding:7px 8px;
+  border-radius:10px;
+  background:#fff;
+  color:var(--ink-900);
+  font-size:.88rem;
+  font-weight:700;
+  margin-top:6px;
+}
+
+.host-score-rank{
+  color:var(--royal-700);
+  font-weight:800;
+  text-align:center;
+}
+
+.host-score-name{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.host-score-delta{
+  color:var(--success);
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+
+.host-score-total{
+  color:var(--royal-700);
+  text-align:right;
+  font-weight:800;
+  font-variant-numeric:tabular-nums;
+}
+
+.host-score-empty{
+  color:var(--ink-500);
+  font-weight:600;
+  font-size:.86rem;
+}
+
+@media(max-width:640px){
+  #hostQuestionPanel .answer-dist{
+    grid-template-columns:1fr !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2455,7 +2585,10 @@ function startHostListener(code){
 }
 function renderHost(){
   if(hostRoom.phase==='lobby') return renderHostLobby();
-  if(hostRoom.phase==='leaderboard') return renderLeaderboard();
+  if(hostRoom.phase==='leaderboard'){
+    hostRoom.phase='answer_results';
+    return renderHostQuestion();
+  }
   if(hostRoom.phase==='final') return renderFinal();
   if(hostRoom.phase==='ended') return endHostToLibrary(false);
   renderHostQuestion();
@@ -2531,7 +2664,7 @@ function renderHostQuestion(){
   if(hostRoom.phase==='answer_results' && players.length>0){
     const counts = answers.map(a=>players.filter(p=>p.answerQ===hostRoom.currentQ && p.currentAnswerIndex===a.index).length);
     const max = Math.max(1, ...counts);
-    dist.innerHTML = answers.map((a,idx)=>{
+    const distRows = answers.map((a,idx)=>{
       const c = counts[idx];
       const pct = (c/max)*100;
       return `<div class="dist-row">
@@ -2540,6 +2673,17 @@ function renderHostQuestion(){
         <div class="dist-count">${c}</div>
       </div>`;
     }).join('');
+    const scoreRows = players.slice(0,5).map((p,i)=>`
+      <div class="host-score-row">
+        <span class="host-score-rank">${i+1}</span>
+        <span class="host-score-name">${esc(p.name)}</span>
+        <span class="host-score-delta">${p.lastDelta?'+'+p.lastDelta:''}</span>
+        <span class="host-score-total">${p.score||0}</span>
+      </div>`).join('');
+    dist.innerHTML = distRows + `<div class="host-inline-board">
+      <div class="host-inline-board-title">Current Scores</div>
+      ${scoreRows || '<div class="host-score-empty">No scores yet</div>'}
+    </div>`;
     dist.classList.remove('hidden');
   } else {
     dist.classList.add('hidden');
@@ -2547,14 +2691,14 @@ function renderHostQuestion(){
 
   $('hostNotice').textContent=
     hostRoom.phase==='question_media'?'Video plays first — answers appear when it ends.':
-    hostRoom.phase==='locked'?'Click Show Results when ready.':
+    hostRoom.phase==='locked'?'Showing results…':
     hostRoom.phase==='paused'?'Question paused.':
-    hostRoom.phase==='answer_results'?'Scoreboard is next…':
+    hostRoom.phase==='answer_results'?'Results are shown. Continue when ready.':
     hostRoom.phase==='question_answers'?'Press space to pause.':'';
   $('pauseBtn').classList.toggle('hidden', !['question_answers','question_media'].includes(hostRoom.phase));
   $('resumeBtn').classList.toggle('hidden', hostRoom.phase!=='paused');
-  $('showResultsBtn').classList.toggle('hidden', hostRoom.phase!=='locked');
-  $('nextQuestionBtn').classList.add('hidden');
+  $('showResultsBtn').classList.add('hidden');
+  $('nextQuestionBtn').classList.toggle('hidden', hostRoom.phase!=='answer_results');
 
   if(hostTimerHandle){clearInterval(hostTimerHandle); hostTimerHandle=null;}
 
@@ -2632,6 +2776,7 @@ async function lockQuestion(room){
     phase:'locked',paused:false,currentRemainingMs:0,
     currentQuestionEndsAt:room.currentQuestionEndsAt||0,updatedAt:Date.now()
   });
+  setTimeout(()=>showResults(), 80);
 }
 async function pauseQuestion(){
   const snap=await roomRef(hostRoom.code).get();
@@ -2694,10 +2839,6 @@ async function showResults(){
   });
   await roomRef(room.code).update(updates);
   if(revealHandle) clearTimeout(revealHandle);
-  revealHandle=setTimeout(async()=>{
-    const fresh=(await roomRef(room.code).get()).val();
-    if(fresh&&fresh.phase==='answer_results') await roomRef(room.code).update({phase:'leaderboard',updatedAt:Date.now()});
-  },2400);
 }
 function capturePreviousRanks(room){
   const players = sortedPlayers(room);
@@ -2963,6 +3104,7 @@ function previewLockQuestion(){
   hostRoom.phase = 'locked'; hostRoom.paused = false; hostRoom.currentRemainingMs = 0;
   hostRoom.updatedAt = Date.now();
   renderHost();
+  setTimeout(()=>previewShowResults(), 80);
 }
 function previewPauseQuestion(){
   if(!hostRoom || hostRoom.phase !== 'question_answers') return;
@@ -2983,12 +3125,6 @@ function previewShowResults(){
   hostRoom.phase = 'answer_results'; hostRoom.updatedAt = Date.now();
   renderHost();
   if(revealHandle) clearTimeout(revealHandle);
-  revealHandle = setTimeout(() => {
-    if(hostRoom && hostRoom.phase === 'answer_results'){
-      hostRoom.phase = 'leaderboard'; hostRoom.updatedAt = Date.now();
-      renderLeaderboard();
-    }
-  }, 2400);
 }
 function previewNextQuestion(){
   if(!hostRoom) return;
@@ -3035,7 +3171,7 @@ document.addEventListener('keydown', e=>{
     e.preventDefault();
     if(hostRoom.phase==='locked'){
       if(previewMode) previewShowResults(); else showResults();
-    } else if(hostRoom.phase==='leaderboard'){
+    } else if(hostRoom.phase==='answer_results' || hostRoom.phase==='leaderboard'){
       if(previewMode) previewNextQuestion(); else nextQuestion();
     }
   }
