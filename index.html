@@ -1932,6 +1932,24 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   .settings-inline{flex-direction:column;align-items:stretch}
 }
 
+
+/* ===== SETTINGS ICON FIX ===== */
+#settingsBtn{
+  color:var(--ink-800) !important;
+}
+
+.settings-gear-svg{
+  width:18px;
+  height:18px;
+  display:block;
+  color:var(--ink-700);
+  flex-shrink:0;
+}
+
+#settingsBtn:hover .settings-gear-svg{
+  color:var(--ink-900);
+}
+
 </style>
 </head>
 <body>
@@ -1991,7 +2009,11 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
             </button>
             <div id="teacherName" style="font-weight:600;font-size:.92rem;opacity:.9"></div>
             <button id="settingsBtn" type="button" class="btn icon outline" title="Settings" aria-label="Settings">
-              <span class="material-symbols-outlined">settings</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true" class="settings-gear-svg">
+                <circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="M19.4 15a1.7 1.7 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.82-.33 1.7 1.7 0 0 0-1 1.52V21a2 2 0 1 1-4 0v-.08a1.7 1.7 0 0 0-1-1.52 1.7 1.7 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .33-1.82 1.7 1.7 0 0 0-1.52-1H3a2 2 0 1 1 0-4h.08a1.7 1.7 0 0 0 1.52-1 1.7 1.7 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.82.33h.01a1.7 1.7 0 0 0 1-1.52V3a2 2 0 1 1 4 0v.08a1.7 1.7 0 0 0 1 1.52h.01a1.7 1.7 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.33 1.82v.01a1.7 1.7 0 0 0 1.52 1H21a2 2 0 1 1 0 4h-.08a1.7 1.7 0 0 0-1.52 1z"
+                  fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
             </button>
             <button id="newQuizBtn" type="button" class="btn accent">
               <span class="material-symbols-outlined">add</span>New Quiz
