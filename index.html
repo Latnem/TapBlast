@@ -1934,6 +1934,42 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   }
 }
 
+
+/* ===== V10.1 SETTINGS FIX ===== */
+#settingsBtn{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  color:var(--ink-900) !important;
+  background:#ffffff !important;
+  border:1px solid var(--line) !important;
+}
+
+#settingsBtn:hover{
+  background:var(--panel-soft) !important;
+}
+
+#settingsBtn .icon-svg,
+#settingsBtn .material-symbols-outlined{
+  width:18px !important;
+  height:18px !important;
+  color:var(--ink-700) !important;
+}
+
+#settingsModal.show,
+#shareQuizModal.show,
+#sharedPreviewModal.show{
+  display:flex !important;
+}
+
+#settingsModal{
+  z-index:99999 !important;
+}
+
+.settings-card{
+  width:min(760px, calc(100vw - 24px)) !important;
+}
+
 </style>
 </head>
 <body>
@@ -2505,7 +2541,26 @@ const emailKey=email=>String(email||'').trim().toLowerCase().replace(/[.#$\[\]]/
 const ADMIN_EMAIL='ngoht83@gmail.com';
 
 const defaultFolder=name=>({id:genId(),name,updatedAt:Date.now()});
-function defaultQuestion(){const type=appSettings.defaultQuestionType||'quiz'; const q={id:genId(),type,text:'',seconds:Number(appSettings.defaultSeconds)||20,media:null,answers:[0,1,2,3].map(()=>({id:genId(),text:'',media:null})),correctIndex:0,typeAnswer:''}; if(type==='truefalse'){q.answers=[{id:genId(),text:'True',media:null},{id:genId(),text:'False',media:null}];} return q;}
+function defaultQuestion(){
+  const selectedType=appSettings.defaultQuestionType||'quiz';
+  const q={
+    id:genId(),
+    type:selectedType,
+    text:'',
+    seconds:Number(appSettings.defaultSeconds)||20,
+    media:null,
+    answers:[0,1,2,3].map(()=>({id:genId(),text:'',media:null})),
+    correctIndex:0,
+    typeAnswer:''
+  };
+  if(selectedType==='truefalse'){
+    q.answers=[
+      {id:genId(),text:'True',media:null},
+      {id:genId(),text:'False',media:null}
+    ];
+  }
+  return q;
+}
 function defaultQuiz(){return {id:genId(),title:'Untitled Quiz',folderId:'',cover:null,updatedAt:Date.now(),questions:[defaultQuestion()]};}
 function getJoinUrl(code){return 'https://latnem.github.io/TapBlast/join/?code='+encodeURIComponent(code||'');}
 function qrUrl(url){return 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(url);}
@@ -3675,11 +3730,16 @@ function buildPreviewRoom(){
 }
 function startPreviewHost(){
   if(!editorQuiz) return;
-  cleanupHost();
-  previewMode = true;
-  hostRoom = buildPreviewRoom();
-  showScreen('host-screen');
-  renderHost();
+  try{
+    cleanupHost();
+    previewMode = true;
+    hostRoom = buildPreviewRoom();
+    showScreen('host-screen');
+    renderHost();
+  }catch(err){
+    console.error('Preview failed:', err);
+    alert('Preview failed. Check the current question fields, then try again.');
+  }
 }
 function previewStartQuiz(){
   if(!hostRoom) return;
@@ -3803,17 +3863,17 @@ function bindEvents(){
   $('folderModalSave').onclick=commitFolderModal;
   $('folderNameInput').onkeydown=e=>{ if(e.key==='Enter') commitFolderModal(); };
   $('moveQuizCancel').onclick=closeMoveQuizModal;
-  $('settingsBtn').onclick=()=>openSettings('defaults');
-  $('settingsCloseBtn').onclick=closeSettings;
+  if($('settingsBtn')) $('settingsBtn').onclick=()=>openSettings('defaults');
+  if($('settingsCloseBtn')) $('settingsCloseBtn').onclick=closeSettings;
   document.querySelectorAll('[data-settings-tab]').forEach(btn=>btn.onclick=()=>setSettingsTab(btn.dataset.settingsTab));
-  $('saveDefaultsBtn').onclick=saveDefaultSettings;
-  $('addWhitelistBtn').onclick=addWhitelistEmail;
-  $('whitelistEmailInput').onkeydown=e=>{ if(e.key==='Enter') addWhitelistEmail(); };
-  $('shareQuizCancelBtn').onclick=closeShareQuizModal;
-  $('shareQuizSendBtn').onclick=sendSharedQuiz;
-  $('sharedPreviewCloseBtn').onclick=closeSharedPreview;
-  $('sharedPreviewAcceptBtn').onclick=()=>pendingSharedItem&&acceptSharedQuiz(pendingSharedItem.id);
-  $('sharedPreviewDeclineBtn').onclick=()=>pendingSharedItem&&declineSharedQuiz(pendingSharedItem.id);
+  if($('saveDefaultsBtn')) $('saveDefaultsBtn').onclick=saveDefaultSettings;
+  if($('addWhitelistBtn')) $('addWhitelistBtn').onclick=addWhitelistEmail;
+  if($('whitelistEmailInput')) $('whitelistEmailInput').onkeydown=e=>{ if(e.key==='Enter') addWhitelistEmail(); };
+  if($('shareQuizCancelBtn')) $('shareQuizCancelBtn').onclick=closeShareQuizModal;
+  if($('shareQuizSendBtn')) $('shareQuizSendBtn').onclick=sendSharedQuiz;
+  if($('sharedPreviewCloseBtn')) $('sharedPreviewCloseBtn').onclick=closeSharedPreview;
+  if($('sharedPreviewAcceptBtn')) $('sharedPreviewAcceptBtn').onclick=()=>pendingSharedItem&&acceptSharedQuiz(pendingSharedItem.id);
+  if($('sharedPreviewDeclineBtn')) $('sharedPreviewDeclineBtn').onclick=()=>pendingSharedItem&&declineSharedQuiz(pendingSharedItem.id);
   $('newQuizBtn').onclick=createNewQuiz;
   $('editorBackBtn').onclick=async()=>{ await loadQuizzes(); showScreen('library-screen'); };
   $('previewQuizBtn').onclick=startPreviewHost;
@@ -3856,5 +3916,52 @@ document.addEventListener('keydown', e=>{
   if(e.key==='Escape') document.body.classList.remove('folders-open');
 });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const sbtn=document.getElementById('settingsBtn');
+  if(sbtn){
+    sbtn.onclick=(e)=>{
+      e.preventDefault();
+      try{ openSettings('defaults'); }
+      catch(err){ console.error('settings failed', err); }
+    };
+  }
+});
+</script>
+
+<script>
+/* ===== V10.2 DEFENSIVE EVENT FIX ===== */
+document.addEventListener('DOMContentLoaded',()=>{
+  const safeBind=(id,handler)=>{
+    const el=document.getElementById(id);
+    if(el) el.onclick=(e)=>{
+      try{ handler(e); }
+      catch(err){ console.error(id+' handler failed:', err); }
+    };
+  };
+
+  safeBind('previewQuizBtn', ()=>{
+    if(typeof startPreviewHost==='function') startPreviewHost();
+  });
+
+  safeBind('settingsBtn', (e)=>{
+    e.preventDefault();
+    if(typeof openSettings==='function') openSettings('defaults');
+  });
+
+  safeBind('settingsCloseBtn', ()=>{
+    if(typeof closeSettings==='function') closeSettings();
+  });
+
+  safeBind('shareQuizCancelBtn', ()=>{
+    if(typeof closeShareQuizModal==='function') closeShareQuizModal();
+  });
+
+  safeBind('sharedPreviewCloseBtn', ()=>{
+    if(typeof closeSharedPreview==='function') closeSharedPreview();
+  });
+});
+</script>
+
 </body>
 </html>
