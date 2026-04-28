@@ -1950,6 +1950,38 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   color:var(--ink-900);
 }
 
+
+/* ===== CLICK FIX (NO OVERLAYS BLOCKING) ===== */
+
+/* Hide ALL modals by default */
+.modal-backdrop{
+  display:none !important;
+  pointer-events:none !important;
+}
+
+/* Only visible when explicitly shown */
+.modal-backdrop.show{
+  display:flex !important;
+  pointer-events:auto !important;
+  z-index:9999 !important;
+}
+
+/* Ensure screens are interactive */
+.screen{
+  display:none;
+  position:relative;
+  z-index:1;
+}
+
+.screen.active{
+  display:block;
+}
+
+/* Prevent invisible overlays */
+body > div{
+  pointer-events:auto;
+}
+
 </style>
 </head>
 <body>
