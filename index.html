@@ -1784,7 +1784,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 }
 
 
-/* ===== V11 CLEAN SETTINGS / ACCESS / SHARE ===== */
+/* ===== V12 CLEAN SETTINGS / ACCESS / SHARE ===== */
 .settings-card{
   max-width:760px !important;
   width:min(760px, calc(100vw - 24px)) !important;
@@ -1912,32 +1912,8 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   display:inline-flex !important;
   align-items:center !important;
   justify-content:center !important;
-  pointer-events:auto !important;
-}
-#settingsBtn .icon-svg,
-#settingsBtn .material-symbols-outlined{
-  width:18px !important;
-  height:18px !important;
-}
-.modal-backdrop:not(.show){
-  display:none !important;
-  pointer-events:none !important;
-}
-.modal-backdrop.show{
-  display:flex !important;
-  pointer-events:auto !important;
-}
-@media(max-width:720px){
-  .settings-admin-grid{grid-template-columns:1fr}
-  .settings-inline{flex-direction:column;align-items:stretch}
-}
-
-
-/* ===== SETTINGS ICON FIX ===== */
-#settingsBtn{
   color:var(--ink-800) !important;
 }
-
 .settings-gear-svg{
   width:18px;
   height:18px;
@@ -1945,41 +1921,12 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   color:var(--ink-700);
   flex-shrink:0;
 }
-
 #settingsBtn:hover .settings-gear-svg{
   color:var(--ink-900);
 }
-
-
-/* ===== CLICK FIX (NO OVERLAYS BLOCKING) ===== */
-
-/* Hide ALL modals by default */
-.modal-backdrop{
-  display:none !important;
-  pointer-events:none !important;
-}
-
-/* Only visible when explicitly shown */
-.modal-backdrop.show{
-  display:flex !important;
-  pointer-events:auto !important;
-  z-index:9999 !important;
-}
-
-/* Ensure screens are interactive */
-.screen{
-  display:none;
-  position:relative;
-  z-index:1;
-}
-
-.screen.active{
-  display:block;
-}
-
-/* Prevent invisible overlays */
-body > div{
-  pointer-events:auto;
+@media(max-width:720px){
+  .settings-admin-grid{grid-template-columns:1fr}
+  .settings-inline{flex-direction:column;align-items:stretch}
 }
 
 </style>
@@ -2591,42 +2538,55 @@ function readDataUrl(file, cb){if(!file) return; const fr=new FileReader(); fr.o
    AUTH
    ========================================================= */
 
-async function ensureAdminSeed(){
-  await accessWhitelistRef().child(emailKey(ADMIN_EMAIL)).update({
-    email:ADMIN_EMAIL,
-    role:'admin',
-    enabled:true,
-    updatedAt:Date.now()
-  });
+async function seedAdminWhitelistBestEffort(){
+  try{
+    await accessWhitelistRef().child(emailKey(ADMIN_EMAIL)).update({
+      email:ADMIN_EMAIL,
+      role:'admin',
+      enabled:true,
+      updatedAt:Date.now()
+    });
+  }catch(err){
+    console.warn('Admin whitelist seed skipped:', err);
+  }
 }
 async function loadAppSettings(){
-  const snap=await appSettingsRef().get();
-  if(snap.exists()){
-    appSettings={...appSettings,...(snap.val()||{})};
-  }else{
-    await appSettingsRef().update(appSettings);
+  try{
+    const snap=await appSettingsRef().get();
+    if(snap.exists()) appSettings={...appSettings,...(snap.val()||{})};
+    else await appSettingsRef().update(appSettings);
+  }catch(err){
+    console.warn('App settings unavailable, using defaults:', err);
   }
 }
 async function checkTeacherAccess(user){
   const email=String(user?.email||'').toLowerCase();
-  await ensureAdminSeed();
   if(email===ADMIN_EMAIL){
     currentRole='admin';
+    seedAdminWhitelistBestEffort();
     return true;
   }
-  const snap=await accessWhitelistRef().child(emailKey(email)).get();
-  const record=snap.val();
-  if(record && record.enabled!==false){
-    currentRole=record.role||'teacher';
-    return true;
+  try{
+    const snap=await accessWhitelistRef().child(emailKey(email)).get();
+    const record=snap.val();
+    if(record && record.enabled!==false){
+      currentRole=record.role||'teacher';
+      return true;
+    }
+  }catch(err){
+    console.warn('Whitelist check failed:', err);
   }
-  await accessRequestsRef().child(emailKey(email)).update({
-    email,
-    displayName:user.displayName||'',
-    uid:user.uid||'',
-    status:'pending',
-    requestedAt:Date.now()
-  });
+  try{
+    await accessRequestsRef().child(emailKey(email)).update({
+      email,
+      displayName:user.displayName||'',
+      uid:user.uid||'',
+      status:'pending',
+      requestedAt:Date.now()
+    });
+  }catch(err){
+    console.warn('Access request could not be saved:', err);
+  }
   currentRole='blocked';
   return false;
 }
@@ -3873,6 +3833,200 @@ function toggleMobileFolders(){
   document.body.classList.toggle('folders-open');
 }
 
+
+/* =========================================================
+   SETTINGS / ACCESS / SHARING
+   ========================================================= */
+function openSettings(tab='defaults'){
+  $('settingsModal').classList.add('show');
+  $('settingsAccountLine').textContent=`${currentTeacher?.email||''} · ${currentRole==='admin'?'Admin':'Teacher'}`;
+  document.querySelectorAll('.admin-only').forEach(el=>el.classList.toggle('hidden', currentRole!=='admin'));
+  $('defaultSecondsInput').value=Number(appSettings.defaultSeconds)||20;
+  $('defaultQuestionTypeSelect').value=appSettings.defaultQuestionType||'quiz';
+  setSettingsTab(tab);
+  loadSharedInbox();
+  if(currentRole==='admin') loadAdminAccessLists();
+}
+function closeSettings(){
+  $('settingsModal').classList.remove('show');
+}
+function setSettingsTab(tab){
+  document.querySelectorAll('.settings-tab').forEach(btn=>btn.classList.toggle('active', btn.dataset.settingsTab===tab));
+  ['defaults','sharing','admin'].forEach(name=>$('settingsTab-'+name).classList.toggle('hidden', name!==tab));
+}
+async function saveDefaultSettings(){
+  appSettings.defaultSeconds=Math.max(5, Math.min(120, parseInt($('defaultSecondsInput').value||'20',10)||20));
+  appSettings.defaultQuestionType=$('defaultQuestionTypeSelect').value||'quiz';
+  try{
+    await appSettingsRef().update(appSettings);
+    $('defaultsSavedLine').textContent='Saved.';
+  }catch(err){
+    console.error(err);
+    $('defaultsSavedLine').textContent='Could not save settings.';
+  }
+  setTimeout(()=>{$('defaultsSavedLine').textContent='';},1600);
+}
+async function loadAdminAccessLists(){
+  try{
+    const [whiteSnap, reqSnap]=await Promise.all([accessWhitelistRef().get(), accessRequestsRef().get()]);
+    const whitelist=Object.values(whiteSnap.val()||{}).sort((a,b)=>String(a.email).localeCompare(String(b.email)));
+    $('whitelistList').innerHTML=whitelist.length?whitelist.map(u=>`
+      <div class="settings-item">
+        <div class="settings-item-main">
+          <div class="settings-item-title">${esc(u.email)}</div>
+          <div class="settings-item-sub">${u.role||'teacher'} · ${u.enabled===false?'disabled':'enabled'}</div>
+        </div>
+        <div class="settings-item-actions">
+          ${String(u.email).toLowerCase()===ADMIN_EMAIL?'':`<button class="btn outline" type="button" data-toggle-user="${esc(u.email)}">${u.enabled===false?'Enable':'Disable'}</button>`}
+        </div>
+      </div>`).join(''):'<div class="settings-note">No whitelist users yet.</div>';
+    const requests=Object.values(reqSnap.val()||{}).filter(r=>r.status==='pending').sort((a,b)=>(b.requestedAt||0)-(a.requestedAt||0));
+    $('accessRequestList').innerHTML=requests.length?requests.map(r=>`
+      <div class="settings-item">
+        <div class="settings-item-main">
+          <div class="settings-item-title">${esc(r.email)}</div>
+          <div class="settings-item-sub">${r.displayName?esc(r.displayName)+' · ':''}${new Date(r.requestedAt||Date.now()).toLocaleDateString()}</div>
+        </div>
+        <div class="settings-item-actions">
+          <button class="btn accent" type="button" data-approve-user="${esc(r.email)}">Approve</button>
+          <button class="btn outline" type="button" data-deny-user="${esc(r.email)}">Deny</button>
+        </div>
+      </div>`).join(''):'<div class="settings-note">No pending requests.</div>';
+    document.querySelectorAll('[data-approve-user]').forEach(btn=>btn.onclick=()=>approveUser(btn.dataset.approveUser));
+    document.querySelectorAll('[data-deny-user]').forEach(btn=>btn.onclick=()=>denyUser(btn.dataset.denyUser));
+    document.querySelectorAll('[data-toggle-user]').forEach(btn=>btn.onclick=()=>toggleUserEnabled(btn.dataset.toggleUser));
+  }catch(err){
+    console.error(err);
+    $('whitelistList').innerHTML='<div class="settings-note">Could not load whitelist.</div>';
+    $('accessRequestList').innerHTML='<div class="settings-note">Could not load requests.</div>';
+  }
+}
+async function addWhitelistEmail(){
+  const email=String($('whitelistEmailInput').value||'').trim().toLowerCase();
+  if(!email || !email.includes('@')) return;
+  await accessWhitelistRef().child(emailKey(email)).update({email,role:'teacher',enabled:true,updatedAt:Date.now()});
+  $('whitelistEmailInput').value='';
+  await loadAdminAccessLists();
+}
+async function approveUser(email){
+  email=String(email||'').toLowerCase();
+  await accessWhitelistRef().child(emailKey(email)).update({email,role:'teacher',enabled:true,updatedAt:Date.now()});
+  await accessRequestsRef().child(emailKey(email)).update({status:'approved',decidedAt:Date.now()});
+  await loadAdminAccessLists();
+}
+async function denyUser(email){
+  email=String(email||'').toLowerCase();
+  await accessRequestsRef().child(emailKey(email)).update({status:'denied',decidedAt:Date.now()});
+  await loadAdminAccessLists();
+}
+async function toggleUserEnabled(email){
+  email=String(email||'').toLowerCase();
+  const ref=accessWhitelistRef().child(emailKey(email));
+  const snap=await ref.get();
+  const u=snap.val()||{email,role:'teacher'};
+  await ref.update({email,role:u.role||'teacher',enabled:u.enabled===false?true:false,updatedAt:Date.now()});
+  await loadAdminAccessLists();
+}
+async function loadSharedInbox(){
+  if(!currentTeacher?.email) return;
+  try{
+    const snap=await sharedRef().child(emailKey(currentTeacher.email)).get();
+    sharedInbox=Object.entries(snap.val()||{}).map(([id,v])=>({id,...v})).sort((a,b)=>(b.sharedAt||0)-(a.sharedAt||0));
+    renderSharedInbox();
+  }catch(err){
+    console.warn('Shared inbox unavailable:', err);
+  }
+}
+function renderSharedInbox(){
+  const box=$('sharedInboxList');
+  if(!box) return;
+  const pending=sharedInbox.filter(x=>x.status==='pending');
+  box.innerHTML=pending.length?pending.map(item=>`
+    <div class="settings-item">
+      <div class="settings-item-main">
+        <div class="settings-item-title">${esc(item.quiz?.title||'Untitled Quiz')}</div>
+        <div class="settings-item-sub">From ${esc(item.fromEmail||'teacher')} · ${(item.quiz?.questions||[]).length} questions</div>
+      </div>
+      <div class="settings-item-actions">
+        <button class="btn outline" type="button" data-preview-share="${item.id}">Preview</button>
+        <button class="btn accent" type="button" data-accept-share="${item.id}">Accept</button>
+        <button class="btn outline" type="button" data-decline-share="${item.id}">Decline</button>
+      </div>
+    </div>`).join(''):'<div class="settings-note">No shared quizzes waiting.</div>';
+  document.querySelectorAll('[data-preview-share]').forEach(btn=>btn.onclick=()=>openSharedPreview(btn.dataset.previewShare));
+  document.querySelectorAll('[data-accept-share]').forEach(btn=>btn.onclick=()=>acceptSharedQuiz(btn.dataset.acceptShare));
+  document.querySelectorAll('[data-decline-share]').forEach(btn=>btn.onclick=()=>declineSharedQuiz(btn.dataset.declineShare));
+}
+function openShareQuizModal(quizId){
+  pendingShareQuizId=quizId;
+  $('shareQuizEmailInput').value='';
+  $('shareQuizStatus').textContent='';
+  $('shareQuizModal').classList.add('show');
+}
+function closeShareQuizModal(){
+  $('shareQuizModal').classList.remove('show');
+  pendingShareQuizId=null;
+}
+async function sendSharedQuiz(){
+  const toEmail=String($('shareQuizEmailInput').value||'').trim().toLowerCase();
+  if(!toEmail || !toEmail.includes('@')){ $('shareQuizStatus').textContent='Enter a valid email.'; return; }
+  const quiz=quizzes.find(q=>q.id===pendingShareQuizId);
+  if(!quiz) return;
+  const itemId=genId();
+  const copy=clone(quiz);
+  copy.sharedOriginalId=quiz.id;
+  await sharedRef().child(emailKey(toEmail)).child(itemId).set({
+    id:itemId,
+    fromUid:currentTeacher.uid,
+    fromEmail:currentTeacher.email||'',
+    toEmail,
+    quiz:copy,
+    status:'pending',
+    sharedAt:Date.now()
+  });
+  $('shareQuizStatus').textContent='Shared.';
+  setTimeout(closeShareQuizModal,800);
+}
+function openSharedPreview(itemId){
+  const item=sharedInbox.find(x=>x.id===itemId);
+  if(!item) return;
+  pendingSharedItem=item;
+  const q=item.quiz||{};
+  $('sharedPreviewTitle').textContent=q.title||'Untitled Quiz';
+  $('sharedPreviewMeta').textContent=`From ${item.fromEmail||'teacher'} · ${(q.questions||[]).length} questions`;
+  $('sharedPreviewBody').innerHTML=(q.questions||[]).map((qq,i)=>`
+    <div class="shared-preview-question">
+      <div class="shared-preview-question-title">${i+1}. ${esc(qq.text||'Untitled question')} <span style="color:var(--ink-400);font-size:.75rem">(${questionTypeLabel(qq)})</span></div>
+      ${(qq.type==='type')?`<div class="shared-preview-answer">Typed answer: ${esc(qq.typeAnswer||'')}</div>`:(qq.answers||[]).map((a,idx)=>`<div class="shared-preview-answer">${idx+1}. ${esc(a.text||'')}${idx===qq.correctIndex?' ✓':''}</div>`).join('')}
+    </div>`).join('') || '<div class="settings-note">No questions.</div>';
+  $('sharedPreviewModal').classList.add('show');
+}
+function closeSharedPreview(){
+  $('sharedPreviewModal').classList.remove('show');
+  pendingSharedItem=null;
+}
+async function acceptSharedQuiz(itemId){
+  const item=sharedInbox.find(x=>x.id===itemId) || pendingSharedItem;
+  if(!item) return;
+  const q=clone(item.quiz||defaultQuiz());
+  q.id=genId();
+  q.title=(q.title||'Untitled Quiz')+' copy';
+  q.folderId='';
+  q.updatedAt=Date.now();
+  await qRef(currentTeacher.uid).child(q.id).set(q);
+  await sharedRef().child(emailKey(currentTeacher.email)).child(item.id).update({status:'accepted',decidedAt:Date.now()});
+  closeSharedPreview();
+  await loadQuizzes();
+  await loadSharedInbox();
+}
+async function declineSharedQuiz(itemId){
+  const item=sharedInbox.find(x=>x.id===itemId) || pendingSharedItem;
+  if(!item) return;
+  await sharedRef().child(emailKey(currentTeacher.email)).child(item.id).update({status:'declined',decidedAt:Date.now()});
+  closeSharedPreview();
+  await loadSharedInbox();
+}
+
 function bindEvents(){
   $('googleLoginBtn').onclick=signInTeacher;
   $('logoutBtn').onclick=logoutTeacher;
@@ -3881,7 +4035,6 @@ function bindEvents(){
   $('folderModalSave').onclick=commitFolderModal;
   $('folderNameInput').onkeydown=e=>{ if(e.key==='Enter') commitFolderModal(); };
   $('moveQuizCancel').onclick=closeMoveQuizModal;
-
   $('settingsBtn').onclick=()=>openSettings('defaults');
   $('settingsCloseBtn').onclick=closeSettings;
   document.querySelectorAll('[data-settings-tab]').forEach(btn=>btn.onclick=()=>setSettingsTab(btn.dataset.settingsTab));
@@ -3893,7 +4046,9 @@ function bindEvents(){
   $('sharedPreviewCloseBtn').onclick=closeSharedPreview;
   $('sharedPreviewAcceptBtn').onclick=()=>pendingSharedItem&&acceptSharedQuiz(pendingSharedItem.id);
   $('sharedPreviewDeclineBtn').onclick=()=>pendingSharedItem&&declineSharedQuiz(pendingSharedItem.id);
-
+  $('settingsModal').addEventListener('click',e=>{ if(e.target===$('settingsModal')) closeSettings(); });
+  $('shareQuizModal').addEventListener('click',e=>{ if(e.target===$('shareQuizModal')) closeShareQuizModal(); });
+  $('sharedPreviewModal').addEventListener('click',e=>{ if(e.target===$('sharedPreviewModal')) closeSharedPreview(); });
   $('newQuizBtn').onclick=createNewQuiz;
   $('editorBackBtn').onclick=async()=>{ await loadQuizzes(); showScreen('library-screen'); };
   $('previewQuizBtn').onclick=startPreviewHost;
@@ -3902,7 +4057,6 @@ function bindEvents(){
   $('deleteQuestionBtn').onclick=deleteCurrentQuestion;
   $('clearCoverBtn').onclick=clearCover;
   $('clearQuestionMediaBtn').onclick=clearQuestionMedia;
-
   $('startQuizBtn').onclick=()=>{ if(previewMode) previewStartQuiz(); else startQuiz(); };
   $('pauseBtn').onclick=()=>{ if(previewMode) previewPauseQuestion(); else pauseQuestion(); };
   $('resumeBtn').onclick=()=>{ if(previewMode) previewResumeQuestion(); else resumeQuestion(); };
@@ -3913,12 +4067,10 @@ function bindEvents(){
   $('endLobbyBtn').onclick=()=>{ if(previewMode) previewEndGame(); else endGame(); };
   $('endGameBtn').onclick=()=>{ if(previewMode) previewEndGame(); else endGame(); };
   $('finalLibraryBtn').onclick=()=>{ if(previewMode) previewEndGame(); else endHostToLibrary(true); };
-
   $('searchInput').oninput=e=>{ searchTerm=e.target.value||''; renderLibrary(); };
   $('studentJoinBtn').onclick=studentJoin;
   $('studentCode').onkeydown=e=>{ if(e.key==='Enter') studentJoin(); };
   $('studentName').onkeydown=e=>{ if(e.key==='Enter') studentJoin(); };
-
   bindDropZone('coverDrop','coverInput', file=>readDataUrl(file,data=>{ editorQuiz.cover=data; renderCoverPreview(); }));
   bindDropZone('questionMediaDrop','questionMediaInput', file=>{
     readDataUrl(file,data=>{
@@ -3926,12 +4078,7 @@ function bindEvents(){
       renderQuestionMediaPreview(currentQuestion().media);
     });
   });
-
-  $('settingsModal').addEventListener('click',e=>{ if(e.target===$('settingsModal')) closeSettings(); });
-  $('shareQuizModal').addEventListener('click',e=>{ if(e.target===$('shareQuizModal')) closeShareQuizModal(); });
-  $('sharedPreviewModal').addEventListener('click',e=>{ if(e.target===$('sharedPreviewModal')) closeSharedPreview(); });
 }
-
 document.addEventListener('DOMContentLoaded',()=>{
   bindEvents();
   setTimeout(()=>{ try{ setBootComplete(); }catch(e){} }, 1500);
