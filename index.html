@@ -175,9 +175,9 @@ button,input,textarea,select{font:inherit;color:inherit}
 
 /* ===== BUTTONS ===== */
 .btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  border:none;border-radius:12px;
-  padding:11px 18px;font-weight:700;font-size:.92rem;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  border:none;border-radius:10px;
+  padding:8px 14px;font-weight:700;font-size:.84rem;
   cursor:pointer;transition:all .18s cubic-bezier(.2,.9,.3,1.2);
   letter-spacing:-.005em;
 }
@@ -204,13 +204,13 @@ button,input,textarea,select{font:inherit;color:inherit}
 .btn.ghost{background:transparent;color:var(--muted);padding:10px 14px}
 .btn.ghost:hover{background:var(--panel-soft);color:var(--ink-900)}
 .btn.danger{background:var(--danger);color:#fff;box-shadow:0 4px 12px rgba(220,38,38,.3)}
-.btn.icon{width:40px;height:40px;padding:0;border-radius:50%}
+.btn.icon{width:34px;height:34px;padding:0;border-radius:10px}
 .btn.lg{padding:14px 24px;font-size:1rem;border-radius:14px}
 
 /* ===== INLINE SVG ICONS (replaces Material Symbols when CDN blocked) ===== */
 .icon{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
 .icon .icon-svg,.material-symbols-outlined{width:20px;height:20px}
-.btn.icon{width:40px;height:40px;padding:0;border-radius:50%}
+.btn.icon{width:34px;height:34px;padding:0;border-radius:10px}
 .btn.icon .icon-svg,.btn.icon .material-symbols-outlined{width:22px;height:22px}
 .menu-pop .icon .icon-svg,.menu-pop .material-symbols-outlined{width:18px;height:18px}
 .library-empty .icon .icon-svg,.library-empty .material-symbols-outlined{width:56px;height:56px;color:var(--sky-300);margin:0 auto 12px}
@@ -242,22 +242,22 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 /* ===== APP SHELL ===== */
 .app-shell{display:flex;justify-content:center;width:100%;min-height:100vh;background:var(--bg)}
 .app-container{
-  display:grid;grid-template-columns:280px 1fr;
+  display:grid;grid-template-columns:220px 1fr;
   max-width:1440px;width:100%;min-height:100vh;
   background:var(--panel);
   box-shadow:0 0 60px rgba(15,32,80,.05);
 }
 .left-pane{
-  background:linear-gradient(180deg, var(--panel-soft), #fff);
+  background:#f8faff;
   border-right:1px solid var(--line);
-  padding:22px 16px;
+  padding:14px 10px;
 }
 .main-pane{display:flex;flex-direction:column;min-width:0}
 
 /* ===== TOP BAR ===== */
 .topbar{
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding:20px 26px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:14px 18px;
   background:linear-gradient(120deg, var(--royal-900) 0%, var(--royal-700) 60%, var(--royal-600) 100%);
   color:#fff;
   position:relative;overflow:hidden;
@@ -366,13 +366,13 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 .folder-head-title{font-weight:800;font-size:.76rem;text-transform:uppercase;letter-spacing:.8px;color:var(--ink-500)}
 .folder-list{display:flex;flex-direction:column;gap:4px}
 .folder-item{
-  display:flex;align-items:center;gap:10px;
-  padding:11px 12px;
-  border-radius:11px;
+  display:flex;align-items:center;gap:8px;
+  padding:8px 10px;
+  border-radius:10px;
   cursor:pointer;
   border:1.5px solid transparent;
   transition:all .14s;
-  color:var(--ink-700);font-weight:600;font-size:.95rem;
+  color:var(--ink-700);font-weight:600;font-size:.86rem;
 }
 .folder-item:hover{background:var(--sky-50);color:var(--royal-700)}
 .folder-item.active{
@@ -389,8 +389,8 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 .folder-item .material-symbols-outlined{font-size:20px;color:var(--ink-400)}
 .folder-name{flex:1;font-weight:600}
 .folder-count{
-  font-size:.78rem;font-weight:700;color:var(--ink-400);
-  background:var(--line-soft);padding:2px 8px;border-radius:999px;
+  font-size:.68rem;font-weight:700;color:var(--ink-400);
+  background:var(--line-soft);padding:1px 6px;border-radius:999px;
 }
 .folder-item.active .folder-count{background:#fff;color:var(--royal-600)}
 .folder-item [data-folder-menu]{
@@ -402,7 +402,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 .folder-item [data-folder-menu]:hover{background:#fff;color:var(--ink-800)}
 
 /* ===== LIBRARY — MAIN ===== */
-.content-wrap{padding:26px 28px}
+.content-wrap{padding:18px 20px}
 .search-row{
   display:flex;align-items:center;gap:12px;flex-wrap:wrap;
   margin-bottom:22px;
@@ -423,7 +423,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 .library-header-meta{color:var(--ink-500);font-size:.9rem;margin-bottom:20px}
 .quiz-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
   gap:18px;
 }
 .quiz-card{
@@ -443,7 +443,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 }
 .quiz-card.dragging{opacity:.5;transform:rotate(-2deg) scale(.98)}
 .quiz-cover{
-  height:128px;
+  height:96px;
   background:
     linear-gradient(135deg, var(--sky-100) 0%, var(--sky-50) 100%);
   display:flex;align-items:center;justify-content:center;overflow:hidden;
@@ -1402,8 +1402,51 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
     border-radius:7px !important;
   }
 
+  .control-row .btn,
+  .modal-actions .btn,
+  #editor-screen .topbar .btn,
+  #host-screen .btn,
+  #leaderboard-screen .btn,
+  #final-screen .btn{
+    min-height:28px !important;
+    height:28px !important;
+    padding:4px 10px !important;
+    font-size:.76rem !important;
+    border-radius:8px !important;
+  }
+
   .content-wrap{
     padding:14px 16px !important;
+  }
+
+  .search-row{
+    margin-bottom:14px !important;
+  }
+
+  .search-wrap input,
+  input[type=text],
+  input[type=number],
+  input[type=email],
+  input[type=password],
+  textarea,
+  select{
+    padding:8px 10px !important;
+    border-radius:9px !important;
+    font-size:.84rem !important;
+  }
+
+  .search-wrap input{
+    padding-left:34px !important;
+  }
+
+  .library-header-title{
+    font-size:1.25rem !important;
+    margin-bottom:2px !important;
+  }
+
+  .library-header-meta{
+    font-size:.78rem !important;
+    margin-bottom:12px !important;
   }
 
   .quiz-grid{
@@ -1428,6 +1471,17 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
     margin-bottom:10px !important;
   }
 
+  .menu-btn{
+    width:28px !important;
+    height:28px !important;
+    border-radius:7px !important;
+  }
+
+  .panel{
+    padding:16px !important;
+    border-radius:16px !important;
+  }
+
   .editor-shell{
     grid-template-columns:230px 1fr !important;
     min-height:calc(100vh - 52px) !important;
@@ -1435,6 +1489,20 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 
   .editor-left{
     padding:12px !important;
+  }
+
+  .question-card{
+    padding:9px 10px 9px 22px !important;
+    border-radius:10px !important;
+  }
+
+  .question-card-preview{
+    font-size:.78rem !important;
+  }
+
+  #addQuestionBtn{
+    min-height:30px !important;
+    height:30px !important;
   }
 }
 
@@ -1497,7 +1565,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
             </button>
             <div id="teacherName" style="font-weight:600;font-size:.92rem;opacity:.9"></div>
             <button id="newQuizBtn" type="button" class="btn accent">
-              <span class="material-symbols-outlined">add</span>New Quiz
+              New
             </button>
             <button id="logoutBtn" type="button" class="btn outline">Logout</button>
           </div>
