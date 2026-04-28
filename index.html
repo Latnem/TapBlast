@@ -1655,6 +1655,285 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   }
 }
 
+
+/* ===== V9 TIMER + QUESTION TYPES ===== */
+.question-card{
+  overflow:visible !important;
+}
+.question-card-menu-wrap{
+  position:absolute;
+  top:6px;
+  right:6px;
+  z-index:30;
+}
+.question-type-menu-btn{
+  width:24px;
+  height:24px;
+  border:0;
+  border-radius:7px;
+  background:transparent;
+  color:var(--ink-500);
+  cursor:pointer;
+  font-size:18px;
+  line-height:1;
+}
+.question-type-menu-btn:hover{
+  background:var(--sky-50);
+  color:var(--royal-700);
+}
+.question-type-menu{
+  position:absolute;
+  right:0;
+  top:28px;
+  width:150px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:12px;
+  box-shadow:var(--shadow-lg);
+  padding:5px;
+  z-index:9999;
+}
+.question-type-menu button{
+  width:100%;
+  border:0;
+  background:transparent;
+  text-align:left;
+  padding:8px 10px;
+  border-radius:8px;
+  font-size:.78rem;
+  font-weight:700;
+  cursor:pointer;
+}
+.question-type-menu button:hover{
+  background:var(--sky-50);
+  color:var(--royal-700);
+}
+.type-answer-editor{
+  grid-column:1 / -1;
+  border:1px solid var(--line);
+  background:var(--panel-soft);
+  border-radius:14px;
+  padding:14px;
+}
+.type-answer-label{
+  font-size:.78rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+  color:var(--ink-500);
+  margin-bottom:8px;
+}
+.type-answer-help{
+  color:var(--ink-500);
+  font-size:.78rem;
+  margin-top:8px;
+}
+.host-type-answer{
+  grid-column:1 / -1;
+  background:var(--panel-soft);
+  border:1px solid var(--line);
+  color:var(--ink-900);
+  border-radius:18px;
+  padding:22px;
+  text-align:center;
+}
+.host-type-answer-title{
+  font-size:.8rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  color:var(--ink-500);
+  margin-bottom:8px;
+}
+.host-type-answer-value{
+  font-size:1.35rem;
+  font-weight:800;
+  color:var(--royal-700);
+}
+.student-type-wrap{
+  grid-column:1 / -1;
+  display:flex;
+  gap:10px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:18px;
+  padding:14px;
+}
+.student-type-wrap input{
+  flex:1;
+  min-height:46px;
+  border-radius:12px;
+  border:0;
+  padding:0 14px;
+  color:var(--ink-900);
+}
+.student-type-result{
+  grid-column:1 / -1;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:18px;
+  padding:16px;
+  text-align:center;
+  font-weight:700;
+}
+.progress > div{
+  transition:width .25s linear, box-shadow .25s linear !important;
+}
+.timer{
+  transition:color .25s linear, text-shadow .25s linear !important;
+}
+
+
+/* ===== V10 SETTINGS / ACCESS / SHARE ===== */
+.settings-card{
+  max-width:760px !important;
+  max-height:88vh;
+  overflow:auto;
+}
+.settings-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:14px;
+  margin-bottom:12px;
+}
+.settings-subline{
+  color:var(--ink-500);
+  font-size:.84rem;
+  font-weight:600;
+}
+.settings-tabs{
+  display:flex;
+  gap:6px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:16px;
+}
+.settings-tab{
+  border:0;
+  background:transparent;
+  padding:9px 12px;
+  border-radius:9px 9px 0 0;
+  font-size:.84rem;
+  font-weight:800;
+  color:var(--ink-500);
+  cursor:pointer;
+}
+.settings-tab.active{
+  background:var(--sky-50);
+  color:var(--royal-700);
+}
+.settings-section{
+  padding-top:4px;
+}
+.settings-panel-title{
+  font-size:.76rem;
+  font-weight:800;
+  letter-spacing:.7px;
+  text-transform:uppercase;
+  color:var(--ink-500);
+  margin:10px 0 8px;
+}
+.settings-inline{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.settings-inline input{
+  flex:1;
+}
+.settings-admin-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+.settings-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:10px;
+}
+.settings-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 11px;
+  background:var(--panel-soft);
+  border:1px solid var(--line);
+  border-radius:12px;
+}
+.settings-item-main{
+  min-width:0;
+}
+.settings-item-title{
+  font-weight:800;
+  color:var(--ink-900);
+  font-size:.9rem;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.settings-item-sub{
+  font-size:.76rem;
+  color:var(--ink-500);
+  margin-top:2px;
+}
+.settings-item-actions{
+  display:flex;
+  gap:6px;
+  flex-shrink:0;
+}
+.settings-item-actions .btn{
+  height:26px !important;
+  min-height:26px !important;
+  padding:4px 8px !important;
+  font-size:.72rem !important;
+}
+.settings-note{
+  min-height:20px;
+  margin-top:8px;
+  color:var(--ink-500);
+  font-size:.84rem;
+  font-weight:600;
+}
+.shared-preview-body{
+  background:var(--panel-soft);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:14px;
+  max-height:52vh;
+  overflow:auto;
+}
+.shared-preview-question{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px;
+  margin-top:8px;
+}
+.shared-preview-question-title{
+  font-weight:800;
+  color:var(--ink-900);
+  margin-bottom:4px;
+}
+.shared-preview-answer{
+  font-size:.82rem;
+  color:var(--ink-500);
+  margin-left:10px;
+}
+.access-denied-card{
+  text-align:center;
+}
+@media(max-width:720px){
+  .settings-admin-grid{
+    grid-template-columns:1fr;
+  }
+  .settings-inline{
+    flex-direction:column;
+    align-items:stretch;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1713,6 +1992,9 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
               <span class="material-symbols-outlined">menu</span>
             </button>
             <div id="teacherName" style="font-weight:600;font-size:.92rem;opacity:.9"></div>
+            <button id="settingsBtn" type="button" class="btn icon outline" title="Settings" aria-label="Settings">
+              <span class="material-symbols-outlined">settings</span>
+            </button>
             <button id="newQuizBtn" type="button" class="btn accent">
               <span class="material-symbols-outlined">add</span>New Quiz
             </button>
@@ -1995,6 +2277,101 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   </div>
 </div>
 
+
+<!-- ============ SETTINGS / SHARING ============ -->
+<div id="settingsModal" class="modal-backdrop">
+  <div class="modal-card settings-card">
+    <div class="settings-head">
+      <div>
+        <div class="modal-title">Settings</div>
+        <div id="settingsAccountLine" class="settings-subline"></div>
+      </div>
+      <button id="settingsCloseBtn" type="button" class="btn icon ghost" title="Close">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="settings-tabs">
+      <button type="button" class="settings-tab active" data-settings-tab="defaults">Defaults</button>
+      <button type="button" class="settings-tab" data-settings-tab="sharing">Sharing</button>
+      <button type="button" class="settings-tab admin-only hidden" data-settings-tab="admin">Admin Access</button>
+    </div>
+
+    <section id="settingsTab-defaults" class="settings-section">
+      <div class="field">
+        <label for="defaultSecondsInput">Default time for new questions</label>
+        <input id="defaultSecondsInput" type="number" min="5" max="120" value="20">
+      </div>
+      <div class="field">
+        <label for="defaultQuestionTypeSelect">Default question type</label>
+        <select id="defaultQuestionTypeSelect">
+          <option value="quiz">Quiz</option>
+          <option value="truefalse">True or False</option>
+          <option value="type">Type Answer</option>
+        </select>
+      </div>
+      <button id="saveDefaultsBtn" type="button" class="btn accent">Save Defaults</button>
+      <div id="defaultsSavedLine" class="settings-note"></div>
+    </section>
+
+    <section id="settingsTab-sharing" class="settings-section hidden">
+      <div class="settings-panel-title">Shared with me</div>
+      <div id="sharedInboxList" class="settings-list"></div>
+    </section>
+
+    <section id="settingsTab-admin" class="settings-section hidden">
+      <div class="settings-admin-grid">
+        <div>
+          <div class="settings-panel-title">Whitelist email</div>
+          <div class="settings-inline">
+            <input id="whitelistEmailInput" type="email" placeholder="teacher@school.org">
+            <button id="addWhitelistBtn" type="button" class="btn accent">Add</button>
+          </div>
+          <div id="whitelistList" class="settings-list"></div>
+        </div>
+        <div>
+          <div class="settings-panel-title">Pending requests</div>
+          <div id="accessRequestList" class="settings-list"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div id="shareQuizModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-title">Share Quiz</div>
+    <div class="field">
+      <label for="shareQuizEmailInput">Send copy to email</label>
+      <input id="shareQuizEmailInput" type="email" placeholder="teacher@school.org">
+    </div>
+    <div id="shareQuizStatus" class="settings-note"></div>
+    <div class="modal-actions">
+      <button id="shareQuizCancelBtn" type="button" class="btn outline">Cancel</button>
+      <button id="shareQuizSendBtn" type="button" class="btn accent">Share</button>
+    </div>
+  </div>
+</div>
+
+<div id="sharedPreviewModal" class="modal-backdrop">
+  <div class="modal-card settings-card">
+    <div class="settings-head">
+      <div>
+        <div id="sharedPreviewTitle" class="modal-title">Shared Quiz Preview</div>
+        <div id="sharedPreviewMeta" class="settings-subline"></div>
+      </div>
+      <button id="sharedPreviewCloseBtn" type="button" class="btn icon ghost" title="Close">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div id="sharedPreviewBody" class="shared-preview-body"></div>
+    <div class="modal-actions">
+      <button id="sharedPreviewDeclineBtn" type="button" class="btn outline">Decline</button>
+      <button id="sharedPreviewAcceptBtn" type="button" class="btn accent">Accept Copy</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* =========================================================
    FIREBASE + STATE
@@ -2108,10 +2485,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
   _iconObserver.observe(document.body, {childList:true, subtree:true});
 });
 
-let currentTeacher=null, folders=[], quizzes=[], selectedFolderId='all', searchTerm='',
+let currentTeacher=null, currentRole='teacher', appSettings={defaultSeconds:20,defaultQuestionType:'quiz'}, folders=[], quizzes=[], sharedInbox=[], selectedFolderId='all', searchTerm='',
     editorQuiz=null, selectedQuestionId=null,
     hostRoom=null, hostRoomUnsub=null, hostTimerHandle=null, revealHandle=null,
-    pendingFolderAction=null, pendingFolderId=null,
+    pendingFolderAction=null, pendingFolderId=null, pendingShareQuizId=null, pendingSharedItem=null,
     studentPlayerId=null, studentRoomUnsub=null,
     previewMode=false,
     previousRanks={}; // for leaderboard delta arrows
@@ -2120,9 +2497,15 @@ const qRef=uid=>db.ref(`${ROOT}/quizzes/${uid}`);
 const fRef=uid=>db.ref(`${ROOT}/folders/${uid}`);
 const roomRef=code=>db.ref(`${ROOT}/rooms/${code}`);
 const hostSessionRef=uid=>db.ref(`${ROOT}/hostSessions/${uid}`);
+const appSettingsRef=()=>db.ref(`${ROOT}/appSettings`);
+const accessWhitelistRef=()=>db.ref(`${ROOT}/accessWhitelist`);
+const accessRequestsRef=()=>db.ref(`${ROOT}/accessRequests`);
+const sharedRef=()=>db.ref(`${ROOT}/sharedQuizzes`);
+const emailKey=email=>String(email||'').trim().toLowerCase().replace(/[.#$\[\]]/g,'_');
+const ADMIN_EMAIL='ngoht83@gmail.com';
 
 const defaultFolder=name=>({id:genId(),name,updatedAt:Date.now()});
-function defaultQuestion(){return {id:genId(),text:'',seconds:20,media:null,answers:[0,1,2,3].map(()=>({id:genId(),text:'',media:null})),correctIndex:0};}
+function defaultQuestion(){const type=appSettings.defaultQuestionType||'quiz'; const q={id:genId(),type,text:'',seconds:Number(appSettings.defaultSeconds)||20,media:null,answers:[0,1,2,3].map(()=>({id:genId(),text:'',media:null})),correctIndex:0,typeAnswer:''}; if(type==='truefalse'){q.answers=[{id:genId(),text:'True',media:null},{id:genId(),text:'False',media:null}];} return q;}
 function defaultQuiz(){return {id:genId(),title:'Untitled Quiz',folderId:'',cover:null,updatedAt:Date.now(),questions:[defaultQuestion()]};}
 function getJoinUrl(code){return 'https://latnem.github.io/TapBlast/join/?code='+encodeURIComponent(code||'');}
 function qrUrl(url){return 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(url);}
@@ -2135,14 +2518,57 @@ function readDataUrl(file, cb){if(!file) return; const fr=new FileReader(); fr.o
 /* =========================================================
    AUTH
    ========================================================= */
+
+async function ensureAdminSeed(){
+  await accessWhitelistRef().child(emailKey(ADMIN_EMAIL)).update({
+    email:ADMIN_EMAIL,role:'admin',enabled:true,updatedAt:Date.now()
+  });
+}
+async function loadAppSettings(){
+  const snap=await appSettingsRef().get();
+  if(snap.exists()) appSettings={...appSettings,...(snap.val()||{})};
+  else await appSettingsRef().update(appSettings);
+}
+async function checkTeacherAccess(user){
+  const email=String(user?.email||'').toLowerCase();
+  await ensureAdminSeed();
+  if(email===ADMIN_EMAIL){
+    currentRole='admin';
+    return true;
+  }
+  const snap=await accessWhitelistRef().child(emailKey(email)).get();
+  const record=snap.val();
+  if(record && record.enabled!==false){
+    currentRole=record.role||'teacher';
+    return true;
+  }
+  await accessRequestsRef().child(emailKey(email)).update({
+    email,
+    displayName:user.displayName||'',
+    uid:user.uid||'',
+    status:'pending',
+    requestedAt:Date.now()
+  });
+  currentRole='blocked';
+  return false;
+}
+function showAccessDenied(user){
+  showScreen('login-screen');
+  $('loginError').innerHTML=`Access pending approval for ${esc(user?.email||'this account')}. Ask the TapBlast admin to whitelist this email.`;
+}
+
 async function enterTeacherApp(){
   if(!currentTeacher) return;
+  const allowed=await checkTeacherAccess(currentTeacher);
+  if(!allowed){ showAccessDenied(currentTeacher); return; }
+  await loadAppSettings();
   $('teacherName').textContent=currentTeacher.displayName||currentTeacher.email||'Teacher';
   showScreen('library-screen');
   try{
     await ensureDefaultFolders();
     await loadFolders();
     await loadQuizzes();
+    await loadSharedInbox();
     const resumed=await tryResumeHost();
     if(!resumed) showScreen('library-screen');
     $('loginError').textContent='';
@@ -2286,6 +2712,7 @@ function renderLibrary(){
             <button class="menu-btn" type="button" data-menu-btn="${q.id}"><span class="material-symbols-outlined">more_vert</span></button>
             <div class="menu-pop hidden" id="menu-${q.id}">
               <button type="button" data-duplicate="${q.id}"><span class="material-symbols-outlined">content_copy</span>Duplicate</button>
+              <button type="button" data-share="${q.id}"><span class="material-symbols-outlined">share</span>Share quiz</button>
               <button type="button" data-move="${q.id}"><span class="material-symbols-outlined">drive_file_move</span>Move to folder</button>
               <button type="button" data-rename="${q.id}"><span class="material-symbols-outlined">edit</span>Rename</button>
               <button type="button" data-delete="${q.id}"><span class="material-symbols-outlined">delete</span>Delete</button>
@@ -2318,6 +2745,7 @@ function bindLibraryEvents(){
     pop.classList.toggle('hidden', isOpen);
   });
   document.querySelectorAll('[data-duplicate]').forEach(btn=>btn.onclick=()=>duplicateQuiz(btn.dataset.duplicate));
+  document.querySelectorAll('[data-share]').forEach(btn=>btn.onclick=()=>openShareQuizModal(btn.dataset.share));
   document.querySelectorAll('[data-move]').forEach(btn=>btn.onclick=()=>openMoveQuizModal(btn.dataset.move));
   document.querySelectorAll('[data-rename]').forEach(btn=>btn.onclick=()=>renameQuiz(btn.dataset.rename));
   document.querySelectorAll('[data-delete]').forEach(btn=>btn.onclick=()=>deleteQuiz(btn.dataset.delete));
@@ -2420,20 +2848,88 @@ function renderEditor(){
 function renderFolderSelect(){
   $('quizFolderSelect').innerHTML=`<option value="">Unsorted</option>`+folders.map(f=>`<option value="${f.id}" ${editorQuiz.folderId===f.id?'selected':''}>${esc(f.name)}</option>`).join('');
 }
+function questionTypeLabel(q){
+  const type=q.type||'quiz';
+  if(type==='truefalse') return 'TRUE/FALSE';
+  if(type==='type') return 'TYPE';
+  return 'QUIZ';
+}
+function setQuestionType(qid,type){
+  const q=editorQuiz.questions.find(x=>x.id===qid);
+  if(!q) return;
+  q.type=type||'quiz';
+  if(q.type==='truefalse'){
+    q.answers=[
+      {id:q.answers?.[0]?.id||genId(),text:'True',media:null},
+      {id:q.answers?.[1]?.id||genId(),text:'False',media:null}
+    ];
+    q.correctIndex=Number(q.correctIndex)===1?1:0;
+  }else if(q.type==='type'){
+    q.typeAnswer=q.typeAnswer||'';
+  }else{
+    while((q.answers||[]).length<4) q.answers.push({id:genId(),text:'',media:null});
+    q.answers=q.answers.slice(0,4);
+    if(typeof q.correctIndex!=='number') q.correctIndex=0;
+  }
+  selectedQuestionId=qid;
+  renderEditor();
+}
+function normalizeTypedAnswer(v){return String(v||'').trim().toLowerCase();}
+function isTypeAnswerCorrect(q,value){
+  const accepted=String(q.typeAnswer||'').split('|').map(normalizeTypedAnswer).filter(Boolean);
+  return accepted.includes(normalizeTypedAnswer(value));
+}
+function playerAnsweredCurrent(p,room){
+  return p.answerQ===room.currentQ && (typeof p.currentAnswerIndex==='number' || typeof p.currentTypedAnswer==='string');
+}
+function playerCorrectForQuestion(p,q,room){
+  if(!playerAnsweredCurrent(p,room)) return false;
+  if((q.type||'quiz')==='type') return isTypeAnswerCorrect(q,p.currentTypedAnswer);
+  return p.currentAnswerIndex===q.correctIndex;
+}
 function renderQuestionList(){
   $('questionList').innerHTML=editorQuiz.questions.map((q,i)=>`
     <div class="question-card ${q.id===selectedQuestionId?'active':''}" draggable="true" data-qid="${q.id}">
-      <div class="question-card-num">QUESTION ${i+1}</div>
+      <div class="question-card-menu-wrap">
+        <button type="button" class="question-type-menu-btn" data-question-menu="${q.id}" title="Question options">⋮</button>
+        <div class="question-type-menu hidden" data-question-menu-pop="${q.id}">
+          <button type="button" data-question-type="${q.id}:quiz">Quiz</button>
+          <button type="button" data-question-type="${q.id}:truefalse">True or False</button>
+          <button type="button" data-question-type="${q.id}:type">Type Answer</button>
+        </div>
+      </div>
+      <div class="question-card-num">QUESTION ${i+1} · ${questionTypeLabel(q)}</div>
       <div class="question-card-preview">${esc((q.text||'').slice(0,80)||'Untitled question')}</div>
     </div>`).join('');
   document.querySelectorAll('.question-card').forEach(card=>{
-    card.onclick=()=>{ saveQuestionForm(); selectedQuestionId=card.dataset.qid; renderEditor(); };
+    card.onclick=e=>{
+      if(e.target.closest('.question-card-menu-wrap')) return;
+      saveQuestionForm(); selectedQuestionId=card.dataset.qid; renderEditor();
+    };
     card.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain', card.dataset.qid));
     card.addEventListener('dragover',e=>e.preventDefault());
     card.addEventListener('drop',e=>{
       e.preventDefault();
       reorderQuestions(e.dataTransfer.getData('text/plain'), card.dataset.qid);
     });
+  });
+  document.querySelectorAll('[data-question-menu]').forEach(btn=>{
+    btn.onclick=e=>{
+      e.stopPropagation();
+      const id=btn.dataset.questionMenu;
+      document.querySelectorAll('.question-type-menu').forEach(m=>{
+        if(m.dataset.questionMenuPop!==id) m.classList.add('hidden');
+      });
+      document.querySelector(`[data-question-menu-pop="${id}"]`)?.classList.toggle('hidden');
+    };
+  });
+  document.querySelectorAll('[data-question-type]').forEach(btn=>{
+    btn.onclick=e=>{
+      e.stopPropagation();
+      saveQuestionForm();
+      const [qid,type]=btn.dataset.questionType.split(':');
+      setQuestionType(qid,type);
+    };
   });
 }
 function reorderQuestions(draggedId,targetId){
@@ -2462,24 +2958,42 @@ function renderQuestionMediaPreview(media){
   $('questionMediaPreview').innerHTML=!media?'':(media.type==='video'?`<video src="${media.dataUrl}" controls></video>`:`<img src="${media.dataUrl}">`);
 }
 function renderAnswersEditor(q){
+  q.type=q.type||'quiz';
+  if(q.type==='type'){
+    $('answersGrid').innerHTML=`
+      <div class="type-answer-editor">
+        <div class="type-answer-label">Correct typed answer</div>
+        <input id="typeAnswerInput" type="text" placeholder="Example: Washington" value="${esc(q.typeAnswer||'')}">
+        <div class="type-answer-help">Case insensitive. Use | for multiple accepted answers. Example: USA|United States</div>
+      </div>`;
+    return;
+  }
+  if(q.type==='truefalse'){
+    q.answers=[
+      {id:q.answers?.[0]?.id||genId(),text:'True',media:null},
+      {id:q.answers?.[1]?.id||genId(),text:'False',media:null}
+    ];
+    if(q.correctIndex>1) q.correctIndex=0;
+  }
   $('answersGrid').innerHTML=(q.answers||[]).map((ans,i)=>`
     <div class="answer-edit" data-color="${i}">
       <div class="answer-letter">${answerShapes[i]}</div>
       <div class="top">
         <input type="radio" name="correctAnswer" value="${i}" ${q.correctIndex===i?'checked':''}>
-        <input type="text" data-answer-text="${i}" placeholder="Answer ${i+1}" value="${esc(ans.text)}">
+        <input type="text" data-answer-text="${i}" placeholder="Answer ${i+1}" value="${esc(ans.text)}" ${q.type==='truefalse'?'readonly':''}>
       </div>
       <div class="answer-media-preview">
         ${ans.media?(ans.media.type==='video'?`<video src="${ans.media.dataUrl}" controls></video>`:`<img src="${ans.media.dataUrl}">`):''}
       </div>
-      <div style="display:flex;gap:8px;margin-top:10px">
+      ${q.type==='truefalse'?'':`<div style="display:flex;gap:8px;margin-top:10px">
         <button type="button" class="btn outline" data-answer-media-btn="${i}" style="padding:6px 12px;font-size:.82rem">
           <span class="material-symbols-outlined" style="font-size:16px">image</span>Media
         </button>
         <button type="button" class="btn ghost ${ans.media?'':'hidden'}" data-answer-media-clear="${i}" style="padding:6px 12px;font-size:.82rem">Remove</button>
         <input type="file" class="hidden" accept="image/*,video/*" id="answerMediaInput-${i}">
-      </div>
+      </div>`}
     </div>`).join('');
+  if(q.type==='truefalse') return;
   $('answersGrid').querySelectorAll('[data-answer-media-btn]').forEach(btn=>btn.onclick=()=>$('answerMediaInput-'+btn.dataset.answerMediaBtn).click());
   $('answersGrid').querySelectorAll('input[type="file"]').forEach(input=>input.onchange=e=>{
     const idx=parseInt(input.id.split('-').pop(),10);
@@ -2500,13 +3014,19 @@ function saveQuestionForm(){
   editorQuiz.title=$('quizTitle').value.trim()||'Untitled Quiz';
   editorQuiz.folderId=$('quizFolderSelect').value||'';
   const q=currentQuestion();
+  q.type=q.type||'quiz';
   q.text=$('questionText').value.trim();
   q.seconds=Math.max(5, parseInt($('questionSeconds').value||'20',10)||20);
-  q.correctIndex=parseInt((document.querySelector('input[name="correctAnswer"]:checked')||{}).value||'0',10);
-  q.answers.forEach((ans,i)=>{
-    const input=document.querySelector(`[data-answer-text="${i}"]`);
-    ans.text=input?input.value.trim():ans.text;
-  });
+  if(q.type==='type'){
+    const typeInput=$('typeAnswerInput');
+    q.typeAnswer=typeInput?typeInput.value.trim():(q.typeAnswer||'');
+  }else{
+    q.correctIndex=parseInt((document.querySelector('input[name="correctAnswer"]:checked')||{}).value||'0',10);
+    q.answers.forEach((ans,i)=>{
+      const input=document.querySelector(`[data-answer-text="${i}"]`);
+      ans.text=input?input.value.trim():ans.text;
+    });
+  }
 }
 async function saveQuiz(){
   saveQuestionForm();
@@ -2613,10 +3133,37 @@ function renderAnswerContent(answer, idx){
   const shape=`<span class="host-answer-shape">${answerShapes[idx%4]}</span>`;
   return shape+media+text;
 }
+function timerUrgencyRatio(room,q){
+  const total=Math.max(1,(q.seconds||20)*1000);
+  const remaining=Math.max(0,room.currentRemainingMs||0);
+  return Math.max(0,Math.min(1,remaining/total));
+}
+function timerUrgencyColor(ratio){
+  if(ratio>.66) return '#16a34a';
+  if(ratio>.40) return '#facc15';
+  if(ratio>.18) return '#f97316';
+  return '#dc2626';
+}
+function applyHostTimerVisual(room,q){
+  const ratio=timerUrgencyRatio(room,q);
+  const color=timerUrgencyColor(ratio);
+  const fill=$('hostProgressFill');
+  const timer=$('hostTimer');
+  if(fill){
+    fill.style.width=(ratio*100)+'%';
+    fill.style.background=`linear-gradient(90deg,#16a34a 0%,#facc15 45%,#f97316 72%,#dc2626 100%)`;
+    fill.style.boxShadow=`0 0 14px ${color}`;
+  }
+  if(timer){
+    timer.style.color=color;
+    timer.style.textShadow=`0 0 18px ${color}66`;
+  }
+}
 function renderHostQuestion(){
   $('hostLobby').classList.add('hidden');
   $('hostQuestionPanel').classList.remove('hidden');
   const q=hostRoom.quiz.questions[hostRoom.currentQ];
+  applyHostTimerVisual(hostRoom,q);
   const phaseMap={countdown:'Get Ready!',question_media:'Watch',question_answers:'Choose your answer',paused:'Paused',locked:"Time's up!",answer_results:'Results'};
   $('hostPhaseTag').textContent=phaseMap[hostRoom.phase]||'';
   const qText = $('hostQuestionText');
@@ -2642,8 +3189,14 @@ function renderHostQuestion(){
   }
 
   const showAnswers=!['countdown','question_media'].includes(hostRoom.phase);
-  const answers=nonBlankAnswers(q);
-  $('hostAnswers').innerHTML=answers.map((a,idx)=>`
+  const isTypeQuestion=(q.type==='type');
+  const answers=isTypeQuestion?[]:nonBlankAnswers(q);
+  $('hostAnswers').innerHTML=isTypeQuestion
+    ? `<div class="host-type-answer ${showAnswers?'':'hidden'}">
+        <div class="host-type-answer-title">${hostRoom.phase==='answer_results'?'Correct answer':'Students type their answer'}</div>
+        <div class="host-type-answer-value">${hostRoom.phase==='answer_results'?esc(q.typeAnswer||''):'Waiting for responses…'}</div>
+      </div>`
+    : answers.map((a,idx)=>`
     <div class="host-answer ${answerColors[idx%4]}
         ${hostRoom.phase==='answer_results'&&a.index===q.correctIndex?'correct':''}
         ${hostRoom.phase==='answer_results'&&a.index!==q.correctIndex?'dim':''}
@@ -2653,7 +3206,7 @@ function renderHostQuestion(){
 
   // Stats
   const players=sortedPlayers(hostRoom);
-  const answered=players.filter(p=>p.answerQ===hostRoom.currentQ&&typeof p.currentAnswerIndex==='number').length;
+  const answered=players.filter(p=>playerAnsweredCurrent(p,hostRoom)).length;
   $('hostStats').innerHTML=`
     <div class="stat"><div class="n">${answered}</div><div class="stat-label">Answered</div></div>
     <div class="stat"><div class="n">${Math.max(0,players.length-answered)}</div><div class="stat-label">Waiting</div></div>
@@ -2662,17 +3215,33 @@ function renderHostQuestion(){
   // Answer distribution (on results phase)
   const dist = $('hostDistribution');
   if(hostRoom.phase==='answer_results' && players.length>0){
-    const counts = answers.map(a=>players.filter(p=>p.answerQ===hostRoom.currentQ && p.currentAnswerIndex===a.index).length);
-    const max = Math.max(1, ...counts);
-    const distRows = answers.map((a,idx)=>{
-      const c = counts[idx];
-      const pct = (c/max)*100;
-      return `<div class="dist-row">
-        <div class="dist-shape ${answerColors[idx%4]}">${answerShapes[idx]}</div>
-        <div class="dist-bar"><div class="dist-bar-fill ${answerColors[idx%4]}" style="width:${pct}%"></div></div>
-        <div class="dist-count">${c}</div>
-      </div>`;
-    }).join('');
+    let distRows='';
+    if(isTypeQuestion){
+      const typedPlayers=players.filter(p=>p.answerQ===hostRoom.currentQ&&typeof p.currentTypedAnswer==='string');
+      const correctCount=typedPlayers.filter(p=>isTypeAnswerCorrect(q,p.currentTypedAnswer)).length;
+      const wrongCount=Math.max(0,typedPlayers.length-correctCount);
+      const max=Math.max(1,correctCount,wrongCount);
+      distRows=[
+        {label:'Correct',count:correctCount,color:'green'},
+        {label:'Incorrect',count:wrongCount,color:'orange'}
+      ].map(row=>`<div class="dist-row">
+        <div class="dist-shape ${row.color}">${row.label[0]}</div>
+        <div class="dist-bar"><div class="dist-bar-fill ${row.color}" style="width:${(row.count/max)*100}%"></div></div>
+        <div class="dist-count">${row.count}</div>
+      </div>`).join('');
+    }else{
+      const counts = answers.map(a=>players.filter(p=>p.answerQ===hostRoom.currentQ && p.currentAnswerIndex===a.index).length);
+      const max = Math.max(1, ...counts);
+      distRows = answers.map((a,idx)=>{
+        const c = counts[idx];
+        const pct = (c/max)*100;
+        return `<div class="dist-row">
+          <div class="dist-shape ${answerColors[idx%4]}">${answerShapes[idx]}</div>
+          <div class="dist-bar"><div class="dist-bar-fill ${answerColors[idx%4]}" style="width:${pct}%"></div></div>
+          <div class="dist-count">${c}</div>
+        </div>`;
+      }).join('');
+    }
     const scoreRows = players.slice(0,5).map((p,i)=>`
       <div class="host-score-row">
         <span class="host-score-rank">${i+1}</span>
@@ -2827,10 +3396,9 @@ async function showResults(){
   capturePreviousRanks(room);
   const updates={phase:'answer_results',updatedAt:Date.now()};
   Object.entries(room.players||{}).forEach(([pid,p])=>{
-    const answered=p.answerQ===room.currentQ&&typeof p.currentAnswerIndex==='number';
-    const correct=answered&&p.currentAnswerIndex===q.correctIndex;
+    const correct=playerCorrectForQuestion(p,q,room);
     const streak=correct?(p.streak||0)+1:0;
-    const delta=scoreFor(room,p,q);
+    const delta=correct?scoreFor(room,p,q):0;
     updates[`players/${pid}/lastCorrect`]=correct;
     updates[`players/${pid}/lastDelta`]=delta;
     updates[`players/${pid}/score`]=(p.score||0)+delta;
@@ -3005,7 +3573,7 @@ function renderStudent(room,player){
     return;
   }
   if(room.phase==='final'){
-    $('studentPhase').textContent='🎉 Final';
+    $('studentPhase').textContent='Final';
     $('studentMedia').innerHTML='';
     $('studentQuestion').textContent=`Final score: ${player.score||0}`;
     $('studentAnswerGrid').innerHTML='';
@@ -3022,6 +3590,7 @@ function renderStudent(room,player){
   }
   const q=room.quiz.questions[room.currentQ];
   if(!q) return;
+  const isTypeQuestion=(q.type==='type');
   $('studentQuestion').textContent=q.text||'';
   $('studentMedia').innerHTML='';
   if(q.media){
@@ -3034,28 +3603,54 @@ function renderStudent(room,player){
     $('studentResult').textContent='';
     return;
   }
-  const answers=nonBlankAnswers(q);
   $('studentPhase').textContent=
     room.phase==='paused'?'Paused':
     room.phase==='locked'?"Time's up — results coming":
-    room.phase==='answer_results'?(player.lastCorrect?'✓ Correct!':'Answer revealed'):
-    'Tap your answer';
-  const hasAnswered = player.answerQ===room.currentQ && typeof player.currentAnswerIndex==='number';
-  $('studentAnswerGrid').innerHTML=answers.map((a,idx)=>{
-    const isSelected = hasAnswered && player.currentAnswerIndex===a.index;
-    const isLocked = room.phase!=='question_answers' || hasAnswered;
-    return `<button type="button" class="student-answer ${answerColors[idx%4]} ${isSelected?'selected':''} ${isLocked?'locked':''}" data-answer-index="${a.index}">
-      <span class="student-answer-shape">${answerShapes[idx]}</span>
-      ${a.media?`<span class="thumb">${a.media.type==='video'?`<video src="${a.media.dataUrl}" muted playsinline></video>`:`<img src="${a.media.dataUrl}">`}</span>`:''}
-      ${a.text?`<span class="label-text">${esc(a.text)}</span>`:''}
-    </button>`;
-  }).join('');
-  $('studentAnswerGrid').querySelectorAll('[data-answer-index]').forEach(btn=>btn.onclick=async()=>{
-    if(room.phase!=='question_answers') return;
-    if(hasAnswered) return; // lock after first submit
-    const idx=parseInt(btn.dataset.answerIndex,10);
-    await roomRef(room.code).child('players').child(studentPlayerId).update({currentAnswerIndex:idx,answerAt:Date.now(),answerQ:room.currentQ});
-  });
+    room.phase==='answer_results'?(player.lastCorrect?'Correct!':'Answer revealed'):
+    isTypeQuestion?'Type your answer':'Tap your answer';
+
+  const hasAnswered = playerAnsweredCurrent(player,room);
+
+  if(isTypeQuestion){
+    if(room.phase==='question_answers' && !hasAnswered){
+      $('studentAnswerGrid').innerHTML=`
+        <div class="student-type-wrap">
+          <input id="studentTypedAnswer" type="text" placeholder="Type answer" autocomplete="off">
+          <button id="studentTypeSubmit" type="button" class="btn accent">Submit</button>
+        </div>`;
+      $('studentTypeSubmit').onclick=async()=>{
+        const value=($('studentTypedAnswer')?.value||'').trim();
+        if(!value) return;
+        await roomRef(room.code).child('players').child(studentPlayerId).update({currentTypedAnswer:value,answerAt:Date.now(),answerQ:room.currentQ,currentAnswerIndex:null});
+      };
+      $('studentTypedAnswer').addEventListener('keydown',e=>{
+        if(e.key==='Enter') $('studentTypeSubmit').click();
+      });
+    }else{
+      $('studentAnswerGrid').innerHTML=`
+        <div class="student-type-result">
+          ${room.phase==='answer_results'?`Correct answer: <strong>${esc(q.typeAnswer||'')}</strong>`:(hasAnswered?'Answer locked':'')}
+        </div>`;
+    }
+  }else{
+    const answers=nonBlankAnswers(q);
+    $('studentAnswerGrid').innerHTML=answers.map((a,idx)=>{
+      const isSelected = hasAnswered && player.currentAnswerIndex===a.index;
+      const isLocked = room.phase!=='question_answers' || hasAnswered;
+      return `<button type="button" class="student-answer ${answerColors[idx%4]} ${isSelected?'selected':''} ${isLocked?'locked':''}" data-answer-index="${a.index}">
+        <span class="student-answer-shape">${answerShapes[idx]}</span>
+        ${a.media?`<span class="thumb">${a.media.type==='video'?`<video src="${a.media.dataUrl}" muted playsinline></video>`:`<img src="${a.media.dataUrl}">`}</span>`:''}
+        ${a.text?`<span class="label-text">${esc(a.text)}</span>`:''}
+      </button>`;
+    }).join('');
+    $('studentAnswerGrid').querySelectorAll('[data-answer-index]').forEach(btn=>btn.onclick=async()=>{
+      if(room.phase!=='question_answers') return;
+      if(hasAnswered) return;
+      const idx=parseInt(btn.dataset.answerIndex,10);
+      await roomRef(room.code).child('players').child(studentPlayerId).update({currentAnswerIndex:idx,currentTypedAnswer:null,answerAt:Date.now(),answerQ:room.currentQ});
+    });
+  }
+
   $('studentResult').textContent=
     room.phase==='answer_results'?
       ((player.lastDelta?'+'+player.lastDelta+' pts ':'')+(player.streakMsg||''))
@@ -3122,6 +3717,17 @@ function previewResumeQuestion(){
 }
 function previewShowResults(){
   if(!hostRoom || hostRoom.phase !== 'locked') return;
+  const q=hostRoom.quiz.questions[hostRoom.currentQ];
+  Object.values(hostRoom.players||{}).forEach(p=>{
+    const correct=playerCorrectForQuestion(p,q,hostRoom);
+    const streak=correct?(p.streak||0)+1:0;
+    const delta=correct?scoreFor(hostRoom,p,q):0;
+    p.lastCorrect=correct;
+    p.lastDelta=delta;
+    p.score=(p.score||0)+delta;
+    p.streak=streak;
+    p.streakMsg=streakMessage(streak);
+  });
   hostRoom.phase = 'answer_results'; hostRoom.updatedAt = Date.now();
   renderHost();
   if(revealHandle) clearTimeout(revealHandle);
@@ -3197,6 +3803,17 @@ function bindEvents(){
   $('folderModalSave').onclick=commitFolderModal;
   $('folderNameInput').onkeydown=e=>{ if(e.key==='Enter') commitFolderModal(); };
   $('moveQuizCancel').onclick=closeMoveQuizModal;
+  $('settingsBtn').onclick=()=>openSettings('defaults');
+  $('settingsCloseBtn').onclick=closeSettings;
+  document.querySelectorAll('[data-settings-tab]').forEach(btn=>btn.onclick=()=>setSettingsTab(btn.dataset.settingsTab));
+  $('saveDefaultsBtn').onclick=saveDefaultSettings;
+  $('addWhitelistBtn').onclick=addWhitelistEmail;
+  $('whitelistEmailInput').onkeydown=e=>{ if(e.key==='Enter') addWhitelistEmail(); };
+  $('shareQuizCancelBtn').onclick=closeShareQuizModal;
+  $('shareQuizSendBtn').onclick=sendSharedQuiz;
+  $('sharedPreviewCloseBtn').onclick=closeSharedPreview;
+  $('sharedPreviewAcceptBtn').onclick=()=>pendingSharedItem&&acceptSharedQuiz(pendingSharedItem.id);
+  $('sharedPreviewDeclineBtn').onclick=()=>pendingSharedItem&&declineSharedQuiz(pendingSharedItem.id);
   $('newQuizBtn').onclick=createNewQuiz;
   $('editorBackBtn').onclick=async()=>{ await loadQuizzes(); showScreen('library-screen'); };
   $('previewQuizBtn').onclick=startPreviewHost;
