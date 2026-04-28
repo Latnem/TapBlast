@@ -1929,6 +1929,17 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   .settings-inline{flex-direction:column;align-items:stretch}
 }
 
+
+/* ===== V12.3 SEGMENTED TIMER BAR ===== */
+.progress > div{
+  transition:width .25s linear, box-shadow .25s linear, background .25s linear !important;
+  background-size:100% 100% !important;
+}
+
+.timer{
+  transition:color .25s linear, text-shadow .25s linear !important;
+}
+
 </style>
 </head>
 <body>
@@ -3183,18 +3194,41 @@ function timerUrgencyColor(ratio){
   return '#dc2626';
 }
 function applyHostTimerVisual(room,q){
-  const ratio=timerUrgencyRatio(room,q);
-  const color=timerUrgencyColor(ratio);
+  const total=Math.max(1,(q.seconds||20)*1000);
+  const remaining=Math.max(0,room.currentRemainingMs||0);
+  const ratio=Math.max(0,Math.min(1,remaining/total));
   const fill=$('hostProgressFill');
-  const timer=$('hostTimer');
+  const timerEl=$('hostTimer');
+
+  // Segmented time bar:
+  // Full time shows red + orange + yellow + green.
+  // As time runs out, green disappears first, then yellow, then orange, leaving red last.
+  let barColor='#dc2626';
+  let timerColor='#dc2626';
+  let gradient='linear-gradient(90deg,#dc2626 0%,#dc2626 100%)';
+
+  if(ratio > .75){
+    barColor='#16a34a';
+    timerColor='#16a34a';
+    gradient='linear-gradient(90deg,#dc2626 0%,#dc2626 25%,#f97316 25%,#f97316 50%,#facc15 50%,#facc15 75%,#16a34a 75%,#16a34a 100%)';
+  }else if(ratio > .50){
+    barColor='#facc15';
+    timerColor='#ca8a04';
+    gradient='linear-gradient(90deg,#dc2626 0%,#dc2626 33.33%,#f97316 33.33%,#f97316 66.66%,#facc15 66.66%,#facc15 100%)';
+  }else if(ratio > .25){
+    barColor='#f97316';
+    timerColor='#f97316';
+    gradient='linear-gradient(90deg,#dc2626 0%,#dc2626 50%,#f97316 50%,#f97316 100%)';
+  }
+
   if(fill){
     fill.style.width=(ratio*100)+'%';
-    fill.style.background=`linear-gradient(90deg,#16a34a 0%,#facc15 45%,#f97316 72%,#dc2626 100%)`;
-    fill.style.boxShadow=`0 0 14px ${color}`;
+    fill.style.background=gradient;
+    fill.style.boxShadow=`0 0 14px ${barColor}`;
   }
-  if(timer){
-    timer.style.color=color;
-    timer.style.textShadow=`0 0 18px ${color}66`;
+  if(timerEl){
+    timerEl.style.color=timerColor;
+    timerEl.style.textShadow=`0 0 18px ${timerColor}66`;
   }
 }
 function renderHostQuestion(){
