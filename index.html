@@ -175,9 +175,9 @@ button,input,textarea,select{font:inherit;color:inherit}
 
 /* ===== BUTTONS ===== */
 .btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  border:none;border-radius:10px;
-  padding:8px 14px;font-weight:700;font-size:.84rem;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border:none;border-radius:12px;
+  padding:11px 18px;font-weight:700;font-size:.92rem;
   cursor:pointer;transition:all .18s cubic-bezier(.2,.9,.3,1.2);
   letter-spacing:-.005em;
 }
@@ -204,13 +204,13 @@ button,input,textarea,select{font:inherit;color:inherit}
 .btn.ghost{background:transparent;color:var(--muted);padding:10px 14px}
 .btn.ghost:hover{background:var(--panel-soft);color:var(--ink-900)}
 .btn.danger{background:var(--danger);color:#fff;box-shadow:0 4px 12px rgba(220,38,38,.3)}
-.btn.icon{width:34px;height:34px;padding:0;border-radius:10px}
+.btn.icon{width:40px;height:40px;padding:0;border-radius:50%}
 .btn.lg{padding:14px 24px;font-size:1rem;border-radius:14px}
 
 /* ===== INLINE SVG ICONS (replaces Material Symbols when CDN blocked) ===== */
 .icon{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
 .icon .icon-svg,.material-symbols-outlined{width:20px;height:20px}
-.btn.icon{width:34px;height:34px;padding:0;border-radius:10px}
+.btn.icon{width:40px;height:40px;padding:0;border-radius:50%}
 .btn.icon .icon-svg,.btn.icon .material-symbols-outlined{width:22px;height:22px}
 .menu-pop .icon .icon-svg,.menu-pop .material-symbols-outlined{width:18px;height:18px}
 .library-empty .icon .icon-svg,.library-empty .material-symbols-outlined{width:56px;height:56px;color:var(--sky-300);margin:0 auto 12px}
@@ -242,22 +242,22 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 /* ===== APP SHELL ===== */
 .app-shell{display:flex;justify-content:center;width:100%;min-height:100vh;background:var(--bg)}
 .app-container{
-  display:grid;grid-template-columns:220px 1fr;
+  display:grid;grid-template-columns:280px 1fr;
   max-width:1440px;width:100%;min-height:100vh;
   background:var(--panel);
   box-shadow:0 0 60px rgba(15,32,80,.05);
 }
 .left-pane{
-  background:#f8faff;
+  background:linear-gradient(180deg, var(--panel-soft), #fff);
   border-right:1px solid var(--line);
-  padding:14px 10px;
+  padding:22px 16px;
 }
 .main-pane{display:flex;flex-direction:column;min-width:0}
 
 /* ===== TOP BAR ===== */
 .topbar{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:14px 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:20px 26px;
   background:linear-gradient(120deg, var(--royal-900) 0%, var(--royal-700) 60%, var(--royal-600) 100%);
   color:#fff;
   position:relative;overflow:hidden;
@@ -366,13 +366,13 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 .folder-head-title{font-weight:800;font-size:.76rem;text-transform:uppercase;letter-spacing:.8px;color:var(--ink-500)}
 .folder-list{display:flex;flex-direction:column;gap:4px}
 .folder-item{
-  display:flex;align-items:center;gap:8px;
-  padding:8px 10px;
-  border-radius:10px;
+  display:flex;align-items:center;gap:10px;
+  padding:11px 12px;
+  border-radius:11px;
   cursor:pointer;
   border:1.5px solid transparent;
   transition:all .14s;
-  color:var(--ink-700);font-weight:600;font-size:.86rem;
+  color:var(--ink-700);font-weight:600;font-size:.95rem;
 }
 .folder-item:hover{background:var(--sky-50);color:var(--royal-700)}
 .folder-item.active{
@@ -389,8 +389,8 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 .folder-item .material-symbols-outlined{font-size:20px;color:var(--ink-400)}
 .folder-name{flex:1;font-weight:600}
 .folder-count{
-  font-size:.68rem;font-weight:700;color:var(--ink-400);
-  background:var(--line-soft);padding:1px 6px;border-radius:999px;
+  font-size:.78rem;font-weight:700;color:var(--ink-400);
+  background:var(--line-soft);padding:2px 8px;border-radius:999px;
 }
 .folder-item.active .folder-count{background:#fff;color:var(--royal-600)}
 .folder-item [data-folder-menu]{
@@ -402,7 +402,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 .folder-item [data-folder-menu]:hover{background:#fff;color:var(--ink-800)}
 
 /* ===== LIBRARY — MAIN ===== */
-.content-wrap{padding:18px 20px}
+.content-wrap{padding:26px 28px}
 .search-row{
   display:flex;align-items:center;gap:12px;flex-wrap:wrap;
   margin-bottom:22px;
@@ -423,7 +423,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 .library-header-meta{color:var(--ink-500);font-size:.9rem;margin-bottom:20px}
 .quiz-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
   gap:18px;
 }
 .quiz-card{
@@ -443,7 +443,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 }
 .quiz-card.dragging{opacity:.5;transform:rotate(-2deg) scale(.98)}
 .quiz-cover{
-  height:96px;
+  height:128px;
   background:
     linear-gradient(135deg, var(--sky-100) 0%, var(--sky-50) 100%);
   display:flex;align-items:center;justify-content:center;overflow:hidden;
@@ -1270,54 +1270,97 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 }
 
 
-/* ===== COMPACT DESKTOP OVERRIDE v2 ===== */
+/* ===== V6 FORCE LIBRARY SIDEBAR + COMPACT UI ===== */
+
+/* Desktop library sidebar */
 @media (min-width:981px){
-  .app-container{
+  #library-screen .app-container{
     grid-template-columns:180px 1fr !important;
   }
 
-  .left-pane{
-    background:#f7f9fd !important;
+  #library-screen .library-sidebar,
+  #library-screen aside.library-sidebar,
+  body[data-screen="library-screen"] #library-screen .library-sidebar{
+    background:#2f3a4d !important;
+    background-image:none !important;
+    border-right:1px solid #202938 !important;
     padding:10px 8px !important;
+    color:#ffffff !important;
   }
 
-  .folder-head{
+  #library-screen .library-sidebar .folder-head{
     margin-bottom:8px !important;
     padding:0 4px !important;
   }
 
-  .folder-head-title{
-    font-size:.66rem !important;
-    letter-spacing:.7px !important;
+  #library-screen .library-sidebar .folder-head-title{
+    display:none !important;
+    visibility:hidden !important;
+    width:0 !important;
+    height:0 !important;
+    overflow:hidden !important;
   }
 
-  .folder-list{
+  #library-screen .library-sidebar #newFolderBtn{
+    width:28px !important;
+    height:28px !important;
+    min-height:28px !important;
+    padding:0 !important;
+    border-radius:8px !important;
+    background:#435168 !important;
+    color:#ffffff !important;
+    border:1px solid #64748b !important;
+    box-shadow:none !important;
+  }
+
+  #library-screen .library-sidebar #newFolderBtn:hover{
+    background:#5c6d89 !important;
+  }
+
+  #library-screen .library-sidebar .folder-list{
     gap:2px !important;
   }
 
-  .folder-item{
+  #library-screen .library-sidebar .folder-item{
     min-height:30px !important;
     padding:5px 7px !important;
     gap:6px !important;
     border-radius:8px !important;
     font-size:.78rem !important;
     line-height:1.15 !important;
+    background:transparent !important;
+    color:#dbe4f0 !important;
+    border:1px solid transparent !important;
     border-left:3px solid transparent !important;
   }
 
-  .folder-item .icon,
-  .folder-item .material-symbols-outlined{
+  #library-screen .library-sidebar .folder-item:hover{
+    background:#435168 !important;
+    color:#ffffff !important;
+  }
+
+  #library-screen .library-sidebar .folder-item.active{
+    background:#52627d !important;
+    color:#ffffff !important;
+    border-left-color:#93c5fd !important;
+  }
+
+  #library-screen .library-sidebar .folder-item .material-symbols-outlined,
+  #library-screen .library-sidebar .folder-item .icon{
     display:none !important;
   }
 
-  .folder-name{
+  #library-screen .library-sidebar .folder-name{
+    color:inherit !important;
     font-weight:600 !important;
     overflow:hidden !important;
     text-overflow:ellipsis !important;
     white-space:nowrap !important;
   }
 
-  .folder-count{
+  #library-screen .library-sidebar .folder-count{
+    background:#64748b !important;
+    color:#ffffff !important;
     font-size:.62rem !important;
     padding:0 5px !important;
     min-width:18px !important;
@@ -1327,25 +1370,25 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
     justify-content:center !important;
   }
 
-  .folder-item [data-folder-menu]{
+  #library-screen .library-sidebar .folder-item.active .folder-count{
+    background:#dbeafe !important;
+    color:#1e3a8a !important;
+  }
+
+  #library-screen .library-sidebar .folder-item [data-folder-menu]{
+    color:#cbd5e1 !important;
     width:22px !important;
     height:22px !important;
   }
 
-  #folderList .folder-item.active{
-    background:#eef4ff !important;
-    border-color:var(--sky-200) !important;
-    border-left-color:var(--royal-600) !important;
-  }
-
-  #folderList .folder-item:hover{
-    background:#f0f6ff !important;
+  #library-screen .library-sidebar .folder-item [data-folder-menu]:hover{
+    background:#64748b !important;
+    color:#ffffff !important;
   }
 
   .topbar{
     padding:9px 14px !important;
-    min-height:52px !important;
-    gap:8px !important;
+    min-height:50px !important;
   }
 
   .brand{
@@ -1357,96 +1400,35 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
     margin-top:2px !important;
   }
 
-  #teacherName{
-    font-size:.78rem !important;
-  }
-
   .btn{
     min-height:28px !important;
     height:28px !important;
     padding:4px 10px !important;
-    gap:5px !important;
-    border-radius:8px !important;
     font-size:.76rem !important;
+    border-radius:8px !important;
+    gap:5px !important;
     line-height:1 !important;
-  }
-
-  .btn.lg{
-    min-height:34px !important;
-    height:34px !important;
-    padding:6px 13px !important;
-    font-size:.82rem !important;
-    border-radius:9px !important;
   }
 
   .btn.icon{
     width:28px !important;
     height:28px !important;
-    min-height:28px !important;
     padding:0 !important;
-    border-radius:8px !important;
   }
 
-  .btn .material-symbols-outlined,
-  .btn .icon-svg{
-    width:16px !important;
-    height:16px !important;
+  .btn .material-symbols-outlined{
     font-size:16px !important;
   }
 
   .quiz-actions .btn{
-    min-height:27px !important;
-    height:27px !important;
+    min-height:26px !important;
+    height:26px !important;
     padding:4px 8px !important;
-    font-size:.73rem !important;
-    border-radius:7px !important;
-  }
-
-  .control-row .btn,
-  .modal-actions .btn,
-  #editor-screen .topbar .btn,
-  #host-screen .btn,
-  #leaderboard-screen .btn,
-  #final-screen .btn{
-    min-height:28px !important;
-    height:28px !important;
-    padding:4px 10px !important;
-    font-size:.76rem !important;
-    border-radius:8px !important;
+    font-size:.72rem !important;
   }
 
   .content-wrap{
     padding:14px 16px !important;
-  }
-
-  .search-row{
-    margin-bottom:14px !important;
-  }
-
-  .search-wrap input,
-  input[type=text],
-  input[type=number],
-  input[type=email],
-  input[type=password],
-  textarea,
-  select{
-    padding:8px 10px !important;
-    border-radius:9px !important;
-    font-size:.84rem !important;
-  }
-
-  .search-wrap input{
-    padding-left:34px !important;
-  }
-
-  .library-header-title{
-    font-size:1.25rem !important;
-    margin-bottom:2px !important;
-  }
-
-  .library-header-meta{
-    font-size:.78rem !important;
-    margin-bottom:12px !important;
   }
 
   .quiz-grid{
@@ -1470,40 +1452,77 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
     font-size:.72rem !important;
     margin-bottom:10px !important;
   }
+}
 
-  .menu-btn{
-    width:28px !important;
-    height:28px !important;
-    border-radius:7px !important;
+/* Mobile folder drawer stays clean but also uses slate when opened */
+@media(max-width:980px){
+  #library-screen .library-sidebar{
+    background:#2f3a4d !important;
+    background-image:none !important;
+    color:#ffffff !important;
   }
 
-  .panel{
-    padding:16px !important;
-    border-radius:16px !important;
+  #library-screen .library-sidebar .folder-head-title{
+    display:none !important;
   }
 
-  .editor-shell{
-    grid-template-columns:230px 1fr !important;
-    min-height:calc(100vh - 52px) !important;
+  #library-screen .library-sidebar .folder-item{
+    color:#dbe4f0 !important;
   }
 
-  .editor-left{
-    padding:12px !important;
+  #library-screen .library-sidebar .folder-item:hover,
+  #library-screen .library-sidebar .folder-item.active{
+    background:#52627d !important;
+    color:#ffffff !important;
   }
 
-  .question-card{
-    padding:9px 10px 9px 22px !important;
-    border-radius:10px !important;
+  #library-screen .library-sidebar #newFolderBtn{
+    background:#435168 !important;
+    color:#ffffff !important;
+    border:1px solid #64748b !important;
   }
+}
 
-  .question-card-preview{
-    font-size:.78rem !important;
-  }
 
-  #addQuestionBtn{
-    min-height:30px !important;
-    height:30px !important;
-  }
+/* ===== V7 MENU FIX ===== */
+
+/* Make 3-dot menus open upward and fully visible */
+.menu-wrap{
+  position:relative !important;
+  overflow:visible !important;
+}
+
+.quiz-card{
+  overflow:visible !important;
+}
+
+.menu-pop{
+  position:absolute !important;
+  right:0 !important;
+  bottom:40px !important;
+  top:auto !important;
+  z-index:9999 !important;
+  min-width:220px !important;
+  max-height:none !important;
+  overflow:visible !important;
+  box-shadow:0 18px 40px rgba(0,0,0,.22) !important;
+  border-radius:14px !important;
+}
+
+/* Keep all buttons clearly visible */
+.menu-pop button{
+  min-height:38px !important;
+  display:flex !important;
+  align-items:center !important;
+  white-space:nowrap !important;
+}
+
+/* Prevent clipping from parent containers */
+.quiz-grid,
+.quiz-body,
+.content-wrap,
+.main-pane{
+  overflow:visible !important;
 }
 
 </style>
@@ -1544,9 +1563,9 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   <div id="foldersBackdrop" class="folders-backdrop"></div>
   <div class="app-shell">
     <div class="app-container">
-      <aside class="left-pane">
+      <aside class="left-pane library-sidebar">
         <div class="folder-head">
-          <div class="folder-head-title">Folders</div>
+          <div class="folder-head-title"></div>
           <button id="newFolderBtn" class="btn icon ghost" type="button" title="New folder">
             <span class="material-symbols-outlined">create_new_folder</span>
           </button>
@@ -1565,7 +1584,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
             </button>
             <div id="teacherName" style="font-weight:600;font-size:.92rem;opacity:.9"></div>
             <button id="newQuizBtn" type="button" class="btn accent">
-              New
+              <span class="material-symbols-outlined">add</span>New Quiz
             </button>
             <button id="logoutBtn" type="button" class="btn outline">Logout</button>
           </div>
