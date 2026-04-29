@@ -2600,6 +2600,12 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   color:#ffb4b4 !important;
 }
 
+
+/* ===== V12.20 SHRINKING STRIP WIDTH FIX ===== */
+#hostProgressFill{
+  transition:width .25s linear, background-size .25s linear !important;
+}
+
 </style>
 </head>
 <body>
@@ -3928,30 +3934,32 @@ function applyHostTimerVisual(room,q){
 
   // Visible loading strip.
   // Full gradient order left-to-right: red, orange, yellow, green.
-  // The fill gets shorter from the right as time counts down.
+  // The fill width shrinks as time counts down.
   const gradient='linear-gradient(90deg,#dc2626 0%,#ef4444 18%,#f97316 36%,#fb923c 52%,#facc15 68%,#fde047 82%,#22c55e 94%,#16a34a 100%)';
 
   if(fill){
-    fill.style.display='block';
-    fill.style.position='relative';
-    fill.style.left='0';
-    fill.style.top='0';
-    fill.style.height='100%';
-    fill.style.width=(ratio*100)+'%';
-    fill.style.minWidth=ratio>0 ? '3px' : '0';
-    fill.style.transform='none';
-    fill.style.clipPath='none';
-    fill.style.background=gradient;
-    fill.style.backgroundImage=gradient;
-    fill.style.backgroundSize=(ratio>0 ? (100/ratio) : 100)+'% 100%';
-    fill.style.backgroundPosition='left center';
-    fill.style.borderRadius='999px';
-    fill.style.boxShadow='0 0 12px rgba(255,255,255,.28)';
+    const pct=(ratio*100)+'%';
+    fill.style.setProperty('display','block','important');
+    fill.style.setProperty('position','relative','important');
+    fill.style.setProperty('left','0','important');
+    fill.style.setProperty('top','0','important');
+    fill.style.setProperty('height','100%','important');
+    fill.style.setProperty('min-height','100%','important');
+    fill.style.setProperty('width',pct,'important');
+    fill.style.setProperty('min-width',ratio>0 ? '3px' : '0','important');
+    fill.style.setProperty('transform','none','important');
+    fill.style.setProperty('clip-path','none','important');
+    fill.style.setProperty('background',gradient,'important');
+    fill.style.setProperty('background-image',gradient,'important');
+    fill.style.setProperty('background-size',(ratio>0 ? (100/ratio) : 100)+'% 100%','important');
+    fill.style.setProperty('background-position','left center','important');
+    fill.style.setProperty('border-radius','999px','important');
+    fill.style.setProperty('box-shadow','0 0 12px rgba(255,255,255,.28)','important');
   }
 
   if(timerEl){
-    timerEl.style.color='#ffffff';
-    timerEl.style.textShadow='none';
+    timerEl.style.setProperty('color','#ffffff','important');
+    timerEl.style.setProperty('text-shadow','none','important');
   }
 }
 function renderHostQuestion(){
