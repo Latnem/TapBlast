@@ -1984,7 +1984,6 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   display:block !important;
   height:100% !important;
   min-height:100% !important;
-  width:100% !important;
   border-radius:999px !important;
   background:linear-gradient(90deg,#dc2626 0%,#f97316 33%,#facc15 66%,#16a34a 100%) !important;
   background-image:linear-gradient(90deg,#dc2626 0%,#f97316 33%,#facc15 66%,#16a34a 100%) !important;
@@ -3253,31 +3252,25 @@ function applyHostTimerVisual(room,q){
   const fill=$('hostProgressFill');
   const timerEl=$('hostTimer');
 
-  // Visible loading strip / progress bar.
-  // The strip itself contains the gradient and shrinks as time counts down.
   const gradient='linear-gradient(90deg,#dc2626 0%,#f97316 33%,#facc15 66%,#16a34a 100%)';
-
-  let activeColor='#16a34a';
-  if(ratio <= .75) activeColor='#ca8a04';
-  if(ratio <= .50) activeColor='#f97316';
-  if(ratio <= .25) activeColor='#dc2626';
 
   if(fill){
     fill.style.display='block';
     fill.style.height='100%';
     fill.style.width=(ratio*100)+'%';
-    fill.style.transform='none';
+    fill.style.maxWidth='100%';
     fill.style.background=gradient;
     fill.style.backgroundImage=gradient;
     fill.style.backgroundSize='100% 100%';
     fill.style.backgroundPosition='left center';
     fill.style.borderRadius='999px';
-    fill.style.boxShadow='0 0 14px '+activeColor;
+    fill.style.transition='width .25s linear';
+    fill.style.boxShadow='0 0 12px rgba(255,255,255,.15)';
   }
 
   if(timerEl){
-    timerEl.style.color=activeColor;
-    timerEl.style.textShadow='0 0 18px '+activeColor+'66';
+    timerEl.style.color='#ffffff';
+    timerEl.style.textShadow='0 0 10px rgba(255,255,255,.25)';
   }
 }
 function renderHostQuestion(){
