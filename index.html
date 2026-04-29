@@ -1969,18 +1969,27 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 }
 
 
-/* ===== V12.7 FIXED GRADIENT TIMER MASK ===== */
+/* ===== V12.8 HOST LOADING STRIP GRADIENT FIX ===== */
+.host-top .progress,
 .progress{
-  position:relative !important;
+  height:12px !important;
+  min-height:12px !important;
+  background:rgba(255,255,255,.18) !important;
+  border-radius:999px !important;
   overflow:hidden !important;
+  position:relative !important;
 }
 
-.progress > div{
-  width:100% !important;
+#hostProgressFill{
+  display:block !important;
   height:100% !important;
-  transform-origin:left center !important;
-  transition:transform .25s linear, box-shadow .25s linear !important;
-  will-change:transform !important;
+  min-height:100% !important;
+  width:100% !important;
+  border-radius:999px !important;
+  background:linear-gradient(90deg,#dc2626 0%,#f97316 33%,#facc15 66%,#16a34a 100%) !important;
+  background-image:linear-gradient(90deg,#dc2626 0%,#f97316 33%,#facc15 66%,#16a34a 100%) !important;
+  transform:none !important;
+  transition:width .25s linear, box-shadow .25s linear !important;
 }
 
 </style>
@@ -3244,12 +3253,9 @@ function applyHostTimerVisual(room,q){
   const fill=$('hostProgressFill');
   const timerEl=$('hostTimer');
 
-  // Fixed full-width gradient:
-  // left = red final danger, then orange, yellow, right = green safe.
-  // The full gradient never changes. As time decreases, the bar is clipped
-  // from the right, so green disappears first, then yellow, then orange,
-  // and red remains last.
-  const fullGradient='linear-gradient(90deg,#dc2626 0%,#ef4444 18%,#f97316 34%,#fb923c 50%,#facc15 66%,#fde047 82%,#22c55e 92%,#16a34a 100%)';
+  // Visible loading strip / progress bar.
+  // The strip itself contains the gradient and shrinks as time counts down.
+  const gradient='linear-gradient(90deg,#dc2626 0%,#f97316 33%,#facc15 66%,#16a34a 100%)';
 
   let activeColor='#16a34a';
   if(ratio <= .75) activeColor='#ca8a04';
@@ -3257,13 +3263,15 @@ function applyHostTimerVisual(room,q){
   if(ratio <= .25) activeColor='#dc2626';
 
   if(fill){
-    fill.style.width='100%';
-    fill.style.background=fullGradient;
-    fill.style.backgroundImage=fullGradient;
+    fill.style.display='block';
+    fill.style.height='100%';
+    fill.style.width=(ratio*100)+'%';
+    fill.style.transform='none';
+    fill.style.background=gradient;
+    fill.style.backgroundImage=gradient;
     fill.style.backgroundSize='100% 100%';
     fill.style.backgroundPosition='left center';
-    fill.style.transformOrigin='left center';
-    fill.style.transform='scaleX('+ratio+')';
+    fill.style.borderRadius='999px';
     fill.style.boxShadow='0 0 14px '+activeColor;
   }
 
