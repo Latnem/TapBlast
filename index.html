@@ -2253,7 +2253,120 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 }
 
 
-/* ===== V12.15 QUIZ SETTINGS ANSWER SHUFFLE ===== */
+/* ===== V12.17 CLEAN FIXES ===== */
+
+/* Host progress/loading strip */
+.host-top .progress,
+.progress{
+  height:12px !important;
+  min-height:12px !important;
+  background:rgba(255,255,255,.18) !important;
+  border-radius:999px !important;
+  overflow:hidden !important;
+  position:relative !important;
+}
+
+#hostProgressFill{
+  display:block !important;
+  height:100% !important;
+  min-height:100% !important;
+  border-radius:999px !important;
+  background:linear-gradient(90deg,#16a34a 0%,#22c55e 20%,#facc15 44%,#fde047 56%,#f97316 74%,#dc2626 100%) !important;
+  background-image:linear-gradient(90deg,#16a34a 0%,#22c55e 20%,#facc15 44%,#fde047 56%,#f97316 74%,#dc2626 100%) !important;
+  transform:none !important;
+  transition:width .25s linear !important;
+}
+
+#hostTimer{
+  color:#ffffff !important;
+  text-shadow:none !important;
+}
+
+/* Restore answer text and labels */
+.host-answer,
+.host-answer *,
+.student-answer,
+.student-answer *{
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+
+.host-answer .host-answer-shape,
+.student-answer .student-answer-shape{
+  color:#ffffff !important;
+  background:rgba(0,0,0,.22) !important;
+}
+
+/* Folder icon-only actions */
+.folder-inline-actions{
+  display:flex !important;
+  align-items:center !important;
+  gap:3px !important;
+  margin-left:auto !important;
+  flex-shrink:0 !important;
+}
+
+.folder-action-btn{
+  width:22px !important;
+  height:22px !important;
+  min-width:22px !important;
+  min-height:22px !important;
+  padding:0 !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+  background:rgba(255,255,255,.10) !important;
+  color:#ffffff !important;
+  border-radius:7px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  cursor:pointer !important;
+}
+
+.folder-action-btn .material-symbols-outlined{
+  font-size:15px !important;
+  line-height:1 !important;
+}
+
+.folder-action-btn.danger{
+  color:#fecaca !important;
+  border-color:rgba(248,113,113,.35) !important;
+}
+
+.folder-name{
+  min-width:0 !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+
+/* Quiz settings separate card */
+.editor-content-stack{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:16px !important;
+}
+
+.editor-card-title{
+  font-family:'Fraunces', serif;
+  font-size:1.08rem;
+  font-weight:850;
+  color:var(--ink-900);
+  margin-bottom:14px;
+  letter-spacing:-.01em;
+}
+
+.quiz-settings-grid{
+  display:grid;
+  grid-template-columns:minmax(220px,1fr) minmax(180px,260px);
+  gap:14px;
+  align-items:end;
+}
+
+.quiz-cover-drop{
+  min-height:86px !important;
+  padding:14px !important;
+}
+
 .quiz-settings-check{
   display:inline-flex;
   align-items:center;
@@ -2277,8 +2390,10 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   accent-color:var(--royal-600);
 }
 
-.quiz-settings-check span{
-  line-height:1.2;
+@media(max-width:760px){
+  .quiz-settings-grid{
+    grid-template-columns:1fr;
+  }
 }
 
 </style>
@@ -2409,7 +2524,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
                 <input id="quizTitle" type="text" placeholder="e.g., Fractions Fundamentals">
               </div>
               <div class="field">
-                <label for="quizFolderSelect">Folder</label>
+                <label for="quizFolderSelect">Quiz Folder</label>
                 <select id="quizFolderSelect"></select>
               </div>
             </div>
@@ -3084,8 +3199,12 @@ function renderFolders(){
       <span class="folder-count">${quizCountForFolder(item.id)}</span>
       ${item.id!=='all'&&item.id!=='unsorted'?`
         <div class="folder-inline-actions">
-          <button class="folder-action-btn" type="button" data-folder-rename="${item.id}" title="Rename folder" aria-label="Rename folder">Rename</button>
-          <button class="folder-action-btn danger" type="button" data-folder-delete="${item.id}" title="Delete folder" aria-label="Delete folder">Delete</button>
+          <button class="folder-action-btn" type="button" data-folder-rename="${item.id}" title="Rename folder" aria-label="Rename folder">
+            <span class="material-symbols-outlined">edit</span>
+          </button>
+          <button class="folder-action-btn danger" type="button" data-folder-delete="${item.id}" title="Delete folder" aria-label="Delete folder">
+            <span class="material-symbols-outlined">close</span>
+          </button>
         </div>`:''}
     </div>`).join('');
   document.querySelectorAll('[data-folder-id]').forEach(el=>{
@@ -3595,25 +3714,21 @@ function applyHostTimerVisual(room,q){
   const fill=$('hostProgressFill');
   const timerEl=$('hostTimer');
 
-  // Loading strip / progress bar:
-  // Full bar order is GREEN -> YELLOW -> ORANGE -> RED.
-  // As time counts down, the bar clips from the LEFT:
-  // green disappears first, then yellow, then orange, red remains last.
-  const fullGradient='linear-gradient(90deg,#16a34a 0%,#22c55e 18%,#facc15 38%,#fde047 52%,#f97316 68%,#fb923c 82%,#dc2626 100%)';
-  const clipLeft=(1-ratio)*100;
+  // Visible progress strip: green -> yellow -> orange -> red.
+  // Width shrinks as time counts down.
+  const gradient='linear-gradient(90deg,#16a34a 0%,#22c55e 20%,#facc15 44%,#fde047 56%,#f97316 74%,#dc2626 100%)';
 
   if(fill){
     fill.style.display='block';
-    fill.style.width='100%';
     fill.style.height='100%';
+    fill.style.width=(ratio*100)+'%';
     fill.style.transform='none';
-    fill.style.background=fullGradient;
-    fill.style.backgroundImage=fullGradient;
+    fill.style.background=gradient;
+    fill.style.backgroundImage=gradient;
     fill.style.backgroundSize='100% 100%';
     fill.style.backgroundPosition='left center';
-    fill.style.clipPath='inset(0 0 0 '+clipLeft+'%)';
     fill.style.borderRadius='999px';
-    fill.style.boxShadow='0 0 14px rgba(255,255,255,.28)';
+    fill.style.boxShadow='0 0 12px rgba(255,255,255,.28)';
   }
 
   if(timerEl){
