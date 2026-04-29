@@ -2506,6 +2506,100 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   -webkit-text-fill-color:#ffffff !important;
 }
 
+
+/* ===== V12.19 STRIP + FOLDER MANAGE MODE ===== */
+
+/* Progress strip must visibly shrink and keep gradient */
+.host-top .progress,
+.progress{
+  height:12px !important;
+  min-height:12px !important;
+  background:rgba(255,255,255,.18) !important;
+  border-radius:999px !important;
+  overflow:hidden !important;
+  position:relative !important;
+}
+
+#hostProgressFill{
+  display:block !important;
+  position:relative !important;
+  left:0 !important;
+  top:0 !important;
+  height:100% !important;
+  min-height:100% !important;
+  width:100% !important;
+  border-radius:999px !important;
+  background:linear-gradient(90deg,#dc2626 0%,#ef4444 18%,#f97316 36%,#fb923c 52%,#facc15 68%,#fde047 82%,#22c55e 94%,#16a34a 100%) !important;
+  background-image:linear-gradient(90deg,#dc2626 0%,#ef4444 18%,#f97316 36%,#fb923c 52%,#facc15 68%,#fde047 82%,#22c55e 94%,#16a34a 100%) !important;
+  background-position:left center !important;
+  transform:none !important;
+  clip-path:none !important;
+  transition:width .25s linear, background-size .25s linear !important;
+}
+
+#hostTimer{
+  color:#ffffff !important;
+  text-shadow:none !important;
+}
+
+/* Folder manage button */
+.folder-manage-svg{
+  width:17px !important;
+  height:17px !important;
+  display:block !important;
+  fill:none !important;
+  stroke:currentColor !important;
+  stroke-width:2.1 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+}
+
+#folderManageBtn.active{
+  background:rgba(255,255,255,.18) !important;
+  color:#ffffff !important;
+}
+
+/* Hide folder rename/delete icons unless manage mode is ON */
+.folder-inline-actions{
+  display:none !important;
+}
+
+.folder-inline-actions.show{
+  display:flex !important;
+  align-items:center !important;
+  gap:3px !important;
+  margin-left:auto !important;
+  flex-shrink:0 !important;
+}
+
+.folder-action-btn{
+  width:22px !important;
+  height:22px !important;
+  min-width:22px !important;
+  min-height:22px !important;
+  padding:0 !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border-radius:7px !important;
+}
+
+.folder-action-svg{
+  width:14px !important;
+  height:14px !important;
+  display:block !important;
+  fill:none !important;
+  stroke:currentColor !important;
+  stroke-width:2.2 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+  color:#ffffff !important;
+}
+
+.folder-action-btn.danger .folder-action-svg{
+  color:#ffb4b4 !important;
+}
+
 </style>
 </head>
 <body>
@@ -2547,6 +2641,12 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
       <aside class="left-pane library-sidebar">
         <div class="folder-head">
           <div class="folder-head-title"></div>
+          <button id="folderManageBtn" class="btn icon ghost" type="button" title="Manage folders" aria-label="Manage folders">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="folder-manage-svg">
+              <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z"/>
+              <path d="M14 7l3 3"/>
+            </svg>
+          </button>
           <button id="newFolderBtn" class="btn icon ghost" type="button" title="New folder">
             <span class="material-symbols-outlined">create_new_folder</span>
           </button>
@@ -3063,7 +3163,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   _iconObserver.observe(document.body, {childList:true, subtree:true});
 });
 
-let currentTeacher=null, currentRole='teacher', appSettings={defaultSeconds:20,defaultQuestionType:'quiz'},
+let currentTeacher=null, currentRole='teacher', appSettings={defaultSeconds:20,defaultQuestionType:'quiz'}, folderManageMode=false,
     folders=[], quizzes=[], sharedInbox=[], selectedFolderId='all', searchTerm='',
     editorQuiz=null, selectedQuestionId=null,
     hostRoom=null, hostRoomUnsub=null, hostTimerHandle=null, revealHandle=null,
@@ -3297,6 +3397,7 @@ function closeFolderMenus(){
   document.querySelectorAll('.folder-menu-pop').forEach(el=>el.classList.add('hidden'));
 }
 function renderFolders(){
+  if($('folderManageBtn')) $('folderManageBtn').classList.toggle('active', folderManageMode);
   const items=[
     {id:'all',name:'All Quizzes',icon:'folder_open'},
     {id:'unsorted',name:'Unsorted',icon:'folder_off'},
@@ -3308,7 +3409,7 @@ function renderFolders(){
       <div class="folder-name">${esc(item.name)}</div>
       <span class="folder-count">${quizCountForFolder(item.id)}</span>
       ${item.id!=='all'&&item.id!=='unsorted'?`
-        <div class="folder-inline-actions">
+        <div class="folder-inline-actions ${folderManageMode?'show':''}">
           <button class="folder-action-btn" type="button" data-folder-rename="${item.id}" title="Rename folder" aria-label="Rename folder">
             <svg viewBox="0 0 24 24" aria-hidden="true" class="folder-action-svg"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M14 7l3 3"/></svg>
           </button>
@@ -3825,23 +3926,27 @@ function applyHostTimerVisual(room,q){
   const fill=$('hostProgressFill');
   const timerEl=$('hostTimer');
 
-  // Full gradient lives on a full-width strip.
-  // As time counts down, clip from the right so the strip visibly gets shorter.
-  // Order: red/orange/yellow/green, so green disappears first and red remains last.
-  const gradient='linear-gradient(90deg,#dc2626 0%,#ef4444 20%,#f97316 40%,#fb923c 55%,#facc15 72%,#fde047 84%,#22c55e 94%,#16a34a 100%)';
-  const clipRight=(1-ratio)*100;
+  // Visible loading strip.
+  // Full gradient order left-to-right: red, orange, yellow, green.
+  // The fill gets shorter from the right as time counts down.
+  const gradient='linear-gradient(90deg,#dc2626 0%,#ef4444 18%,#f97316 36%,#fb923c 52%,#facc15 68%,#fde047 82%,#22c55e 94%,#16a34a 100%)';
 
   if(fill){
     fill.style.display='block';
-    fill.style.width='100%';
+    fill.style.position='relative';
+    fill.style.left='0';
+    fill.style.top='0';
     fill.style.height='100%';
+    fill.style.width=(ratio*100)+'%';
+    fill.style.minWidth=ratio>0 ? '3px' : '0';
     fill.style.transform='none';
+    fill.style.clipPath='none';
     fill.style.background=gradient;
     fill.style.backgroundImage=gradient;
-    fill.style.backgroundSize='100% 100%';
+    fill.style.backgroundSize=(ratio>0 ? (100/ratio) : 100)+'% 100%';
     fill.style.backgroundPosition='left center';
-    fill.style.clipPath='inset(0 '+clipRight+'% 0 0)';
     fill.style.borderRadius='999px';
+    fill.style.boxShadow='0 0 12px rgba(255,255,255,.28)';
   }
 
   if(timerEl){
@@ -4682,6 +4787,7 @@ function bindEvents(){
   $('googleLoginBtn').onclick=signInTeacher;
   $('logoutBtn').onclick=logoutTeacher;
   $('mobileFoldersBtn').onclick=()=>document.body.classList.toggle('folders-open');
+  $('folderManageBtn').onclick=()=>{ folderManageMode=!folderManageMode; renderFolders(); };
   $('foldersBackdrop').onclick=()=>document.body.classList.remove('folders-open');
   $('newFolderBtn').onclick=()=>openFolderModal('new');
   $('folderModalCancel').onclick=closeFolderModal;
