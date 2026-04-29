@@ -2687,6 +2687,64 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   text-shadow:none !important;
 }
 
+
+/* ===== V12.22 QUIZ SETTINGS RIGHT PANEL ===== */
+.editor-main-grid{
+  display:grid !important;
+  grid-template-columns:minmax(0, 1fr) 320px !important;
+  gap:16px !important;
+  align-items:start !important;
+}
+
+.editor-right-settings{
+  position:sticky !important;
+  top:96px !important;
+  align-self:start !important;
+}
+
+.editor-right-settings .quiz-settings-card{
+  max-width:none !important;
+  padding:18px !important;
+  border-radius:18px !important;
+}
+
+.editor-right-settings .editor-card-title{
+  font-size:1.05rem !important;
+  margin-bottom:14px !important;
+}
+
+.editor-right-settings .quiz-settings-grid{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:12px !important;
+}
+
+.editor-right-settings .quiz-cover-drop{
+  min-height:82px !important;
+  padding:14px !important;
+}
+
+.editor-right-settings .quiz-settings-check{
+  width:100% !important;
+  font-size:.84rem !important;
+  align-items:flex-start !important;
+  padding:9px 10px !important;
+}
+
+/* Remove previous left-sidebar placement space if any remains */
+.sidebar-quiz-settings{
+  display:none !important;
+}
+
+@media(max-width:1100px){
+  .editor-main-grid{
+    grid-template-columns:1fr !important;
+  }
+  .editor-right-settings{
+    position:static !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2811,19 +2869,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
           <button id="addQuestionBtn" class="btn primary" type="button" style="width:100%;margin-top:14px">
             <span class="material-symbols-outlined">add</span>Add Question
           </button>
-          <div class="sidebar-quiz-settings">
-<div class="panel quiz-settings-card" style="max-width:900px">
-            <div class="editor-card-title">Quiz Settings</div>
-            <div class="quiz-settings-grid">
-              <div class="field">
-                <label for="quizTitle">Quiz Title</label>
-                <input id="quizTitle" type="text" placeholder="e.g., Fractions Fundamentals">
-              </div>
-              <div class="field">
-                <label for="quizFolderSelect">Quiz Folder</label>
-                <select id="quizFolderSelect"></select>
-              </div>
-            </div>
+
             <div class="field">
               <label>Quiz Cover</label>
               <div id="coverDrop" class="media-drop quiz-cover-drop">
@@ -2841,7 +2887,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
           </div>
           </div>
         </aside>
-        <main class="content-wrap">
+        <main class="content-wrap editor-main-grid">
 
           <div class="panel question-editor-card" style="max-width:900px">
             <div class="editor-card-title">Question</div>
@@ -2873,7 +2919,21 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
               </button>
             </div>
           </div>
-        </main>
+        
+          <aside class="editor-right-settings">
+            <div class="panel quiz-settings-card" style="max-width:900px">
+            <div class="editor-card-title">Quiz Settings</div>
+            <div class="quiz-settings-grid">
+              <div class="field">
+                <label for="quizTitle">Quiz Title</label>
+                <input id="quizTitle" type="text" placeholder="e.g., Fractions Fundamentals">
+              </div>
+              <div class="field">
+                <label for="quizFolderSelect">Quiz Folder</label>
+                <select id="quizFolderSelect"></select>
+              </div>
+          </aside>
+</main>
       </div>
     </div>
   </div>
@@ -3586,9 +3646,6 @@ function renderLibrary(){
         </div>
         <div class="quiz-actions">
           <button class="btn outline" type="button" data-edit="${q.id}"><span class="material-symbols-outlined">edit</span>Edit</button>
-          <button class="btn outline icon" type="button" data-share="${q.id}" title="Share quiz" aria-label="Share quiz">
-            <span class="material-symbols-outlined">share</span>
-          </button>
           <button class="btn accent" type="button" data-host="${q.id}"><span class="material-symbols-outlined">play_arrow</span>Host</button>
         </div>
       </div>
