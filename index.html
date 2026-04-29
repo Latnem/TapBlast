@@ -2745,6 +2745,62 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   }
 }
 
+
+/* ===== V12.24 FINAL CHECKED TIMER/LAYOUT CLEANUP ===== */
+.host-top .progress,
+.progress{
+  height:12px !important;
+  min-height:12px !important;
+  background:rgba(255,255,255,.18) !important;
+  border-radius:999px !important;
+  overflow:hidden !important;
+  position:relative !important;
+}
+
+#hostProgressFill{
+  display:block !important;
+  position:absolute !important;
+  left:0 !important;
+  top:0 !important;
+  height:100% !important;
+  width:100% !important;
+  min-width:0 !important;
+  border-radius:999px !important;
+  background:linear-gradient(90deg,#dc2626 0%,#ef4444 18%,#f97316 36%,#fb923c 52%,#facc15 68%,#fde047 82%,#22c55e 94%,#16a34a 100%) !important;
+  background-image:linear-gradient(90deg,#dc2626 0%,#ef4444 18%,#f97316 36%,#fb923c 52%,#facc15 68%,#fde047 82%,#22c55e 94%,#16a34a 100%) !important;
+  background-size:100% 100% !important;
+  background-position:left center !important;
+  transform-origin:left center !important;
+  transition:transform .25s linear !important;
+  will-change:transform !important;
+}
+
+#hostTimer{
+  color:#ffffff !important;
+  text-shadow:none !important;
+}
+
+/* Right panel settings should remain aligned beside question editor */
+.editor-main-grid{
+  display:grid !important;
+  grid-template-columns:minmax(0, 1fr) 320px !important;
+  gap:16px !important;
+  align-items:start !important;
+}
+.editor-right-settings{
+  position:sticky !important;
+  top:96px !important;
+  align-self:start !important;
+}
+@media(max-width:1100px){
+  .editor-main-grid{
+    grid-template-columns:1fr !important;
+  }
+  .editor-right-settings{
+    position:static !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4075,7 +4131,6 @@ function applyHostTimerVisual(room,q){
   const fill=$('hostProgressFill');
   const timerEl=$('hostTimer');
 
-  // Full gradient strip. It shrinks visually with scaleX.
   const gradient='linear-gradient(90deg,#dc2626 0%,#ef4444 18%,#f97316 36%,#fb923c 52%,#facc15 68%,#fde047 82%,#22c55e 94%,#16a34a 100%)';
 
   if(fill){
@@ -4241,7 +4296,8 @@ function renderHostQuestion(){
       }
     },1000);
     $('hostTimer').textContent='--';
-    $('hostProgressFill').style.width='100%';
+    hostRoom.currentRemainingMs=(q.seconds||20)*1000;
+    applyHostTimerVisual(hostRoom,q);
     return;
   }
 
@@ -4250,8 +4306,9 @@ function renderHostQuestion(){
       if(previewMode){
         const qq=hostRoom.quiz.questions[hostRoom.currentQ];
         const remain=Math.max(0,(hostRoom.currentQuestionEndsAt||0)-Date.now());
+        hostRoom.currentRemainingMs=remain;
         $('hostTimer').textContent=String(Math.ceil(remain/1000));
-        $('hostProgressFill').style.width=`${Math.max(0,Math.min(100,(remain/((qq.seconds||20)*1000))*100))}%`;
+        applyHostTimerVisual(hostRoom,qq);
         if(remain<=0){ clearInterval(hostTimerHandle); hostTimerHandle=null; previewLockQuestion(); }
       } else {
         const snap=await roomRef(hostRoom.code).get();
@@ -4259,20 +4316,20 @@ function renderHostQuestion(){
         if(!current||current.phase!=='question_answers'){ clearInterval(hostTimerHandle); hostTimerHandle=null; return; }
         const qq=current.quiz.questions[current.currentQ];
         const remain=Math.max(0,(current.currentQuestionEndsAt||0)-Date.now());
+        current.currentRemainingMs=remain;
+        hostRoom.currentRemainingMs=remain;
         $('hostTimer').textContent=String(Math.ceil(remain/1000));
-        $('hostProgressFill').style.width=`${Math.max(0,Math.min(100,(remain/((qq.seconds||20)*1000))*100))}%`;
+        applyHostTimerVisual(current,qq);
         if(remain<=0){ clearInterval(hostTimerHandle); hostTimerHandle=null; await lockQuestion(current); }
       }
     },250);
   } else if(hostRoom.phase==='paused'){
     $('hostTimer').textContent=String(Math.ceil((hostRoom.currentRemainingMs||0)/1000));
+    applyHostTimerVisual(hostRoom,q);
   } else {
     $('hostTimer').textContent=hostRoom.phase==='question_media'?'--':String(q.seconds||20);
-    if(hostRoom.phase==='locked' || hostRoom.phase==='answer_results'){
-      $('hostProgressFill').style.width='0%';
-    } else {
-      $('hostProgressFill').style.width='100%';
-    }
+    hostRoom.currentRemainingMs=(hostRoom.phase==='locked' || hostRoom.phase==='answer_results') ? 0 : ((q.seconds||20)*1000);
+    applyHostTimerVisual(hostRoom,q);
   }
 }
 async function startQuiz(){ await roomRef(hostRoom.code).update({phase:'countdown',updatedAt:Date.now()}); }
