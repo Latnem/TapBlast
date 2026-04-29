@@ -2606,6 +2606,87 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   transition:width .25s linear, background-size .25s linear !important;
 }
 
+
+/* ===== V12.21 SIDEBAR QUIZ SETTINGS + SHRINKING STRIP ===== */
+
+/* Quiz Settings lives inside left editor column */
+.sidebar-quiz-settings{
+  margin-top:18px !important;
+}
+
+.editor-left .quiz-settings-card{
+  max-width:none !important;
+  padding:14px !important;
+  border-radius:16px !important;
+}
+
+.editor-left .editor-card-title{
+  font-size:.98rem !important;
+  margin-bottom:12px !important;
+}
+
+.editor-left .quiz-settings-grid{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:10px !important;
+}
+
+.editor-left .quiz-cover-drop{
+  min-height:72px !important;
+  padding:12px !important;
+  font-size:.82rem !important;
+}
+
+.editor-left .field{
+  margin-bottom:11px !important;
+}
+
+.editor-left .quiz-settings-check{
+  width:100% !important;
+  font-size:.78rem !important;
+  align-items:flex-start !important;
+  padding:8px !important;
+}
+
+/* Question editor card only contains question-specific content */
+.question-editor-card{
+  max-width:900px !important;
+}
+
+/* Progress strip forced to shrink by transform */
+.host-top .progress,
+.progress{
+  height:12px !important;
+  min-height:12px !important;
+  background:rgba(255,255,255,.18) !important;
+  border-radius:999px !important;
+  overflow:hidden !important;
+  position:relative !important;
+}
+
+#hostProgressFill{
+  display:block !important;
+  position:absolute !important;
+  left:0 !important;
+  top:0 !important;
+  height:100% !important;
+  width:100% !important;
+  min-width:0 !important;
+  border-radius:999px !important;
+  background:linear-gradient(90deg,#dc2626 0%,#ef4444 18%,#f97316 36%,#fb923c 52%,#facc15 68%,#fde047 82%,#22c55e 94%,#16a34a 100%) !important;
+  background-image:linear-gradient(90deg,#dc2626 0%,#ef4444 18%,#f97316 36%,#fb923c 52%,#facc15 68%,#fde047 82%,#22c55e 94%,#16a34a 100%) !important;
+  background-size:100% 100% !important;
+  background-position:left center !important;
+  transform-origin:left center !important;
+  transition:transform .25s linear !important;
+  will-change:transform !important;
+}
+
+#hostTimer{
+  color:#ffffff !important;
+  text-shadow:none !important;
+}
+
 </style>
 </head>
 <body>
@@ -2730,9 +2811,8 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
           <button id="addQuestionBtn" class="btn primary" type="button" style="width:100%;margin-top:14px">
             <span class="material-symbols-outlined">add</span>Add Question
           </button>
-        </aside>
-        <main class="content-wrap editor-content-stack">
-          <div class="panel quiz-settings-card" style="max-width:900px">
+          <div class="sidebar-quiz-settings">
+<div class="panel quiz-settings-card" style="max-width:900px">
             <div class="editor-card-title">Quiz Settings</div>
             <div class="quiz-settings-grid">
               <div class="field">
@@ -2759,6 +2839,9 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
               <span>Shuffle answer order during game</span>
             </label>
           </div>
+          </div>
+        </aside>
+        <main class="content-wrap">
 
           <div class="panel question-editor-card" style="max-width:900px">
             <div class="editor-card-title">Question</div>
@@ -3503,6 +3586,9 @@ function renderLibrary(){
         </div>
         <div class="quiz-actions">
           <button class="btn outline" type="button" data-edit="${q.id}"><span class="material-symbols-outlined">edit</span>Edit</button>
+          <button class="btn outline icon" type="button" data-share="${q.id}" title="Share quiz" aria-label="Share quiz">
+            <span class="material-symbols-outlined">share</span>
+          </button>
           <button class="btn accent" type="button" data-host="${q.id}"><span class="material-symbols-outlined">play_arrow</span>Host</button>
         </div>
       </div>
@@ -3932,26 +4018,23 @@ function applyHostTimerVisual(room,q){
   const fill=$('hostProgressFill');
   const timerEl=$('hostTimer');
 
-  // Visible loading strip.
-  // Full gradient order left-to-right: red, orange, yellow, green.
-  // The fill width shrinks as time counts down.
+  // Full gradient strip. It shrinks visually with scaleX.
   const gradient='linear-gradient(90deg,#dc2626 0%,#ef4444 18%,#f97316 36%,#fb923c 52%,#facc15 68%,#fde047 82%,#22c55e 94%,#16a34a 100%)';
 
   if(fill){
-    const pct=(ratio*100)+'%';
     fill.style.setProperty('display','block','important');
-    fill.style.setProperty('position','relative','important');
+    fill.style.setProperty('position','absolute','important');
     fill.style.setProperty('left','0','important');
     fill.style.setProperty('top','0','important');
     fill.style.setProperty('height','100%','important');
-    fill.style.setProperty('min-height','100%','important');
-    fill.style.setProperty('width',pct,'important');
-    fill.style.setProperty('min-width',ratio>0 ? '3px' : '0','important');
-    fill.style.setProperty('transform','none','important');
+    fill.style.setProperty('width','100%','important');
+    fill.style.setProperty('min-width','0','important');
+    fill.style.setProperty('transform-origin','left center','important');
+    fill.style.setProperty('transform','scaleX('+ratio+')','important');
     fill.style.setProperty('clip-path','none','important');
     fill.style.setProperty('background',gradient,'important');
     fill.style.setProperty('background-image',gradient,'important');
-    fill.style.setProperty('background-size',(ratio>0 ? (100/ratio) : 100)+'% 100%','important');
+    fill.style.setProperty('background-size','100% 100%','important');
     fill.style.setProperty('background-position','left center','important');
     fill.style.setProperty('border-radius','999px','important');
     fill.style.setProperty('box-shadow','0 0 12px rgba(255,255,255,.28)','important');
