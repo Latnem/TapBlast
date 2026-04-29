@@ -1969,7 +1969,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 }
 
 
-/* ===== V12.8 HOST LOADING STRIP GRADIENT FIX ===== */
+/* ===== V12.9 SHRINKING GRADIENT LOADING STRIP ===== */
 .host-top .progress,
 .progress{
   height:12px !important;
@@ -1984,11 +1984,170 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   display:block !important;
   height:100% !important;
   min-height:100% !important;
+  width:100% !important;
   border-radius:999px !important;
-  background:linear-gradient(90deg,#dc2626 0%,#f97316 33%,#facc15 66%,#16a34a 100%) !important;
-  background-image:linear-gradient(90deg,#dc2626 0%,#f97316 33%,#facc15 66%,#16a34a 100%) !important;
+  background:linear-gradient(90deg,#16a34a 0%,#22c55e 18%,#facc15 38%,#fde047 52%,#f97316 68%,#fb923c 82%,#dc2626 100%) !important;
+  background-image:linear-gradient(90deg,#16a34a 0%,#22c55e 18%,#facc15 38%,#fde047 52%,#f97316 68%,#fb923c 82%,#dc2626 100%) !important;
+  background-size:100% 100% !important;
+  background-position:left center !important;
   transform:none !important;
-  transition:width .25s linear, box-shadow .25s linear !important;
+  transform-origin:left center !important;
+  transition:clip-path .25s linear !important;
+  will-change:clip-path !important;
+}
+
+#hostTimer{
+  color:#ffffff !important;
+  text-shadow:none !important;
+}
+
+
+/* ===== V12.10 COMPACT SEARCH + FOLDER INPUTS ===== */
+
+/* Search bar: compact but still comfortable */
+.search-row{
+  margin-bottom:12px !important;
+}
+
+.search-wrap{
+  max-width:420px !important;
+}
+
+.search-wrap input{
+  height:34px !important;
+  min-height:34px !important;
+  padding:6px 10px 6px 34px !important;
+  font-size:.84rem !important;
+  border-radius:10px !important;
+}
+
+.search-wrap .material-symbols-outlined,
+.search-wrap .icon{
+  left:10px !important;
+  width:16px !important;
+  height:16px !important;
+  font-size:16px !important;
+}
+
+/* New/Rename folder modal: smaller, cleaner */
+#folderModal .modal-card{
+  max-width:360px !important;
+  padding:18px !important;
+  border-radius:16px !important;
+}
+
+#folderModal .modal-title{
+  font-size:1.05rem !important;
+  margin-bottom:10px !important;
+}
+
+#folderModal .field{
+  margin-bottom:12px !important;
+}
+
+#folderNameInput{
+  height:34px !important;
+  min-height:34px !important;
+  padding:6px 10px !important;
+  font-size:.84rem !important;
+  border-radius:10px !important;
+}
+
+#folderModal .modal-actions{
+  gap:8px !important;
+  margin-top:8px !important;
+}
+
+#folderModal .btn{
+  height:30px !important;
+  min-height:30px !important;
+  padding:5px 11px !important;
+  font-size:.78rem !important;
+  border-radius:8px !important;
+}
+
+
+/* ===== V12.11 SETTINGS DEFAULT TIME COMPACT ===== */
+#defaultSecondsInput{
+  width:72px !important;
+  max-width:72px !important;
+  height:34px !important;
+  min-height:34px !important;
+  padding:6px 8px !important;
+  text-align:center !important;
+  font-size:.84rem !important;
+  border-radius:10px !important;
+}
+
+#settingsTab-defaults .field{
+  margin-bottom:12px !important;
+}
+
+
+/* ===== V12.12 FOLDER ACTION MENU ===== */
+.folder-item{
+  position:relative !important;
+  overflow:visible !important;
+}
+
+.folder-menu-wrap{
+  position:relative;
+  flex-shrink:0;
+}
+
+.folder-menu-btn{
+  width:24px;
+  height:24px;
+  border:0;
+  border-radius:7px;
+  background:transparent;
+  color:inherit;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+
+.folder-menu-btn:hover{
+  background:rgba(255,255,255,.12);
+}
+
+.folder-menu-pop{
+  position:absolute;
+  right:0;
+  top:28px;
+  min-width:116px;
+  background:#ffffff;
+  color:var(--ink-900);
+  border:1px solid var(--line);
+  border-radius:10px;
+  box-shadow:0 14px 32px rgba(15,32,80,.18);
+  padding:5px;
+  z-index:9999;
+}
+
+.folder-menu-pop button{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:var(--ink-900);
+  text-align:left;
+  padding:8px 9px;
+  border-radius:7px;
+  font-size:.78rem;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.folder-menu-pop button:hover{
+  background:var(--sky-50);
+  color:var(--royal-700);
+}
+
+.library-sidebar,
+.left-pane,
+.folder-list{
+  overflow:visible !important;
 }
 
 </style>
@@ -2360,16 +2519,8 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 
     <section id="settingsTab-defaults" class="settings-section">
       <div class="field">
-        <label for="defaultSecondsInput">Default time for new questions</label>
+        <label for="defaultSecondsInput">Default time</label>
         <input id="defaultSecondsInput" type="number" min="5" max="120" value="20">
-      </div>
-      <div class="field">
-        <label for="defaultQuestionTypeSelect">Default question type</label>
-        <select id="defaultQuestionTypeSelect">
-          <option value="quiz">Quiz</option>
-          <option value="truefalse">True or False</option>
-          <option value="type">Type Answer</option>
-        </select>
       </div>
       <button id="saveDefaultsBtn" type="button" class="btn accent">Save Defaults</button>
       <div id="defaultsSavedLine" class="settings-note"></div>
@@ -2746,6 +2897,9 @@ function quizCountForFolder(id){
   if(id==='unsorted') return quizzes.filter(q=>!q.folderId).length;
   return quizzes.filter(q=>q.folderId===id).length;
 }
+function closeFolderMenus(){
+  document.querySelectorAll('.folder-menu-pop').forEach(el=>el.classList.add('hidden'));
+}
 function renderFolders(){
   const items=[
     {id:'all',name:'All Quizzes',icon:'folder_open'},
@@ -2757,15 +2911,26 @@ function renderFolders(){
       <span class="material-symbols-outlined">${item.icon}</span>
       <div class="folder-name">${esc(item.name)}</div>
       <span class="folder-count">${quizCountForFolder(item.id)}</span>
-      ${item.id!=='all'&&item.id!=='unsorted'?`<button class="btn" type="button" data-folder-menu="${item.id}"><span class="material-symbols-outlined" style="font-size:18px">more_vert</span></button>`:''}
+      ${item.id!=='all'&&item.id!=='unsorted'?`
+        <div class="folder-menu-wrap">
+          <button class="folder-menu-btn" type="button" data-folder-menu="${item.id}" title="Folder options" aria-label="Folder options">
+            <span class="material-symbols-outlined" style="font-size:18px">more_vert</span>
+          </button>
+          <div class="folder-menu-pop hidden" id="folder-menu-${item.id}">
+            <button type="button" data-folder-rename="${item.id}">Rename</button>
+            <button type="button" data-folder-delete="${item.id}">Delete</button>
+          </div>
+        </div>`:''}
     </div>`).join('');
   document.querySelectorAll('[data-folder-id]').forEach(el=>{
     const id=el.dataset.folderId;
     el.addEventListener('click',e=>{
-      if(e.target.closest('[data-folder-menu]')) return;
+      if(e.target.closest('.folder-menu-wrap')) return;
       selectedFolderId=id;
+      closeFolderMenus();
       renderFolders();
       renderLibrary();
+      document.body.classList.remove('folders-open');
     });
     el.addEventListener('dragover',e=>{e.preventDefault(); el.classList.add('drop-target');});
     el.addEventListener('dragleave',()=>el.classList.remove('drop-target'));
@@ -2780,11 +2945,29 @@ function renderFolders(){
   document.querySelectorAll('[data-folder-menu]').forEach(btn=>btn.onclick=e=>{
     e.stopPropagation();
     const folderId=btn.dataset.folderMenu;
+    const pop=$('folder-menu-'+folderId);
+    const wasOpen=pop && !pop.classList.contains('hidden');
+    closeFolderMenus();
+    if(pop) pop.classList.toggle('hidden', wasOpen);
+  });
+  document.querySelectorAll('[data-folder-rename]').forEach(btn=>btn.onclick=e=>{
+    e.stopPropagation();
+    const folderId=btn.dataset.folderRename;
     const folder=folders.find(f=>f.id===folderId);
+    closeFolderMenus();
+    if(folder) openFolderModal('rename',folderId,folder.name);
+  });
+  document.querySelectorAll('[data-folder-delete]').forEach(btn=>btn.onclick=async e=>{
+    e.stopPropagation();
+    const folderId=btn.dataset.folderDelete;
+    const folder=folders.find(f=>f.id===folderId);
+    closeFolderMenus();
     if(!folder) return;
-    const action=prompt('Type: rename or delete','rename');
-    if(action==='rename') openFolderModal('rename',folderId,folder.name);
-    else if(action==='delete') deleteFolder(folderId);
+    const count=quizCountForFolder(folderId);
+    const msg=count>0
+      ? `Delete folder "${folder.name}"? ${count} quiz${count===1?'':'zes'} will move to Unsorted.`
+      : `Delete folder "${folder.name}"?`;
+    if(confirm(msg)) await deleteFolder(folderId);
   });
 }
 function filterQuizzes(){
@@ -2857,7 +3040,7 @@ function bindLibraryEvents(){
     card.addEventListener('dragend',()=>card.classList.remove('dragging'));
   });
 }
-document.addEventListener('click', e=>{ if(!e.target.closest('.menu-wrap')) closeAllMenus(); });
+document.addEventListener('click', e=>{ if(!e.target.closest('.menu-wrap')) closeAllMenus(); if(!e.target.closest('.folder-menu-wrap')) closeFolderMenus(); });
 
 async function saveFolder(folder){ await fRef(currentTeacher.uid).child(folder.id).set(folder); await loadFolders(); }
 function openFolderModal(mode, folderId='', name=''){
@@ -3252,25 +3435,30 @@ function applyHostTimerVisual(room,q){
   const fill=$('hostProgressFill');
   const timerEl=$('hostTimer');
 
-  const gradient='linear-gradient(90deg,#dc2626 0%,#f97316 33%,#facc15 66%,#16a34a 100%)';
+  // Loading strip / progress bar:
+  // Full bar order is GREEN -> YELLOW -> ORANGE -> RED.
+  // As time counts down, the bar clips from the LEFT:
+  // green disappears first, then yellow, then orange, red remains last.
+  const fullGradient='linear-gradient(90deg,#16a34a 0%,#22c55e 18%,#facc15 38%,#fde047 52%,#f97316 68%,#fb923c 82%,#dc2626 100%)';
+  const clipLeft=(1-ratio)*100;
 
   if(fill){
     fill.style.display='block';
+    fill.style.width='100%';
     fill.style.height='100%';
-    fill.style.width=(ratio*100)+'%';
-    fill.style.maxWidth='100%';
-    fill.style.background=gradient;
-    fill.style.backgroundImage=gradient;
+    fill.style.transform='none';
+    fill.style.background=fullGradient;
+    fill.style.backgroundImage=fullGradient;
     fill.style.backgroundSize='100% 100%';
     fill.style.backgroundPosition='left center';
+    fill.style.clipPath='inset(0 0 0 '+clipLeft+'%)';
     fill.style.borderRadius='999px';
-    fill.style.transition='width .25s linear';
-    fill.style.boxShadow='0 0 12px rgba(255,255,255,.15)';
+    fill.style.boxShadow='0 0 14px rgba(255,255,255,.28)';
   }
 
   if(timerEl){
     timerEl.style.color='#ffffff';
-    timerEl.style.textShadow='0 0 10px rgba(255,255,255,.25)';
+    timerEl.style.textShadow='none';
   }
 }
 function renderHostQuestion(){
@@ -3918,8 +4106,7 @@ function openSettings(tab='defaults'){
   $('settingsAccountLine').textContent=`${currentTeacher?.email||''} · ${currentRole==='admin'?'Admin':'Teacher'}`;
   document.querySelectorAll('.admin-only').forEach(el=>el.classList.toggle('hidden', currentRole!=='admin'));
   $('defaultSecondsInput').value=Number(appSettings.defaultSeconds)||20;
-  $('defaultQuestionTypeSelect').value=appSettings.defaultQuestionType||'quiz';
-  setSettingsTab(tab);
+    setSettingsTab(tab);
   loadSharedInbox();
   if(currentRole==='admin') loadAdminAccessLists();
 }
@@ -3932,7 +4119,7 @@ function setSettingsTab(tab){
 }
 async function saveDefaultSettings(){
   appSettings.defaultSeconds=Math.max(5, Math.min(120, parseInt($('defaultSecondsInput').value||'20',10)||20));
-  appSettings.defaultQuestionType=$('defaultQuestionTypeSelect').value||'quiz';
+  appSettings.defaultQuestionType=appSettings.defaultQuestionType||'quiz';
   try{
     await appSettingsRef().update(appSettings);
     $('defaultsSavedLine').textContent='Saved.';
