@@ -1968,6 +1968,12 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   }
 }
 
+
+/* ===== V12.6 TIMER COLOR-FAMILY GRADIENT ===== */
+.progress > div{
+  transition:width .25s linear, box-shadow .25s linear, background .25s linear !important;
+}
+
 </style>
 </head>
 <body>
@@ -3229,23 +3235,33 @@ function applyHostTimerVisual(room,q){
   const fill=$('hostProgressFill');
   const timerEl=$('hostTimer');
 
-  // Full bar scale: red -> orange -> yellow -> green.
-  // Because the fill width shrinks from right to left, green disappears first,
-  // then yellow, then orange, leaving red last near 0.
-  const fullGradient='linear-gradient(90deg,#dc2626 0%,#dc2626 25%,#f97316 25%,#f97316 50%,#facc15 50%,#facc15 75%,#16a34a 75%,#16a34a 100%)';
+  // One visible color family at a time:
+  // 100-76% = green shades
+  // 75-51%  = yellow shades
+  // 50-26%  = orange shades
+  // 25-0%   = red shades
+  let gradient='';
+  let activeColor='';
 
-  let activeColor='#16a34a';
-  if(ratio <= .75) activeColor='#ca8a04';
-  if(ratio <= .50) activeColor='#f97316';
-  if(ratio <= .25) activeColor='#dc2626';
+  if(ratio > .75){
+    activeColor='#16a34a';
+    gradient='linear-gradient(90deg,#065f46 0%,#047857 35%,#16a34a 70%,#86efac 100%)';
+  }else if(ratio > .50){
+    activeColor='#ca8a04';
+    gradient='linear-gradient(90deg,#a16207 0%,#ca8a04 35%,#facc15 70%,#fef08a 100%)';
+  }else if(ratio > .25){
+    activeColor='#f97316';
+    gradient='linear-gradient(90deg,#9a3412 0%,#c2410c 35%,#f97316 70%,#fdba74 100%)';
+  }else{
+    activeColor='#dc2626';
+    gradient='linear-gradient(90deg,#7f1d1d 0%,#991b1b 35%,#dc2626 70%,#fca5a5 100%)';
+  }
 
   if(fill){
     fill.style.width=(ratio*100)+'%';
-    fill.style.background=fullGradient;
-    fill.style.backgroundImage=fullGradient;
-    // Critical: keep the gradient scaled to the original full bar,
-    // not recalculated inside the shrinking fill.
-    fill.style.backgroundSize=(ratio > 0 ? (100/ratio) : 100)+'% 100%';
+    fill.style.background=gradient;
+    fill.style.backgroundImage=gradient;
+    fill.style.backgroundSize='100% 100%';
     fill.style.backgroundPosition='left center';
     fill.style.boxShadow='0 0 14px '+activeColor;
   }
