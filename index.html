@@ -2150,6 +2150,137 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   overflow:visible !important;
 }
 
+
+/* ===== V12.13 VISIBLE FOLDER ACTIONS ===== */
+.folder-item{
+  position:relative !important;
+  overflow:visible !important;
+}
+
+.folder-inline-actions{
+  display:flex !important;
+  align-items:center !important;
+  gap:4px !important;
+  margin-left:auto !important;
+  flex-shrink:0 !important;
+}
+
+.folder-action-btn{
+  border:1px solid rgba(255,255,255,.18) !important;
+  background:rgba(255,255,255,.10) !important;
+  color:#ffffff !important;
+  border-radius:7px !important;
+  padding:3px 6px !important;
+  font-size:.64rem !important;
+  font-weight:800 !important;
+  line-height:1 !important;
+  height:22px !important;
+  min-height:22px !important;
+  cursor:pointer !important;
+}
+
+.folder-action-btn:hover{
+  background:rgba(255,255,255,.18) !important;
+}
+
+.folder-action-btn.danger{
+  color:#fecaca !important;
+  border-color:rgba(248,113,113,.35) !important;
+}
+
+.folder-action-btn.danger:hover{
+  background:rgba(248,113,113,.18) !important;
+}
+
+@media(max-width:980px){
+  .folder-inline-actions{
+    gap:5px !important;
+  }
+  .folder-action-btn{
+    height:24px !important;
+    min-height:24px !important;
+    padding:4px 7px !important;
+    font-size:.68rem !important;
+  }
+}
+
+.folder-menu-wrap,
+.folder-menu-pop{
+  display:none !important;
+}
+
+
+/* ===== V12.14 EDITOR QUIZ SETTINGS CARD ===== */
+.editor-content-stack{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:16px !important;
+}
+
+.editor-card-title{
+  font-family:'Fraunces', serif;
+  font-size:1.08rem;
+  font-weight:850;
+  color:var(--ink-900);
+  margin-bottom:14px;
+  letter-spacing:-.01em;
+}
+
+.quiz-settings-card{
+  padding-bottom:18px !important;
+}
+
+.quiz-settings-grid{
+  display:grid;
+  grid-template-columns:minmax(220px,1fr) minmax(180px,260px);
+  gap:14px;
+  align-items:end;
+}
+
+.quiz-cover-drop{
+  min-height:86px !important;
+  padding:14px !important;
+}
+
+.question-editor-card{
+  margin-top:0 !important;
+}
+
+@media(max-width:760px){
+  .quiz-settings-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+
+/* ===== V12.15 QUIZ SETTINGS ANSWER SHUFFLE ===== */
+.quiz-settings-check{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-top:4px;
+  padding:8px 10px;
+  border:1px solid var(--line);
+  background:var(--panel-soft);
+  border-radius:10px;
+  text-transform:none;
+  letter-spacing:0;
+  font-size:.86rem;
+  font-weight:700;
+  color:var(--ink-700);
+  cursor:pointer;
+}
+
+.quiz-settings-check input{
+  width:16px;
+  height:16px;
+  accent-color:var(--royal-600);
+}
+
+.quiz-settings-check span{
+  line-height:1.2;
+}
+
 </style>
 </head>
 <body>
@@ -2269,27 +2400,37 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
             <span class="material-symbols-outlined">add</span>Add Question
           </button>
         </aside>
-        <main class="content-wrap">
-          <div class="panel" style="max-width:900px">
-            <div class="field">
-              <label for="quizTitle">Quiz Title</label>
-              <input id="quizTitle" type="text" placeholder="e.g., Fractions Fundamentals">
-            </div>
-            <div class="field">
-              <label for="quizFolderSelect">Folder</label>
-              <select id="quizFolderSelect"></select>
+        <main class="content-wrap editor-content-stack">
+          <div class="panel quiz-settings-card" style="max-width:900px">
+            <div class="editor-card-title">Quiz Settings</div>
+            <div class="quiz-settings-grid">
+              <div class="field">
+                <label for="quizTitle">Quiz Title</label>
+                <input id="quizTitle" type="text" placeholder="e.g., Fractions Fundamentals">
+              </div>
+              <div class="field">
+                <label for="quizFolderSelect">Folder</label>
+                <select id="quizFolderSelect"></select>
+              </div>
             </div>
             <div class="field">
               <label>Quiz Cover</label>
-              <div id="coverDrop" class="media-drop">
-                <span class="material-symbols-outlined" style="font-size:32px;color:var(--sky-500)">image</span>
-                <div style="margin-top:6px">Click or drag image here</div>
+              <div id="coverDrop" class="media-drop quiz-cover-drop">
+                <span class="material-symbols-outlined" style="font-size:26px;color:var(--sky-500)">image</span>
+                <div style="margin-top:4px">Click or drag image here</div>
                 <input id="coverInput" type="file" accept="image/*" class="hidden">
               </div>
               <div id="coverPreview" class="media-preview"></div>
               <button id="clearCoverBtn" type="button" class="btn ghost hidden" style="margin-top:8px">Remove Cover</button>
             </div>
-            <hr style="border:none;border-top:1px solid var(--line);margin:22px 0">
+            <label class="quiz-settings-check">
+              <input id="shuffleAnswersInput" type="checkbox">
+              <span>Shuffle answer order during game</span>
+            </label>
+          </div>
+
+          <div class="panel question-editor-card" style="max-width:900px">
+            <div class="editor-card-title">Question</div>
             <div class="field">
               <label for="questionText">Question</label>
               <textarea id="questionText" placeholder="Type your question…"></textarea>
@@ -2738,10 +2879,40 @@ function defaultQuestion(){
   }
   return q;
 }
-function defaultQuiz(){return {id:genId(),title:'Untitled Quiz',folderId:'',cover:null,updatedAt:Date.now(),questions:[defaultQuestion()]};}
+function defaultQuiz(){return {id:genId(),title:'Untitled Quiz',folderId:'',cover:null,shuffleAnswers:false,updatedAt:Date.now(),questions:[defaultQuestion()]};}
 function getJoinUrl(code){return 'https://latnem.github.io/TapBlast/join/?code='+encodeURIComponent(code||'');}
 function qrUrl(url){return 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(url);}
 function nonBlankAnswers(q){return (q.answers||[]).map((a,i)=>({...a,index:i})).filter(a=>(a.text||'').trim()||a.media);}
+function seededRandom(seed){
+  let h=2166136261;
+  for(let i=0;i<String(seed).length;i++){
+    h^=String(seed).charCodeAt(i);
+    h=Math.imul(h,16777619);
+  }
+  return ()=>{
+    h+=0x6D2B79F5;
+    let t=h;
+    t=Math.imul(t^t>>>15,t|1);
+    t^=t+Math.imul(t^t>>>7,t|61);
+    return ((t^t>>>14)>>>0)/4294967296;
+  };
+}
+function seededShuffle(list,seed){
+  const arr=list.slice();
+  const rand=seededRandom(seed);
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(rand()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+function displayAnswersFor(room,q){
+  const answers=nonBlankAnswers(q);
+  const quiz=room?.quiz||editorQuiz||{};
+  if(!quiz.shuffleAnswers || (q.type||'quiz')==='truefalse') return answers;
+  const seed=(room?.code||quiz.id||'quiz')+'|'+(room?.currentQ??0)+'|'+(q.id||'q');
+  return seededShuffle(answers,seed);
+}
 function folderNameById(id){if(!id) return 'Unsorted'; const f=folders.find(x=>x.id===id); return f?f.name:'Unsorted';}
 function sortedPlayers(room){return Object.entries(room.players||{}).map(([id,p])=>({id,...p})).sort((a,b)=>(b.score||0)-(a.score||0)||(a.joinedAt||0)-(b.joinedAt||0));}
 function setBootComplete(){$('boot-screen').style.display='none';}
@@ -2912,20 +3083,15 @@ function renderFolders(){
       <div class="folder-name">${esc(item.name)}</div>
       <span class="folder-count">${quizCountForFolder(item.id)}</span>
       ${item.id!=='all'&&item.id!=='unsorted'?`
-        <div class="folder-menu-wrap">
-          <button class="folder-menu-btn" type="button" data-folder-menu="${item.id}" title="Folder options" aria-label="Folder options">
-            <span class="material-symbols-outlined" style="font-size:18px">more_vert</span>
-          </button>
-          <div class="folder-menu-pop hidden" id="folder-menu-${item.id}">
-            <button type="button" data-folder-rename="${item.id}">Rename</button>
-            <button type="button" data-folder-delete="${item.id}">Delete</button>
-          </div>
+        <div class="folder-inline-actions">
+          <button class="folder-action-btn" type="button" data-folder-rename="${item.id}" title="Rename folder" aria-label="Rename folder">Rename</button>
+          <button class="folder-action-btn danger" type="button" data-folder-delete="${item.id}" title="Delete folder" aria-label="Delete folder">Delete</button>
         </div>`:''}
     </div>`).join('');
   document.querySelectorAll('[data-folder-id]').forEach(el=>{
     const id=el.dataset.folderId;
     el.addEventListener('click',e=>{
-      if(e.target.closest('.folder-menu-wrap')) return;
+      if(e.target.closest('.folder-inline-actions')) return;
       selectedFolderId=id;
       closeFolderMenus();
       renderFolders();
@@ -2941,14 +3107,6 @@ function renderFolders(){
       if(!quizId||id==='all') return;
       await moveQuizToFolder(quizId, id==='unsorted'?'':id);
     });
-  });
-  document.querySelectorAll('[data-folder-menu]').forEach(btn=>btn.onclick=e=>{
-    e.stopPropagation();
-    const folderId=btn.dataset.folderMenu;
-    const pop=$('folder-menu-'+folderId);
-    const wasOpen=pop && !pop.classList.contains('hidden');
-    closeFolderMenus();
-    if(pop) pop.classList.toggle('hidden', wasOpen);
   });
   document.querySelectorAll('[data-folder-rename]').forEach(btn=>btn.onclick=e=>{
     e.stopPropagation();
@@ -3123,6 +3281,7 @@ function createNewQuiz(){
 function currentQuestion(){ return editorQuiz.questions.find(q=>q.id===selectedQuestionId)||editorQuiz.questions[0]; }
 function renderEditor(){
   $('quizTitle').value=editorQuiz.title||'';
+  if($('shuffleAnswersInput')) $('shuffleAnswersInput').checked=!!editorQuiz.shuffleAnswers;
   renderFolderSelect();
   renderQuestionList();
   renderCoverPreview();
@@ -3296,6 +3455,7 @@ function saveQuestionForm(){
   if(!editorQuiz) return;
   editorQuiz.title=$('quizTitle').value.trim()||'Untitled Quiz';
   editorQuiz.folderId=$('quizFolderSelect').value||'';
+  editorQuiz.shuffleAnswers=!!($('shuffleAnswersInput')&&$('shuffleAnswersInput').checked);
   const q=currentQuestion();
   q.type=q.type||'quiz';
   q.text=$('questionText').value.trim();
@@ -3492,7 +3652,7 @@ function renderHostQuestion(){
 
   const showAnswers=!['countdown','question_media'].includes(hostRoom.phase);
   const isTypeQuestion=(q.type==='type');
-  const answers=isTypeQuestion?[]:nonBlankAnswers(q);
+  const answers=isTypeQuestion?[]:displayAnswersFor(hostRoom,q);
   $('hostAnswers').innerHTML=isTypeQuestion
     ? `<div class="host-type-answer ${showAnswers?'':'hidden'}">
         <div class="host-type-answer-title">${hostRoom.phase==='answer_results'?'Correct answer':'Students type their answer'}</div>
@@ -3935,7 +4095,7 @@ function renderStudent(room,player){
         </div>`;
     }
   }else{
-    const answers=nonBlankAnswers(q);
+    const answers=displayAnswersFor(room,q);
     $('studentAnswerGrid').innerHTML=answers.map((a,idx)=>{
       const isSelected = hasAnswered && player.currentAnswerIndex===a.index;
       const isLocked = room.phase!=='question_answers' || hasAnswered;
