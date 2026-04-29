@@ -1940,6 +1940,24 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   transition:color .25s linear, text-shadow .25s linear !important;
 }
 
+
+/* ===== ANSWER TEXT COLOR FIX ===== */
+.answer,
+.answer *,
+.answer .answer-text,
+.answer .label,
+.answer .choice,
+.answer .choice-text{
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+
+.answer[disabled],
+.answer[disabled] *{
+  color:#ffffff !important;
+  opacity:1 !important;
+}
+
 </style>
 </head>
 <body>
@@ -3197,38 +3215,53 @@ function applyHostTimerVisual(room,q){
   const total=Math.max(1,(q.seconds||20)*1000);
   const remaining=Math.max(0,room.currentRemainingMs||0);
   const ratio=Math.max(0,Math.min(1,remaining/total));
+
   const fill=$('hostProgressFill');
   const timerEl=$('hostTimer');
 
-  // Segmented time bar:
-  // Full time shows red + orange + yellow + green.
-  // As time runs out, green disappears first, then yellow, then orange, leaving red last.
-  let barColor='#dc2626';
-  let timerColor='#dc2626';
-  let gradient='linear-gradient(90deg,#dc2626 0%,#dc2626 100%)';
+  let stops=[];
 
-  if(ratio > .75){
-    barColor='#16a34a';
-    timerColor='#16a34a';
-    gradient='linear-gradient(90deg,#dc2626 0%,#dc2626 25%,#f97316 25%,#f97316 50%,#facc15 50%,#facc15 75%,#16a34a 75%,#16a34a 100%)';
-  }else if(ratio > .50){
-    barColor='#facc15';
-    timerColor='#ca8a04';
-    gradient='linear-gradient(90deg,#dc2626 0%,#dc2626 33.33%,#f97316 33.33%,#f97316 66.66%,#facc15 66.66%,#facc15 100%)';
-  }else if(ratio > .25){
-    barColor='#f97316';
-    timerColor='#f97316';
-    gradient='linear-gradient(90deg,#dc2626 0%,#dc2626 50%,#f97316 50%,#f97316 100%)';
+  if(ratio > 0.75){
+    stops=[
+      '#dc2626 0%','#dc2626 25%',
+      '#f97316 25%','#f97316 50%',
+      '#facc15 50%','#facc15 75%',
+      '#16a34a 75%','#16a34a 100%'
+    ];
+  }else if(ratio > 0.50){
+    stops=[
+      '#dc2626 0%','#dc2626 33.33%',
+      '#f97316 33.33%','#f97316 66.66%',
+      '#facc15 66.66%','#facc15 100%'
+    ];
+  }else if(ratio > 0.25){
+    stops=[
+      '#dc2626 0%','#dc2626 50%',
+      '#f97316 50%','#f97316 100%'
+    ];
+  }else{
+    stops=[
+      '#dc2626 0%','#dc2626 100%'
+    ];
   }
+
+  const gradient='linear-gradient(90deg,'+stops.join(',')+')';
+
+  let activeColor='#16a34a';
+  if(ratio <= 0.75) activeColor='#ca8a04';
+  if(ratio <= 0.50) activeColor='#f97316';
+  if(ratio <= 0.25) activeColor='#dc2626';
 
   if(fill){
     fill.style.width=(ratio*100)+'%';
     fill.style.background=gradient;
-    fill.style.boxShadow=`0 0 14px ${barColor}`;
+    fill.style.backgroundImage=gradient;
+    fill.style.boxShadow='0 0 14px '+activeColor;
   }
+
   if(timerEl){
-    timerEl.style.color=timerColor;
-    timerEl.style.textShadow=`0 0 18px ${timerColor}66`;
+    timerEl.style.color=activeColor;
+    timerEl.style.textShadow='0 0 18px '+activeColor+'66';
   }
 }
 function renderHostQuestion(){
