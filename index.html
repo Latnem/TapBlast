@@ -1930,32 +1930,42 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 }
 
 
-/* ===== V12.3 SEGMENTED TIMER BAR ===== */
+/* ===== V12.5 MOBILE FOLDER + TIMER + ANSWER FIX ===== */
+.progress{
+  position:relative !important;
+  overflow:hidden !important;
+}
+
 .progress > div{
-  transition:width .25s linear, box-shadow .25s linear, background .25s linear !important;
-  background-size:100% 100% !important;
+  height:100% !important;
+  transform-origin:left center !important;
+  transition:width .25s linear, box-shadow .25s linear, background-size .25s linear !important;
 }
 
-.timer{
-  transition:color .25s linear, text-shadow .25s linear !important;
-}
-
-
-/* ===== ANSWER TEXT COLOR FIX ===== */
-.answer,
-.answer *,
-.answer .answer-text,
-.answer .label,
-.answer .choice,
-.answer .choice-text{
+/* Answer D / yellow choice text should match A/B/C */
+.host-answer.yellow,
+.host-answer.yellow *,
+.student-answer.yellow,
+.student-answer.yellow *{
   color:#ffffff !important;
   -webkit-text-fill-color:#ffffff !important;
 }
 
-.answer[disabled],
-.answer[disabled] *{
+.host-answer.yellow .host-answer-shape,
+.student-answer.yellow .student-answer-shape{
   color:#ffffff !important;
-  opacity:1 !important;
+  background:rgba(0,0,0,.22) !important;
+}
+
+/* Make mobile folder drawer reliable */
+@media(max-width:980px){
+  body.folders-open #library-screen .left-pane{
+    transform:translateX(0) !important;
+  }
+  body.folders-open .folders-backdrop{
+    opacity:1 !important;
+    pointer-events:auto !important;
+  }
 }
 
 </style>
@@ -3219,43 +3229,24 @@ function applyHostTimerVisual(room,q){
   const fill=$('hostProgressFill');
   const timerEl=$('hostTimer');
 
-  let stops=[];
-
-  if(ratio > 0.75){
-    stops=[
-      '#dc2626 0%','#dc2626 25%',
-      '#f97316 25%','#f97316 50%',
-      '#facc15 50%','#facc15 75%',
-      '#16a34a 75%','#16a34a 100%'
-    ];
-  }else if(ratio > 0.50){
-    stops=[
-      '#dc2626 0%','#dc2626 33.33%',
-      '#f97316 33.33%','#f97316 66.66%',
-      '#facc15 66.66%','#facc15 100%'
-    ];
-  }else if(ratio > 0.25){
-    stops=[
-      '#dc2626 0%','#dc2626 50%',
-      '#f97316 50%','#f97316 100%'
-    ];
-  }else{
-    stops=[
-      '#dc2626 0%','#dc2626 100%'
-    ];
-  }
-
-  const gradient='linear-gradient(90deg,'+stops.join(',')+')';
+  // Full bar scale: red -> orange -> yellow -> green.
+  // Because the fill width shrinks from right to left, green disappears first,
+  // then yellow, then orange, leaving red last near 0.
+  const fullGradient='linear-gradient(90deg,#dc2626 0%,#dc2626 25%,#f97316 25%,#f97316 50%,#facc15 50%,#facc15 75%,#16a34a 75%,#16a34a 100%)';
 
   let activeColor='#16a34a';
-  if(ratio <= 0.75) activeColor='#ca8a04';
-  if(ratio <= 0.50) activeColor='#f97316';
-  if(ratio <= 0.25) activeColor='#dc2626';
+  if(ratio <= .75) activeColor='#ca8a04';
+  if(ratio <= .50) activeColor='#f97316';
+  if(ratio <= .25) activeColor='#dc2626';
 
   if(fill){
     fill.style.width=(ratio*100)+'%';
-    fill.style.background=gradient;
-    fill.style.backgroundImage=gradient;
+    fill.style.background=fullGradient;
+    fill.style.backgroundImage=fullGradient;
+    // Critical: keep the gradient scaled to the original full bar,
+    // not recalculated inside the shrinking fill.
+    fill.style.backgroundSize=(ratio > 0 ? (100/ratio) : 100)+'% 100%';
+    fill.style.backgroundPosition='left center';
     fill.style.boxShadow='0 0 14px '+activeColor;
   }
 
@@ -4097,6 +4088,8 @@ async function declineSharedQuiz(itemId){
 function bindEvents(){
   $('googleLoginBtn').onclick=signInTeacher;
   $('logoutBtn').onclick=logoutTeacher;
+  $('mobileFoldersBtn').onclick=()=>document.body.classList.toggle('folders-open');
+  $('foldersBackdrop').onclick=()=>document.body.classList.remove('folders-open');
   $('newFolderBtn').onclick=()=>openFolderModal('new');
   $('folderModalCancel').onclick=closeFolderModal;
   $('folderModalSave').onclick=commitFolderModal;
