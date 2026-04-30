@@ -3564,6 +3564,148 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   }
 }
 
+
+/* ===== V12.33 SIDE PANELS + CLEAN MEDIA REMOVE BUTTON ===== */
+
+/* Overall editor keeps a stable 3-column canvas */
+#editor-screen .editor-shell.editor-three-col{
+  min-height:calc(100vh - 82px) !important;
+  align-items:start !important;
+  overflow:visible !important;
+}
+
+/* QUESTIONS left panel stays fixed/sticky with its own scroll */
+#editor-screen .editor-questions-panel{
+  position:sticky !important;
+  top:82px !important;
+  height:calc(100vh - 82px) !important;
+  max-height:calc(100vh - 82px) !important;
+  overflow:hidden !important;
+  align-self:start !important;
+  background:var(--panel-soft) !important;
+  border-right:1px solid var(--line) !important;
+}
+
+#editor-screen .editor-questions-panel .question-list{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  padding-right:4px !important;
+}
+
+/* Right Quiz Settings panel has a full-height background so it does not look cut off */
+#editor-screen .editor-right-settings{
+  position:sticky !important;
+  top:82px !important;
+  height:calc(100vh - 82px) !important;
+  max-height:calc(100vh - 82px) !important;
+  overflow-y:auto !important;
+  align-self:start !important;
+  background:var(--panel-soft) !important;
+  border-left:1px solid var(--line) !important;
+  padding:22px 20px !important;
+}
+
+#editor-screen .editor-right-settings .quiz-settings-card{
+  background:#ffffff !important;
+}
+
+/* Middle section moves normally with page */
+#editor-screen .editor-question-panel{
+  position:static !important;
+  height:auto !important;
+  max-height:none !important;
+  overflow:visible !important;
+  align-self:start !important;
+}
+
+/* New media remove style: clean white chip with red X icon, not big red bubble */
+.media-remove-x{
+  position:absolute !important;
+  right:8px !important;
+  bottom:8px !important;
+  width:26px !important;
+  height:26px !important;
+  min-width:26px !important;
+  min-height:26px !important;
+  border:1.5px solid rgba(220,38,38,.45) !important;
+  border-radius:8px !important;
+  background:rgba(255,255,255,.95) !important;
+  color:transparent !important;
+  font-size:0 !important;
+  line-height:1 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  cursor:pointer !important;
+  box-shadow:0 8px 18px rgba(15,23,42,.16) !important;
+  z-index:4 !important;
+  padding:0 !important;
+  backdrop-filter:blur(6px) !important;
+}
+
+.media-remove-x::before,
+.media-remove-x::after{
+  content:'' !important;
+  position:absolute !important;
+  width:13px !important;
+  height:2px !important;
+  border-radius:999px !important;
+  background:#dc2626 !important;
+}
+
+.media-remove-x::before{
+  transform:rotate(45deg) !important;
+}
+
+.media-remove-x::after{
+  transform:rotate(-45deg) !important;
+}
+
+.media-remove-x:hover{
+  background:#fff5f5 !important;
+  border-color:#dc2626 !important;
+  box-shadow:0 10px 22px rgba(220,38,38,.22) !important;
+}
+
+.media-remove-x.hidden{
+  display:none !important;
+}
+
+/* Keep media preview clean with new X style */
+.media-selected-shell{
+  position:relative !important;
+}
+
+.cover-selected-shell #coverPreview img,
+.question-media-preview-box .media-preview img,
+.question-media-preview-box .media-preview video{
+  border:1px solid var(--line) !important;
+  background:#ffffff !important;
+}
+
+/* Mobile: natural vertical page, no fixed sidebars */
+@media(max-width:820px){
+  #editor-screen .editor-questions-panel,
+  #editor-screen .editor-right-settings{
+    position:static !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+  }
+
+  #editor-screen .editor-right-settings{
+    border-left:0 !important;
+    border-top:1px solid var(--line) !important;
+  }
+
+  #editor-screen .editor-questions-panel .question-list{
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
+  }
+}
+
 </style>
 </head>
 <body>
