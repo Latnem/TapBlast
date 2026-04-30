@@ -4055,13 +4055,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 
 /* ===== V12.39 MINIMAL EDITOR + HOST AUTOFIT ===== */
 
-/* Restore clean original-style banner/header background */
-#editor-screen .topbar,
-.topbar{
-  background:#ffffff !important;
-  background-image:none !important;
-  color:var(--ink-900) !important;
-}
+
 
 /* Simple question header with delete icon at far right */
 .question-editor-head{
@@ -4210,6 +4204,26 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   .host-left-media-col{
     height:38vh !important;
   }
+}
+
+
+/* ===== V12.40 RESTORE ORIGINAL BLUE HEADER ===== */
+.topbar,
+#editor-screen .topbar{
+  background:linear-gradient(135deg,#1d4ed8 0%, #2563eb 52%, #3b82f6 100%) !important;
+  color:#ffffff !important;
+  border-bottom:1px solid rgba(255,255,255,.12) !important;
+  box-shadow:0 8px 28px rgba(37,99,235,.18) !important;
+}
+
+.topbar .btn,
+#editor-screen .topbar .btn{
+  color:#ffffff !important;
+}
+
+.topbar .subtle,
+#editor-screen .topbar .subtle{
+  color:rgba(255,255,255,.78) !important;
 }
 
 </style>
