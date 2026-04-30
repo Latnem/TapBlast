@@ -3066,6 +3066,20 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   }
 }
 
+
+/* ===== V12.28 LOGIN RELIABILITY ===== */
+#login-screen{
+  position:relative !important;
+  z-index:5 !important;
+}
+
+#googleLoginBtn{
+  pointer-events:auto !important;
+  cursor:pointer !important;
+  position:relative !important;
+  z-index:10 !important;
+}
+
 </style>
 </head>
 <body>
@@ -3812,6 +3826,15 @@ async function signInTeacher(){
       btn.disabled=true;
       btn.style.opacity='.7';
     }
+
+    const isMobile=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+
+    if(isMobile){
+      // Mobile browsers are more reliable with redirect than popup.
+      await auth.signInWithRedirect(provider);
+      return;
+    }
+
     const result=await auth.signInWithPopup(provider);
     currentTeacher=result.user||auth.currentUser;
     await enterTeacherApp();
@@ -3826,6 +3849,17 @@ async function signInTeacher(){
   }
 }
 async function logoutTeacher(){try{await auth.signOut();}catch(err){console.error(err);}}
+
+auth.getRedirectResult().then(async result=>{
+  if(result && result.user){
+    currentTeacher=result.user;
+    if(location.hash!=='#student-join') await enterTeacherApp();
+  }
+}).catch(err=>{
+  console.error(err);
+  const loginError=$('loginError');
+  if(loginError) loginError.textContent=(err && err.message) || 'Google redirect login failed';
+});
 
 auth.onAuthStateChanged(async user=>{
   currentTeacher=user||null;
