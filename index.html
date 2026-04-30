@@ -3894,6 +3894,324 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   }
 }
 
+
+/* ===== V12.38 HOST TEACHER SIDE-BY-SIDE GAMEPLAY ===== */
+
+/* Host gameplay: media left, question/answers/results right */
+#hostQuestionPanel.host-question-layout{
+  display:grid !important;
+  grid-template-columns:minmax(360px, 48%) minmax(360px, 52%) !important;
+  gap:24px !important;
+  align-items:stretch !important;
+  width:min(96vw, 1440px) !important;
+  max-width:1440px !important;
+  margin:0 auto !important;
+  padding:24px !important;
+}
+
+.host-left-media-col,
+.host-right-content-col{
+  min-width:0 !important;
+}
+
+.host-left-media-col{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  background:rgba(15,23,42,.18) !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+  border-radius:22px !important;
+  min-height:min(68vh, 720px) !important;
+  overflow:hidden !important;
+  padding:16px !important;
+}
+
+.host-right-content-col{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:14px !important;
+  justify-content:flex-start !important;
+}
+
+/* Media fills left column cleanly */
+#hostMedia{
+  width:100% !important;
+  height:100% !important;
+  min-height:260px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+#hostMedia:empty::before{
+  content:'No media for this question';
+  color:rgba(255,255,255,.55);
+  font-weight:800;
+  font-size:1rem;
+}
+
+#hostMedia img,
+#hostMedia video{
+  width:100% !important;
+  height:auto !important;
+  max-width:100% !important;
+  max-height:min(66vh, 700px) !important;
+  object-fit:contain !important;
+  border-radius:16px !important;
+  box-shadow:0 10px 30px rgba(0,0,0,.35) !important;
+  display:block !important;
+  margin:0 auto !important;
+}
+
+/* Question and answers on right */
+#hostQuestionPanel .host-question{
+  text-align:left !important;
+  margin:0 !important;
+  font-size:clamp(1.6rem, 2.6vw, 3rem) !important;
+  line-height:1.12 !important;
+}
+
+#hostQuestionPanel .phase-tag{
+  align-self:flex-start !important;
+  margin-bottom:0 !important;
+}
+
+/* Teacher answer boxes stack one per row */
+#hostQuestionPanel .host-answers{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:12px !important;
+  margin-top:4px !important;
+}
+
+#hostQuestionPanel .host-answer{
+  min-height:74px !important;
+  padding:14px 16px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  text-align:left !important;
+  gap:14px !important;
+}
+
+#hostQuestionPanel .host-answer-shape{
+  flex:0 0 42px !important;
+  width:42px !important;
+  height:42px !important;
+  border-radius:12px !important;
+}
+
+#hostQuestionPanel .host-answer .label-text{
+  font-size:clamp(1rem, 1.4vw, 1.4rem) !important;
+  line-height:1.2 !important;
+}
+
+#hostQuestionPanel .answer-dist{
+  grid-template-columns:1fr !important;
+}
+
+#hostQuestionPanel .control-row{
+  margin-top:auto !important;
+  justify-content:flex-start !important;
+}
+
+/* Countdown still centered across right side */
+#hostQuestionPanel .host-question.countdown{
+  text-align:center !important;
+  font-size:min(22vw, 12rem) !important;
+}
+
+/* If no media, let right side breathe but keep layout stable */
+#hostQuestionPanel .host-left-media-col:has(#hostMedia:empty){
+  min-height:280px !important;
+}
+
+/* Smaller screens stack naturally */
+@media(max-width:980px){
+  #hostQuestionPanel.host-question-layout{
+    grid-template-columns:1fr !important;
+    width:96vw !important;
+    padding:18px !important;
+  }
+
+  .host-left-media-col{
+    min-height:260px !important;
+  }
+
+  #hostMedia img,
+  #hostMedia video{
+    max-height:42vh !important;
+  }
+
+  #hostQuestionPanel .host-question{
+    text-align:center !important;
+  }
+
+  #hostQuestionPanel .control-row{
+    justify-content:center !important;
+  }
+}
+
+
+/* ===== V12.39 MINIMAL EDITOR + HOST AUTOFIT ===== */
+
+/* Restore clean original-style banner/header background */
+#editor-screen .topbar,
+.topbar{
+  background:#ffffff !important;
+  background-image:none !important;
+  color:var(--ink-900) !important;
+}
+
+/* Simple question header with delete icon at far right */
+.question-editor-head{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+  margin-bottom:14px !important;
+}
+
+.question-editor-head .editor-card-title{
+  margin-bottom:0 !important;
+}
+
+.question-delete-icon{
+  width:34px !important;
+  height:34px !important;
+  min-width:34px !important;
+  min-height:34px !important;
+  border:1px solid var(--line) !important;
+  border-radius:10px !important;
+  background:#ffffff !important;
+  color:#dc2626 !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  cursor:pointer !important;
+  box-shadow:none !important;
+}
+
+.question-delete-icon:hover{
+  background:#fff5f5 !important;
+  border-color:rgba(220,38,38,.35) !important;
+}
+
+.question-delete-icon .material-symbols-outlined,
+.question-delete-icon svg{
+  width:18px !important;
+  height:18px !important;
+  font-size:18px !important;
+}
+
+/* Host game should fit the window better, with no oversized media pushing content down */
+#host-screen .host-content{
+  padding:14px 18px !important;
+  min-height:calc(100vh - 76px) !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+#hostQuestionPanel.host-question-layout{
+  height:calc(100vh - 106px) !important;
+  max-height:calc(100vh - 106px) !important;
+  overflow:hidden !important;
+  grid-template-columns:minmax(320px, 46%) minmax(360px, 54%) !important;
+  gap:18px !important;
+  padding:18px !important;
+}
+
+.host-left-media-col{
+  min-height:0 !important;
+  height:100% !important;
+  max-height:100% !important;
+  padding:12px !important;
+}
+
+#hostMedia{
+  min-height:0 !important;
+  height:100% !important;
+  max-height:100% !important;
+}
+
+#hostMedia img,
+#hostMedia video{
+  width:100% !important;
+  height:100% !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  object-fit:contain !important;
+  margin:0 auto !important;
+}
+
+.host-right-content-col{
+  min-height:0 !important;
+  height:100% !important;
+  max-height:100% !important;
+  overflow:hidden !important;
+  gap:10px !important;
+}
+
+#hostQuestionPanel .host-question{
+  flex:0 0 auto !important;
+  max-height:22vh !important;
+  overflow:hidden !important;
+  font-size:clamp(1.25rem, 2.1vw, 2.4rem) !important;
+}
+
+#hostQuestionPanel .host-answers{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+  gap:9px !important;
+}
+
+#hostQuestionPanel .host-answer{
+  min-height:0 !important;
+  height:auto !important;
+  padding:10px 13px !important;
+}
+
+#hostQuestionPanel .host-answer-shape{
+  flex:0 0 36px !important;
+  width:36px !important;
+  height:36px !important;
+  border-radius:10px !important;
+}
+
+#hostQuestionPanel .host-answer .label-text{
+  font-size:clamp(.9rem, 1.15vw, 1.22rem) !important;
+}
+
+#hostQuestionPanel .answer-dist,
+#hostQuestionPanel #hostStats,
+#hostQuestionPanel #hostNotice{
+  flex:0 0 auto !important;
+}
+
+#hostQuestionPanel .control-row{
+  flex:0 0 auto !important;
+  margin-top:6px !important;
+}
+
+@media(max-width:980px){
+  #hostQuestionPanel.host-question-layout{
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+  }
+  .host-right-content-col{
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+  }
+  .host-left-media-col{
+    height:38vh !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4029,7 +4347,12 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 
         <main class="content-wrap editor-question-panel">
           <div class="panel question-editor-card">
-            <div class="editor-card-title">Question</div>
+            <div class="question-editor-head">
+              <div class="editor-card-title">Question</div>
+              <button id="deleteQuestionBtn" type="button" class="question-delete-icon" title="Delete question" aria-label="Delete question">
+                <span class="material-symbols-outlined">delete</span>
+              </button>
+            </div>
             <div class="field">
               <label for="questionText">Question</label>
               <textarea id="questionText" placeholder="Type your question…"></textarea>
@@ -4052,15 +4375,8 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
               <label>Answers (tick the correct one)</label>
               <div id="answersGrid" class="answers-grid"></div>
             </div>
-            <div class="field" style="max-width:200px">
-              <label for="questionSeconds">Time limit (seconds)</label>
-              <input id="questionSeconds" type="number" min="5" max="120" value="20">
-            </div>
-            <div style="display:flex;justify-content:flex-end;gap:10px">
-              <button id="deleteQuestionBtn" type="button" class="btn danger">
-                <span class="material-symbols-outlined">delete</span>Delete Question
-              </button>
-            </div>
+
+
           </div>
         </main>
 
@@ -4128,24 +4444,28 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
           </div>
         </div>
       </div>
-      <div id="hostQuestionPanel" class="host-card hidden">
-        <div id="hostPhaseTag" class="phase-tag"></div>
-        <div id="hostMedia" class="host-media"></div>
-        <div id="hostQuestionText" class="host-question"></div>
-        <div id="hostAnswers" class="host-answers"></div>
-        <div id="hostDistribution" class="answer-dist hidden"></div>
-        <div id="hostStats" class="stat-row"></div>
-        <div id="hostNotice" class="notice"></div>
-        <div class="control-row">
-          <button id="pauseBtn" type="button" class="btn outline" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)">
-            <span class="material-symbols-outlined">pause</span>Pause
-          </button>
-          <button id="resumeBtn" type="button" class="btn accent hidden">
-            <span class="material-symbols-outlined">play_arrow</span>Resume
-          </button>
-          <button id="showResultsBtn" type="button" class="btn accent hidden">Show Results</button>
-          <button id="nextQuestionBtn" type="button" class="btn accent hidden">Next Question</button>
-          <button id="endGameBtn" type="button" class="btn outline" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)">End Game</button>
+      <div id="hostQuestionPanel" class="host-card host-question-layout hidden">
+        <div class="host-left-media-col">
+          <div id="hostMedia" class="host-media"></div>
+        </div>
+        <div class="host-right-content-col">
+          <div id="hostPhaseTag" class="phase-tag"></div>
+          <div id="hostQuestionText" class="host-question"></div>
+          <div id="hostAnswers" class="host-answers"></div>
+          <div id="hostDistribution" class="answer-dist hidden"></div>
+          <div id="hostStats" class="stat-row"></div>
+          <div id="hostNotice" class="notice"></div>
+          <div class="control-row">
+            <button id="pauseBtn" type="button" class="btn outline" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)">
+              <span class="material-symbols-outlined">pause</span>Pause
+            </button>
+            <button id="resumeBtn" type="button" class="btn accent hidden">
+              <span class="material-symbols-outlined">play_arrow</span>Resume
+            </button>
+            <button id="showResultsBtn" type="button" class="btn accent hidden">Show Results</button>
+            <button id="nextQuestionBtn" type="button" class="btn accent hidden">Next Question</button>
+            <button id="endGameBtn" type="button" class="btn outline" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)">End Game</button>
+          </div>
         </div>
       </div>
     </div>
@@ -5093,7 +5413,6 @@ function renderCoverPreview(){
 function renderQuestionForm(){
   const q=currentQuestion();
   $('questionText').value=q.text||'';
-  $('questionSeconds').value=q.seconds||20;
   renderQuestionMediaPreview(q.media);
   renderAnswersEditor(q);
 }
@@ -5163,7 +5482,7 @@ function saveQuestionForm(){
   const q=currentQuestion();
   q.type=q.type||'quiz';
   q.text=$('questionText').value.trim();
-  q.seconds=Math.max(5, parseInt($('questionSeconds').value||'20',10)||20);
+  q.seconds=Math.max(5, Math.min(120, Number(q.seconds||appSettings.defaultSeconds||20)));
   if(q.type==='type'){
     const typeInput=$('typeAnswerInput');
     q.typeAnswer=typeInput?typeInput.value.trim():(q.typeAnswer||'');
@@ -5347,7 +5666,7 @@ function renderHostQuestion(){
   $('hostMedia').innerHTML='';
   if(q.media){
     if(q.media.type==='video'){
-      $('hostMedia').innerHTML=`<video id="hostVideo" src="${q.media.dataUrl}" ${hostRoom.phase==='question_media'?'autoplay':''} controls style="width:auto;max-width:100%;height:auto;max-height:min(70vh, 900px);border-radius:16px;display:block;margin:20px auto"></video>`;
+      $('hostMedia').innerHTML=`<video id="hostVideo" src="${q.media.dataUrl}" ${hostRoom.phase==='question_media'?'autoplay':''} controls></video>`;
       if(hostRoom.phase==='question_media'){
         const vid=$('hostVideo');
         vid.onended=async()=>{
