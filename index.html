@@ -4207,23 +4207,53 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
 }
 
 
-/* ===== V12.40 RESTORE ORIGINAL BLUE HEADER ===== */
-.topbar,
-#editor-screen .topbar{
-  background:linear-gradient(135deg,#1d4ed8 0%, #2563eb 52%, #3b82f6 100%) !important;
-  color:#ffffff !important;
-  border-bottom:1px solid rgba(255,255,255,.12) !important;
-  box-shadow:0 8px 28px rgba(37,99,235,.18) !important;
+
+/* ===== V12.41 RESTORE EXACT ORIGINAL TOPBAR UI ===== */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:20px 26px;
+  background:linear-gradient(120deg, var(--royal-900) 0%, var(--royal-700) 60%, var(--royal-600) 100%);
+  color:#fff;
+  position:relative;overflow:hidden;
 }
 
-.topbar .btn,
-#editor-screen .topbar .btn{
-  color:#ffffff !important;
+#editor-screen .topbar,
+#library-screen .topbar,
+#leaderboard-screen .topbar,
+#final-screen .topbar{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+  padding:20px 26px !important;
+  background:linear-gradient(120deg, var(--royal-900) 0%, var(--royal-700) 60%, var(--royal-600) 100%) !important;
+  background-image:linear-gradient(120deg, var(--royal-900) 0%, var(--royal-700) 60%, var(--royal-600) 100%) !important;
+  color:#fff !important;
+  position:relative !important;
+  overflow:hidden !important;
+  border-bottom:0 !important;
+  box-shadow:none !important;
 }
 
-.topbar .subtle,
-#editor-screen .topbar .subtle{
-  color:rgba(255,255,255,.78) !important;
+#editor-screen .topbar .brand,
+#library-screen .topbar .brand,
+#leaderboard-screen .topbar .brand,
+#final-screen .topbar .brand{
+  color:#fff !important;
+}
+
+#editor-screen .topbar .subtle,
+#library-screen .topbar .subtle,
+#leaderboard-screen .topbar .subtle,
+#final-screen .topbar .subtle{
+  color:rgba(255,255,255,.82) !important;
+}
+
+#editor-screen .topbar .btn,
+#library-screen .topbar .btn,
+#leaderboard-screen .topbar .btn,
+#final-screen .topbar .btn{
+  color:inherit;
 }
 
 </style>
