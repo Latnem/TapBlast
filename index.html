@@ -3706,6 +3706,44 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   }
 }
 
+
+/* ===== V12.34 MOBILE HAMBURGER BUTTON ===== */
+.mobile-menu-btn{
+  width:38px !important;
+  height:38px !important;
+  min-width:38px !important;
+  min-height:38px !important;
+  border:1px solid var(--line) !important;
+  border-radius:10px !important;
+  background:#ffffff !important;
+  display:none;
+  align-items:center !important;
+  justify-content:center !important;
+  flex-direction:column !important;
+  gap:4px !important;
+  padding:0 !important;
+  box-shadow:var(--shadow-sm) !important;
+  cursor:pointer !important;
+}
+
+.mobile-menu-btn span{
+  width:16px !important;
+  height:2px !important;
+  border-radius:999px !important;
+  background:#475569 !important;
+  display:block !important;
+}
+
+.mobile-menu-btn:hover{
+  background:#f8fafc !important;
+}
+
+@media(max-width:980px){
+  .mobile-menu-btn{
+    display:flex !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3748,14 +3786,14 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
         <div class="folder-head">
           <div class="folder-head-title">Library</div>
           <div class="folder-head-actions">
+            <button id="newFolderBtn" class="btn icon ghost" type="button" title="New folder">
+              <span class="material-symbols-outlined">create_new_folder</span>
+            </button>
             <button id="folderManageBtn" class="btn icon ghost" type="button" title="Manage folders" aria-label="Manage folders">
               <svg viewBox="0 0 24 24" aria-hidden="true" class="folder-manage-svg">
                 <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z"/>
                 <path d="M14 7l3 3"/>
               </svg>
-            </button>
-            <button id="newFolderBtn" class="btn icon ghost" type="button" title="New folder">
-              <span class="material-symbols-outlined">create_new_folder</span>
             </button>
             <button id="mobileFoldersCloseBtn" class="btn icon ghost mobile-only" type="button" title="Close folders" aria-label="Close folders">
               <span class="material-symbols-outlined">close</span>
@@ -3771,9 +3809,11 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
             <div class="subtle">Teacher Dashboard</div>
           </div>
           <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-            <button id="mobileFoldersBtn" type="button" class="btn icon outline mobile-only" aria-label="Show folders" title="Folders">
-              <span class="material-symbols-outlined">menu</span>
-            </button>
+            <button id="mobileFoldersBtn" class="mobile-menu-btn" type="button" aria-label="Open folders">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
             <div id="teacherName" style="font-weight:600;font-size:.92rem;opacity:.9"></div>
             <button id="settingsBtn" type="button" class="btn icon outline" title="Settings" aria-label="Settings">
               <svg viewBox="0 0 24 24" aria-hidden="true" class="settings-gear-svg">
@@ -4283,7 +4323,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 let currentTeacher=null, currentRole='teacher', appSettings={defaultSeconds:20,defaultQuestionType:'quiz'}, folderManageMode=false,
     folders=[], quizzes=[], sharedInbox=[], selectedFolderId='all', searchTerm='',
     editorQuiz=null, selectedQuestionId=null,
-    hostRoom=null, hostRoomUnsub=null, hostTimerHandle=null, revealHandle=null,
+    hostRoom=null, hostRoomUnsub=null, foldersUnsub=null, quizzesUnsub=null, hostTimerHandle=null, revealHandle=null,
     pendingFolderAction=null, pendingFolderId=null, pendingShareQuizId=null, pendingSharedItem=null,
     studentPlayerId=null, studentRoomUnsub=null,
     previewMode=false,
@@ -4425,6 +4465,7 @@ function showAccessDenied(user){
 }
 
 async function enterTeacherApp(){
+  stopDataListeners();
   if(!currentTeacher) return;
   const allowed=await checkTeacherAccess(currentTeacher);
   if(!allowed){ showAccessDenied(currentTeacher); return; }
@@ -4480,7 +4521,7 @@ async function signInTeacher(){
     }
   }
 }
-async function logoutTeacher(){try{await auth.signOut();}catch(err){console.error(err);}}
+async function logoutTeacher(){try{stopDataListeners(); await auth.signOut();}catch(err){console.error(err);}}
 
 auth.getRedirectResult().then(async result=>{
   if(result && result.user){
@@ -4517,16 +4558,50 @@ async function ensureDefaultFolders(){
   starter.forEach(f=>updates[f.id]=f);
   await fRef(currentTeacher.uid).update(updates);
 }
-async function loadFolders(){
-  const snap=await fRef(currentTeacher.uid).get();
-  folders=snap.exists()?Object.values(snap.val()||{}).sort((a,b)=>a.name.localeCompare(b.name)):[];
-  renderFolders();
+function stopDataListeners(){
+  if(foldersUnsub){ foldersUnsub(); foldersUnsub=null; }
+  if(quizzesUnsub){ quizzesUnsub(); quizzesUnsub=null; }
 }
+
+async function loadFolders(){
+  if(!currentTeacher) return;
+  if(foldersUnsub){ foldersUnsub(); foldersUnsub=null; }
+  const ref=fRef(currentTeacher.uid);
+  return new Promise(resolve=>{
+    let first=true;
+    const cb=snap=>{
+      folders=snap.exists()?Object.values(snap.val()||{}).sort((a,b)=>a.name.localeCompare(b.name)):[];
+      renderFolders();
+      if(first){ first=false; resolve(); }
+    };
+    ref.on('value',cb,err=>{
+      console.error('Folder sync failed:', err);
+      if(first){ first=false; resolve(); }
+    });
+    foldersUnsub=()=>ref.off('value',cb);
+  });
+}
+
 async function loadQuizzes(){
-  const snap=await qRef(currentTeacher.uid).get();
-  quizzes=snap.exists()?Object.values(snap.val()||{}).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)):[];
-  renderLibrary();
-  renderFolders(); // refresh counts
+  if(!currentTeacher) return;
+  if(quizzesUnsub){ quizzesUnsub(); quizzesUnsub=null; }
+  $('librarySubtle').textContent='Loading quizzes…';
+  const ref=qRef(currentTeacher.uid);
+  return new Promise(resolve=>{
+    let first=true;
+    const cb=snap=>{
+      quizzes=snap.exists()?Object.values(snap.val()||{}).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)):[];
+      renderLibrary();
+      renderFolders();
+      if(first){ first=false; resolve(); }
+    };
+    ref.on('value',cb,err=>{
+      console.error('Quiz sync failed:', err);
+      $('librarySubtle').textContent='Could not load quizzes. Check connection.';
+      if(first){ first=false; resolve(); }
+    });
+    quizzesUnsub=()=>ref.off('value',cb);
+  });
 }
 
 /* =========================================================
