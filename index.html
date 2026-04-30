@@ -3744,6 +3744,156 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   }
 }
 
+
+/* ===== V12.37 UNIFIED STICKY EDITOR WORKSPACE ===== */
+
+/* Keep editor header/banner visible */
+#editor-screen .topbar{
+  position:sticky !important;
+  top:0 !important;
+  z-index:1200 !important;
+  background:#ffffff !important;
+  box-shadow:0 1px 0 var(--line), 0 8px 24px rgba(15,23,42,.06) !important;
+}
+
+/* All three editor columns share one stable workspace under the header */
+#editor-screen .editor-shell.editor-three-col{
+  display:grid !important;
+  grid-template-columns:280px minmax(560px, 1fr) 320px !important;
+  align-items:start !important;
+  min-height:auto !important;
+  height:auto !important;
+  overflow:visible !important;
+}
+
+/* Left, middle, and right stay aligned together */
+#editor-screen .editor-questions-panel,
+#editor-screen .editor-question-panel,
+#editor-screen .editor-right-settings{
+  position:sticky !important;
+  top:82px !important;
+  align-self:start !important;
+}
+
+/* Left panel fixed with its own question-list scroll */
+#editor-screen .editor-questions-panel{
+  height:calc(100vh - 82px) !important;
+  max-height:calc(100vh - 82px) !important;
+  overflow:hidden !important;
+  background:var(--panel-soft) !important;
+  border-right:1px solid var(--line) !important;
+  display:flex !important;
+  flex-direction:column !important;
+}
+
+#editor-screen .editor-questions-panel .question-list{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  padding-right:4px !important;
+}
+
+#editor-screen .editor-questions-panel #addQuestionBtn{
+  flex:0 0 auto !important;
+}
+
+/* Middle editor remains visible with page-level scroll only */
+#editor-screen .editor-question-panel{
+  height:auto !important;
+  max-height:none !important;
+  overflow:visible !important;
+  padding:22px !important;
+}
+
+/* Right Quiz Settings remains visible/aligned with full panel background */
+#editor-screen .editor-right-settings{
+  height:calc(100vh - 82px) !important;
+  max-height:calc(100vh - 82px) !important;
+  overflow:hidden !important;
+  background:var(--panel-soft) !important;
+  border-left:1px solid var(--line) !important;
+  padding:22px 20px !important;
+}
+
+/* Prevent detached/choppy motion from older overrides */
+#editor-screen .editor-question-panel,
+#editor-screen .editor-right-settings{
+  transform:none !important;
+  transition:none !important;
+}
+
+/* Shortened question labels */
+#editor-screen .question-card-num{
+  font-size:.76rem !important;
+  letter-spacing:.35px !important;
+}
+
+/* Tablet: keep questions sticky, stack right below middle cleanly */
+@media(max-width:1180px){
+  #editor-screen .editor-shell.editor-three-col{
+    grid-template-columns:260px minmax(0, 1fr) !important;
+  }
+
+  #editor-screen .editor-questions-panel{
+    grid-column:1 !important;
+    grid-row:1 / span 2 !important;
+  }
+
+  #editor-screen .editor-question-panel{
+    grid-column:2 !important;
+    grid-row:1 !important;
+  }
+
+  #editor-screen .editor-right-settings{
+    grid-column:2 !important;
+    grid-row:2 !important;
+    position:static !important;
+    height:auto !important;
+    max-height:none !important;
+    border-left:0 !important;
+    border-top:1px solid var(--line) !important;
+  }
+}
+
+/* Mobile: natural stacked layout */
+@media(max-width:820px){
+  #editor-screen .topbar{
+    position:sticky !important;
+    top:0 !important;
+  }
+
+  #editor-screen .editor-shell.editor-three-col{
+    display:flex !important;
+    flex-direction:column !important;
+  }
+
+  #editor-screen .editor-questions-panel,
+  #editor-screen .editor-question-panel,
+  #editor-screen .editor-right-settings{
+    position:static !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+  }
+
+  #editor-screen .editor-questions-panel{
+    border-right:0 !important;
+    border-bottom:1px solid var(--line) !important;
+  }
+
+  #editor-screen .editor-questions-panel .question-list{
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
+    flex-direction:row !important;
+  }
+
+  #editor-screen .editor-right-settings{
+    border-left:0 !important;
+    border-top:1px solid var(--line) !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4890,7 +5040,7 @@ function renderQuestionList(){
           <button type="button" data-question-type="${q.id}:type">Type Answer</button>
         </div>
       </div>
-      <div class="question-card-num">QUESTION ${i+1} · ${questionTypeLabel(q)}</div>
+      <div class="question-card-num">Q${i+1} · ${questionTypeLabel(q)}</div>
       <div class="question-card-preview">${esc((q.text||'').slice(0,80)||'Untitled question')}</div>
     </div>`).join('');
   document.querySelectorAll('.question-card').forEach(card=>{
