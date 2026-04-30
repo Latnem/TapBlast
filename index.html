@@ -3415,6 +3415,155 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   }
 }
 
+
+/* ===== V12.32 EDITOR SMOOTH GROUP + MEDIA X UX ===== */
+
+/* Keep left Questions as the only independent/sticky scroll area */
+#editor-screen .editor-shell.editor-three-col{
+  height:auto !important;
+  min-height:calc(100vh - 82px) !important;
+  overflow:visible !important;
+  align-items:start !important;
+}
+
+#editor-screen .editor-questions-panel{
+  position:sticky !important;
+  top:82px !important;
+  height:calc(100vh - 82px) !important;
+  max-height:calc(100vh - 82px) !important;
+  overflow:hidden !important;
+  align-self:start !important;
+}
+
+/* Middle and right move naturally together with page; no separate sticky jump */
+#editor-screen .editor-question-panel,
+#editor-screen .editor-right-settings{
+  position:static !important;
+  top:auto !important;
+  height:auto !important;
+  max-height:none !important;
+  overflow:visible !important;
+  align-self:start !important;
+}
+
+/* Keep layout visually attached and aligned */
+#editor-screen .editor-question-panel{
+  padding:22px !important;
+}
+
+#editor-screen .editor-right-settings{
+  padding:22px 20px !important;
+  background:var(--panel-soft) !important;
+  border-left:1px solid var(--line) !important;
+}
+
+/* Hide uploader when media exists */
+#coverDrop.hidden,
+#questionMediaDrop.hidden{
+  display:none !important;
+}
+
+/* Selected media shell with red X */
+.media-selected-shell{
+  position:relative !important;
+  width:100% !important;
+}
+
+.cover-selected-shell{
+  min-height:0 !important;
+}
+
+.media-remove-x{
+  position:absolute !important;
+  right:8px !important;
+  bottom:8px !important;
+  width:28px !important;
+  height:28px !important;
+  min-width:28px !important;
+  min-height:28px !important;
+  border:0 !important;
+  border-radius:999px !important;
+  background:#dc2626 !important;
+  color:#ffffff !important;
+  font-size:20px !important;
+  line-height:26px !important;
+  font-weight:900 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  cursor:pointer !important;
+  box-shadow:0 8px 18px rgba(220,38,38,.35) !important;
+  z-index:4 !important;
+  padding:0 !important;
+}
+
+.media-remove-x.hidden{
+  display:none !important;
+}
+
+.media-remove-x:hover{
+  background:#b91c1c !important;
+}
+
+/* Cover preview now owns the selected view */
+#coverPreview{
+  margin-top:0 !important;
+}
+
+#coverPreview img{
+  display:block !important;
+  width:100% !important;
+  max-height:180px !important;
+  object-fit:contain !important;
+  border-radius:14px !important;
+  background:var(--panel-soft) !important;
+  border:1px solid var(--line) !important;
+}
+
+/* Question media side-by-side: when selected, preview becomes the visible half/box */
+.question-media-preview-box{
+  position:relative !important;
+}
+
+.question-media-preview-box .media-preview img,
+.question-media-preview-box .media-preview video{
+  max-width:100% !important;
+  max-height:132px !important;
+  object-fit:contain !important;
+  border-radius:10px !important;
+}
+
+.question-media-preview-box .media-preview:empty::before{
+  content:'No media selected';
+}
+
+/* If selected media exists, preview shell should feel like the actual media card */
+.question-media-row:has(#questionMediaDrop.hidden){
+  grid-template-columns:1fr !important;
+}
+
+.question-media-row:has(#questionMediaDrop.hidden) .question-media-preview-box{
+  max-width:460px !important;
+}
+
+/* Mobile stays natural */
+@media(max-width:820px){
+  #editor-screen .editor-questions-panel{
+    position:static !important;
+    height:auto !important;
+    max-height:none !important;
+  }
+
+  #editor-screen .editor-question-panel,
+  #editor-screen .editor-right-settings{
+    padding:14px 16px !important;
+  }
+
+  #editor-screen .editor-right-settings{
+    border-left:0 !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3561,9 +3710,9 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
                   <div style="margin-top:5px">Click or drag media here</div>
                   <input id="questionMediaInput" type="file" accept="image/*,video/*" class="hidden">
                 </div>
-                <div class="question-media-preview-box">
+                <div class="question-media-preview-box media-selected-shell">
                   <div id="questionMediaPreview" class="media-preview"></div>
-                  <button id="clearQuestionMediaBtn" type="button" class="btn ghost hidden">Remove Media</button>
+                  <button id="clearQuestionMediaBtn" type="button" class="media-remove-x hidden" title="Remove media" aria-label="Remove media">×</button>
                 </div>
               </div>
             </div>
@@ -3601,8 +3750,10 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
                 <div style="margin-top:4px">Click or drag image here</div>
                 <input id="coverInput" type="file" accept="image/*" class="hidden">
               </div>
-              <div id="coverPreview" class="media-preview"></div>
-              <button id="clearCoverBtn" type="button" class="btn ghost hidden" style="margin-top:8px">Remove Cover</button>
+              <div class="media-selected-shell cover-selected-shell">
+                <div id="coverPreview" class="media-preview"></div>
+                <button id="clearCoverBtn" type="button" class="media-remove-x hidden" title="Remove cover" aria-label="Remove cover">×</button>
+              </div>
             </div>
             <label class="quiz-settings-check">
               <input id="shuffleAnswersInput" type="checkbox">
@@ -4567,8 +4718,10 @@ function reorderQuestions(draggedId,targetId){
   renderQuestionList();
 }
 function renderCoverPreview(){
-  $('clearCoverBtn').classList.toggle('hidden', !editorQuiz.cover);
-  $('coverPreview').innerHTML=editorQuiz.cover?`<img src="${editorQuiz.cover}" style="max-width:100%;max-height:200px;border-radius:14px">`:'';
+  const hasCover=!!editorQuiz.cover;
+  $('coverDrop').classList.toggle('hidden', hasCover);
+  $('clearCoverBtn').classList.toggle('hidden', !hasCover);
+  $('coverPreview').innerHTML=hasCover?`<img src="${editorQuiz.cover}" alt="Quiz cover">`:'';
 }
 function renderQuestionForm(){
   const q=currentQuestion();
@@ -4578,8 +4731,10 @@ function renderQuestionForm(){
   renderAnswersEditor(q);
 }
 function renderQuestionMediaPreview(media){
-  $('clearQuestionMediaBtn').classList.toggle('hidden', !media);
-  $('questionMediaPreview').innerHTML=!media?'':(media.type==='video'?`<video src="${media.dataUrl}" controls></video>`:`<img src="${media.dataUrl}">`);
+  const hasMedia=!!media;
+  $('questionMediaDrop').classList.toggle('hidden', hasMedia);
+  $('clearQuestionMediaBtn').classList.toggle('hidden', !hasMedia);
+  $('questionMediaPreview').innerHTML=!hasMedia?'':(media.type==='video'?`<video src="${media.dataUrl}" controls></video>`:`<img src="${media.dataUrl}" alt="Question media">`);
 }
 function renderAnswersEditor(q){
   q.type=q.type||'quiz';
