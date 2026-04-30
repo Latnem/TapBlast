@@ -4256,6 +4256,51 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   color:inherit;
 }
 
+
+/* ===== V12.42 LOCK BANNER, FIX TOPBAR BUTTON CONTRAST ===== */
+/* Banner UI/background is intentionally untouched. Only white/outline button contents are darkened. */
+.topbar .btn.outline,
+.topbar .btn.ghost,
+.topbar .btn.icon,
+#editor-screen .topbar .btn.outline,
+#editor-screen .topbar .btn.ghost,
+#editor-screen .topbar .btn.icon,
+#library-screen .topbar .btn.outline,
+#library-screen .topbar .btn.ghost,
+#library-screen .topbar .btn.icon{
+  color:#1f2937 !important;
+  -webkit-text-fill-color:#1f2937 !important;
+}
+
+.topbar .btn.outline .material-symbols-outlined,
+.topbar .btn.ghost .material-symbols-outlined,
+.topbar .btn.icon .material-symbols-outlined,
+.topbar .btn.outline svg,
+.topbar .btn.ghost svg,
+.topbar .btn.icon svg{
+  color:#1f2937 !important;
+  stroke:#1f2937 !important;
+  fill:none !important;
+}
+
+.topbar .btn.outline:hover,
+.topbar .btn.ghost:hover,
+.topbar .btn.icon:hover{
+  color:#111827 !important;
+  -webkit-text-fill-color:#111827 !important;
+}
+
+/* Specifically keep Logout readable if it is a white/outline button */
+#logoutBtn{
+  color:#1f2937 !important;
+  -webkit-text-fill-color:#1f2937 !important;
+}
+#logoutBtn .material-symbols-outlined,
+#logoutBtn svg{
+  color:#1f2937 !important;
+  stroke:#1f2937 !important;
+}
+
 </style>
 </head>
 <body>
@@ -5546,8 +5591,14 @@ async function saveQuiz(){
   showScreen('library-screen');
 }
 function deleteCurrentQuestion(){
-  if(editorQuiz.questions.length===1) return;
+  if(editorQuiz.questions.length===1){
+    alert('At least one question is required.');
+    return;
+  }
   const idx=editorQuiz.questions.findIndex(q=>q.id===selectedQuestionId);
+  if(idx<0) return;
+  const label='Q'+(idx+1);
+  if(!confirm('Delete '+label+'? This cannot be undone.')) return;
   editorQuiz.questions.splice(idx,1);
   selectedQuestionId=editorQuiz.questions[Math.max(0,idx-1)].id;
   renderEditor();
