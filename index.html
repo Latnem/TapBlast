@@ -4432,6 +4432,268 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   }
 }
 
+
+/* ===== V12.49 GAMEPLAY CLEANUP + FAST JOIN UX ===== */
+
+/* Student avatar picker */
+.avatar-animal-grid{
+  display:grid;
+  grid-template-columns:repeat(6, 1fr);
+  gap:6px;
+  margin-bottom:8px;
+}
+.avatar-animal{
+  height:34px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  cursor:pointer;
+  font-size:1.15rem;
+}
+.avatar-animal.active{
+  border-color:var(--royal-600);
+  box-shadow:0 0 0 2px rgba(37,99,235,.16);
+}
+.avatar-color-grid{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+.avatar-color{
+  width:24px;
+  height:24px;
+  border-radius:999px;
+  border:2px solid #fff;
+  outline:1px solid var(--line);
+  cursor:pointer;
+}
+.avatar-color.active{
+  outline:3px solid var(--royal-500);
+}
+.player-chip{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:7px !important;
+}
+.player-avatar-dot{
+  width:26px;
+  height:26px;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1rem;
+  line-height:1;
+}
+
+/* Remove old white host card override; use clean dark game panel */
+#hostQuestionPanel.host-card,
+#hostQuestionPanel.host-question-layout{
+  background:linear-gradient(160deg, rgba(15,23,42,.92), rgba(30,58,138,.82)) !important;
+  color:#ffffff !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+  box-shadow:0 24px 70px rgba(0,0,0,.32) !important;
+  backdrop-filter:blur(12px) !important;
+  border-radius:24px !important;
+}
+
+/* Host layout autofit */
+#host-screen .host-content{
+  padding:12px 16px !important;
+  min-height:calc(100vh - 74px) !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+#hostQuestionPanel.host-question-layout{
+  width:min(96vw, 1440px) !important;
+  height:calc(100vh - 112px) !important;
+  max-height:calc(100vh - 112px) !important;
+  overflow:hidden !important;
+  grid-template-columns:minmax(320px, 46%) minmax(380px, 54%) !important;
+  gap:18px !important;
+  padding:18px !important;
+  align-items:stretch !important;
+}
+
+/* No-media questions should not show an empty left area */
+#hostQuestionPanel.no-media{
+  grid-template-columns:minmax(520px, 880px) !important;
+  justify-content:center !important;
+}
+#hostQuestionPanel.no-media .host-left-media-col{
+  display:none !important;
+}
+
+/* Media fit */
+.host-left-media-col{
+  min-height:0 !important;
+  height:100% !important;
+  max-height:100% !important;
+  padding:12px !important;
+  background:rgba(255,255,255,.08) !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+  border-radius:20px !important;
+}
+#hostMedia{
+  width:100% !important;
+  height:100% !important;
+  min-height:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+#hostMedia:empty::before{
+  content:'' !important;
+  display:none !important;
+}
+#hostMedia img,
+#hostMedia video{
+  width:100% !important;
+  height:100% !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  object-fit:contain !important;
+  margin:0 !important;
+  border-radius:16px !important;
+  box-shadow:0 10px 30px rgba(0,0,0,.3) !important;
+}
+
+.host-right-content-col{
+  height:100% !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:10px !important;
+}
+#hostQuestionPanel .phase-tag{
+  color:var(--sun-300) !important;
+  text-align:left !important;
+  margin:0 !important;
+}
+#hostQuestionPanel .host-question{
+  color:#ffffff !important;
+  text-align:left !important;
+  margin:0 !important;
+  font-size:clamp(1.25rem, 2.1vw, 2.4rem) !important;
+  line-height:1.14 !important;
+  flex:0 0 auto !important;
+  max-height:20vh !important;
+  overflow:hidden !important;
+}
+#hostQuestionPanel .host-question.countdown{
+  color:var(--sun-300) !important;
+  text-align:center !important;
+  max-height:none !important;
+  font-size:min(18vw, 10rem) !important;
+}
+
+/* Answers: stacked normally; True/False side-by-side */
+#hostQuestionPanel .host-answers{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:9px !important;
+  margin-top:4px !important;
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+  align-content:stretch !important;
+}
+#hostQuestionPanel.tf-question .host-answers{
+  grid-template-columns:1fr 1fr !important;
+  align-items:stretch !important;
+}
+#hostQuestionPanel .host-answer{
+  min-height:0 !important;
+  height:auto !important;
+  padding:10px 13px !important;
+  border-radius:16px !important;
+  overflow:hidden !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+#hostQuestionPanel .host-answer.yellow,
+#hostQuestionPanel .host-answer.yellow *{
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+#hostQuestionPanel .host-answer-shape{
+  flex:0 0 36px !important;
+  width:36px !important;
+  height:36px !important;
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+#hostQuestionPanel .host-answer .label-text{
+  font-size:clamp(.9rem, 1.15vw, 1.22rem) !important;
+  line-height:1.18 !important;
+  overflow:hidden !important;
+  display:-webkit-box !important;
+  -webkit-line-clamp:2 !important;
+  -webkit-box-orient:vertical !important;
+}
+
+/* Results distribution: not full width */
+#hostQuestionPanel .answer-dist{
+  width:min(560px, 58%) !important;
+  max-width:560px !important;
+  grid-template-columns:1fr !important;
+  gap:7px !important;
+  margin-top:4px !important;
+  align-self:flex-start !important;
+}
+#hostQuestionPanel .dist-row{
+  background:rgba(255,255,255,.10) !important;
+  color:#ffffff !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+  padding:8px 10px !important;
+}
+#hostQuestionPanel .dist-bar{
+  background:rgba(255,255,255,.18) !important;
+}
+
+/* Stats/control cleanup */
+#hostQuestionPanel .stat-row{
+  margin-top:4px !important;
+  justify-content:flex-start !important;
+}
+#hostQuestionPanel .notice{
+  color:rgba(255,255,255,.78) !important;
+  text-align:left !important;
+  margin-top:0 !important;
+}
+#hostQuestionPanel .control-row{
+  margin-top:auto !important;
+  justify-content:flex-start !important;
+}
+#hostQuestionPanel .control-row .btn.outline{
+  background:rgba(255,255,255,.10) !important;
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+  border-color:rgba(255,255,255,.22) !important;
+}
+
+/* Mobile/low width */
+@media(max-width:980px){
+  #hostQuestionPanel.host-question-layout,
+  #hostQuestionPanel.no-media{
+    grid-template-columns:1fr !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+  }
+  #hostQuestionPanel .answer-dist{
+    width:100% !important;
+  }
+  #hostQuestionPanel.tf-question .host-answers{
+    grid-template-columns:1fr 1fr !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4760,6 +5022,11 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
           <label for="studentName">Nickname</label>
           <input id="studentName" type="text" maxlength="20" placeholder="e.g., AceOfSpades">
         </div>
+        <div class="field">
+          <label>Avatar</label>
+          <div id="avatarAnimalGrid" class="avatar-animal-grid"></div>
+          <div id="avatarColorGrid" class="avatar-color-grid"></div>
+        </div>
         <button id="studentJoinBtn" type="button" class="btn accent lg" style="width:100%">
           <span class="material-symbols-outlined">login</span>Join Game
         </button>
@@ -4935,6 +5202,9 @@ const ROOT='tapblast_clean_v1';
 const $ = id => document.getElementById(id);
 const answerColors=['blue','green','orange','yellow'];
 const answerShapes=['A','B','C','D'];
+const avatarAnimals=['🐶','🐱','🦊','🐼','🐯','🦁','🐸','🐵','🐧','🦉','🐢','🦄'];
+const avatarColors=['#2563eb','#16a34a','#f97316','#dc2626','#7c3aed','#0891b2','#ca8a04','#db2777'];
+let selectedStudentAvatar=avatarAnimals[0], selectedStudentColor=avatarColors[0];
 const showScreen = id => {
   document.body.setAttribute('data-screen', id);
   document.body.classList.remove('folders-open');
@@ -5072,7 +5342,7 @@ function defaultQuestion(){
 function defaultQuiz(){return {id:genId(),title:'Untitled Quiz',folderId:'',cover:null,shuffleAnswers:false,updatedAt:Date.now(),questions:[defaultQuestion()]};}
 function getJoinUrl(code){
   const base=location.origin+location.pathname;
-  return base+'?code='+encodeURIComponent(code||'')+'#student-join';
+  return base+'?code='+encodeURIComponent(code||'');
 }
 function qrUrl(url){return 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(url);}
 function nonBlankAnswers(q){return (q.answers||[]).map((a,i)=>({...a,index:i})).filter(a=>(a.text||'').trim()||a.media);}
@@ -5180,6 +5450,7 @@ async function enterTeacherApp(){
   await loadAppSettings();
   $('teacherName').textContent=currentTeacher.displayName||currentTeacher.email||'Teacher';
   showScreen('library-screen');
+  renderCachedLibraryIfAvailable();
   try{
     await ensureDefaultFolders();
     await loadFolders();
@@ -5236,7 +5507,7 @@ async function logoutTeacher(){try{stopDataListeners(); await auth.signOut();}ca
 
 auth.onAuthStateChanged(async user=>{
   currentTeacher=user||null;
-  if(location.hash==='#student-join'){
+  if(hasStudentJoinRoute()){
     maybeBootStudentMode();
     setBootComplete();
     return;
@@ -5263,6 +5534,45 @@ function stopDataListeners(){
   if(quizzesUnsub){ quizzesUnsub(); quizzesUnsub=null; }
 }
 
+function libraryCacheKey(uid){
+  return ROOT+'_library_cache_'+uid;
+}
+function readLibraryCache(uid){
+  try{
+    const raw=localStorage.getItem(libraryCacheKey(uid));
+    if(!raw) return null;
+    const data=JSON.parse(raw);
+    if(!data || !Array.isArray(data.quizzes) || !Array.isArray(data.folders)) return null;
+    return data;
+  }catch(err){
+    console.warn('Library cache read failed:', err);
+    return null;
+  }
+}
+function writeLibraryCache(uid){
+  try{
+    if(!uid) return;
+    localStorage.setItem(libraryCacheKey(uid), JSON.stringify({
+      cachedAt:Date.now(),
+      quizzes:quizzes||[],
+      folders:folders||[]
+    }));
+  }catch(err){
+    console.warn('Library cache write failed:', err);
+  }
+}
+function renderCachedLibraryIfAvailable(){
+  if(!currentTeacher) return false;
+  const cached=readLibraryCache(currentTeacher.uid);
+  if(!cached) return false;
+  folders=(cached.folders||[]).sort((a,b)=>a.name.localeCompare(b.name));
+  quizzes=(cached.quizzes||[]).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  renderFolders();
+  renderLibrary();
+  $('librarySubtle').textContent=(quizzes.length===1?'1 quiz':quizzes.length+' quizzes')+' · Syncing…';
+  return true;
+}
+
 async function loadFolders(){
   if(!currentTeacher) return;
   if(foldersUnsub){ foldersUnsub(); foldersUnsub=null; }
@@ -5272,6 +5582,7 @@ async function loadFolders(){
     const cb=snap=>{
       folders=snap.exists()?Object.values(snap.val()||{}).sort((a,b)=>a.name.localeCompare(b.name)):[];
       renderFolders();
+      writeLibraryCache(currentTeacher.uid);
       if(first){ first=false; resolve(); }
     };
     ref.on('value',cb,err=>{
@@ -5285,7 +5596,8 @@ async function loadFolders(){
 async function loadQuizzes(){
   if(!currentTeacher) return;
   if(quizzesUnsub){ quizzesUnsub(); quizzesUnsub=null; }
-  $('librarySubtle').textContent='Loading quizzes…';
+  const hadCache=renderCachedLibraryIfAvailable();
+  if(!hadCache) $('librarySubtle').textContent='Loading quizzes…';
   const ref=qRef(currentTeacher.uid);
   return new Promise(resolve=>{
     let first=true;
@@ -5293,11 +5605,13 @@ async function loadQuizzes(){
       quizzes=snap.exists()?Object.values(snap.val()||{}).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)):[];
       renderLibrary();
       renderFolders();
+      writeLibraryCache(currentTeacher.uid);
+      $('librarySubtle').textContent=(quizzes.length===1?'1 quiz':quizzes.length+' quizzes')+' · Synced';
       if(first){ first=false; resolve(); }
     };
     ref.on('value',cb,err=>{
       console.error('Quiz sync failed:', err);
-      $('librarySubtle').textContent='Could not load quizzes. Check connection.';
+      $('librarySubtle').textContent=hadCache?'Showing cached quizzes · Sync failed':'Could not load quizzes. Check connection.';
       if(first){ first=false; resolve(); }
     });
     quizzesUnsub=()=>ref.off('value',cb);
@@ -5825,7 +6139,7 @@ function renderHostLobby(){
   $('qrImage').src = previewMode ? '' : qrUrl(join);
   const players=sortedPlayers(hostRoom);
   $('playerCountText').textContent=String(players.length);
-  $('playerChips').innerHTML=players.map(p=>`<div class="player-chip">${esc(p.name)}</div>`).join('') || '<div style="opacity:.6;font-size:.88rem">Waiting for players to join…</div>';
+  $('playerChips').innerHTML=players.map(p=>`<div class="player-chip"><span class="player-avatar-dot" style="background:${p.avatarColor||'#2563eb'}">${p.avatarEmoji||'🐶'}</span>${esc(p.name)}</div>`).join('') || '<div style="opacity:.6;font-size:.88rem">Waiting for players to join…</div>';
   $('hostTimer').textContent='';
   $('hostTimer').classList.add('hidden');
   $('hostProgressFill').style.transform='scaleX(0)';
@@ -5892,6 +6206,10 @@ function renderHostQuestion(){
   const progress=$('hostProgressFill').parentElement;
   if(progress) progress.classList.remove('hidden');
   const q=hostRoom.quiz.questions[hostRoom.currentQ];
+  const hostPanel=$('hostQuestionPanel');
+  hostPanel.classList.toggle('has-media', !!(q&&q.media));
+  hostPanel.classList.toggle('no-media', !(q&&q.media));
+  hostPanel.classList.toggle('tf-question', !!(q&&q.type==='truefalse'));
   applyHostTimerVisual(hostRoom,q);
   const phaseMap={countdown:'Get Ready!',question_media:'Watch',question_answers:'Choose your answer',paused:'Paused',locked:"Time's up!",answer_results:'Results'};
   $('hostPhaseTag').textContent=phaseMap[hostRoom.phase]||'';
@@ -6242,13 +6560,31 @@ async function endHostToLibrary(removeSession){
 /* =========================================================
    STUDENT
    ========================================================= */
+function hasStudentJoinRoute(){
+  const params=new URLSearchParams(location.search);
+  return location.hash==='#student-join' || !!params.get('code');
+}
 function maybeBootStudentMode(){
-  if(location.hash!=='#student-join') return false;
+  if(!hasStudentJoinRoute()) return false;
   showScreen('student-join-screen');
   const params=new URLSearchParams(location.search);
   $('studentCode').value=(params.get('code')||'').replace(/\D/g,'').slice(0,6);
   $('studentName').value=(params.get('name')||'').slice(0,20);
+  renderAvatarPicker();
   return true;
+}
+function renderAvatarPicker(){
+  if(!$('avatarAnimalGrid') || !$('avatarColorGrid')) return;
+  $('avatarAnimalGrid').innerHTML=avatarAnimals.map(a=>`<button type="button" class="avatar-animal ${a===selectedStudentAvatar?'active':''}" data-avatar-animal="${a}">${a}</button>`).join('');
+  $('avatarColorGrid').innerHTML=avatarColors.map(c=>`<button type="button" class="avatar-color ${c===selectedStudentColor?'active':''}" style="background:${c}" data-avatar-color="${c}" aria-label="Avatar color"></button>`).join('');
+  document.querySelectorAll('[data-avatar-animal]').forEach(btn=>btn.onclick=()=>{
+    selectedStudentAvatar=btn.dataset.avatarAnimal;
+    renderAvatarPicker();
+  });
+  document.querySelectorAll('[data-avatar-color]').forEach(btn=>btn.onclick=()=>{
+    selectedStudentColor=btn.dataset.avatarColor;
+    renderAvatarPicker();
+  });
 }
 async function studentJoin(){
   const code=($('studentCode').value||'').replace(/\D/g,'').slice(0,6);
@@ -6259,6 +6595,9 @@ async function studentJoin(){
   if(!name){ $('studentJoinError').textContent='Pick a nickname'; return; }
   try{
     if(btn){ btn.disabled=true; btn.style.opacity='.7'; }
+    showScreen('student-screen');
+    $('studentPhase').textContent='Joining…';
+    $('studentTopName').textContent=name;
     const snap=await roomRef(code).get();
     if(!snap.exists()){ $('studentJoinError').textContent='Room not found. Check the code and try again.'; return; }
     const room=snap.val();
@@ -6268,6 +6607,8 @@ async function studentJoin(){
     const existing=(room.players||{})[studentPlayerId];
     const payload=existing||{name,score:0,joinedAt:Date.now(),currentAnswerIndex:null,answerAt:0,answerQ:-1,lastDelta:0,streak:0,streakMsg:''};
     payload.name=name;
+    payload.avatarEmoji=selectedStudentAvatar;
+    payload.avatarColor=selectedStudentColor;
     await roomRef(code).child('players').child(studentPlayerId).update(payload);
     startStudentListener(code);
   }catch(err){
@@ -6871,6 +7212,7 @@ function bindEvents(){
 }
 document.addEventListener('DOMContentLoaded',()=>{
   bindEvents();
+  renderAvatarPicker();
   setTimeout(()=>{ try{ setBootComplete(); }catch(e){} }, 1500);
   if(maybeBootStudentMode()) setBootComplete();
 });
