@@ -4694,6 +4694,151 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   }
 }
 
+
+/* ===== V12.51 CLEAN JOINED HOST LOBBY ===== */
+
+/* During lobby, gameplay card must not appear as blank Pause/End panel */
+#hostQuestionPanel.hidden{
+  display:none !important;
+}
+
+/* Joined two-panel lobby */
+#hostLobby.lobby-combined{
+  width:min(94vw, 980px) !important;
+  max-width:980px !important;
+  margin:0 auto !important;
+  padding:0 !important;
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:0 !important;
+  overflow:hidden !important;
+  border-radius:26px !important;
+  background:linear-gradient(150deg, rgba(255,255,255,.12), rgba(255,255,255,.04)) !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+  box-shadow:0 22px 60px rgba(0,0,0,.30) !important;
+}
+
+.lobby-left-panel{
+  padding:30px !important;
+  color:#ffffff !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  min-height:430px !important;
+}
+
+.lobby-right-panel{
+  padding:30px !important;
+  background:#ffffff !important;
+  color:var(--ink-900) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  min-height:430px !important;
+}
+
+#hostLobby .lobby-title{
+  color:#ffffff !important;
+  margin-bottom:6px !important;
+}
+
+#hostLobby .lobby-subtitle{
+  color:rgba(255,255,255,.78) !important;
+  margin-bottom:14px !important;
+}
+
+#hostLobby .code{
+  color:#ffffff !important;
+  margin:8px 0 10px !important;
+}
+
+#hostLobby .join-url{
+  max-width:100% !important;
+  color:rgba(255,255,255,.72) !important;
+  font-size:.78rem !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+  margin-bottom:18px !important;
+}
+
+#hostLobby .qr-box{
+  width:190px !important;
+  height:190px !important;
+  margin:0 auto !important;
+  background:#ffffff !important;
+  border-radius:20px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  box-shadow:0 12px 30px rgba(0,0,0,.22) !important;
+}
+
+#hostLobby .qr-box img{
+  width:166px !important;
+  height:166px !important;
+  object-fit:contain !important;
+}
+
+#hostLobby .player-count-head{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  color:var(--ink-900) !important;
+  font-size:1.05rem !important;
+  margin-bottom:12px !important;
+}
+
+#hostLobby .player-count-pill{
+  background:var(--royal-600) !important;
+  color:#ffffff !important;
+}
+
+#hostLobby .player-chips{
+  flex:1 1 auto !important;
+  align-content:flex-start !important;
+  justify-content:flex-start !important;
+  max-height:none !important;
+  overflow-y:auto !important;
+  padding:4px 2px 12px !important;
+}
+
+#hostLobby .player-chip{
+  background:var(--panel-soft) !important;
+  color:var(--ink-900) !important;
+  border:1px solid var(--line) !important;
+  box-shadow:var(--shadow-sm) !important;
+}
+
+#hostLobby .lobby-actions{
+  margin-top:auto !important;
+  justify-content:flex-start !important;
+  gap:10px !important;
+}
+
+#hostLobby .lobby-actions .btn{
+  min-height:38px !important;
+}
+
+#hostLobby #endLobbyBtn{
+  background:#ffffff !important;
+  color:var(--ink-800) !important;
+  border-color:var(--line) !important;
+}
+
+@media(max-width:760px){
+  #hostLobby.lobby-combined{
+    grid-template-columns:1fr !important;
+    width:calc(100vw - 24px) !important;
+  }
+  .lobby-left-panel,
+  .lobby-right-panel{
+    min-height:auto !important;
+    padding:24px !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4904,25 +5049,25 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
       <div id="hostTimer" class="timer">20</div>
     </div>
     <div class="host-content">
-      <div id="hostLobby" class="lobby-card">
-        <div class="lobby-title" id="lobbyQuizTitle"></div>
-        <div class="lobby-subtitle">Join at the code below</div>
-        <div id="roomCodeDisplay" class="code">----</div>
-        <div id="joinUrlLabel" class="join-url"></div>
-        <div class="lobby-grid">
+      <div id="hostLobby" class="lobby-card lobby-combined">
+        <div class="lobby-left-panel">
+          <div class="lobby-title" id="lobbyQuizTitle"></div>
+          <div class="lobby-subtitle">Join with code or QR</div>
+          <div id="roomCodeDisplay" class="code">----</div>
+          <div id="joinUrlLabel" class="join-url"></div>
           <div class="qr-box"><img id="qrImage" alt="Join QR"></div>
-          <div>
-            <div class="player-count-head">
-              <span>Players</span>
-              <span class="player-count-pill" id="playerCountText">0</span>
-            </div>
-            <div id="playerChips" class="player-chips"></div>
-            <div class="control-row">
-              <button id="startQuizBtn" type="button" class="btn accent lg">
-                <span class="material-symbols-outlined">play_arrow</span>Start Quiz
-              </button>
-              <button id="endLobbyBtn" type="button" class="btn outline" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)">End</button>
-            </div>
+        </div>
+        <div class="lobby-right-panel">
+          <div class="player-count-head">
+            <span>Players</span>
+            <span class="player-count-pill" id="playerCountText">0</span>
+          </div>
+          <div id="playerChips" class="player-chips"></div>
+          <div class="control-row lobby-actions">
+            <button id="startQuizBtn" type="button" class="btn accent lg">
+              <span class="material-symbols-outlined">play_arrow</span>Start Quiz
+            </button>
+            <button id="endLobbyBtn" type="button" class="btn outline">End</button>
           </div>
         </div>
       </div>
@@ -6150,6 +6295,7 @@ function renderHost(){
 function renderHostLobby(){
   $('hostLobby').classList.remove('hidden');
   $('hostQuestionPanel').classList.add('hidden');
+  $('hostQuestionPanel').style.display='none';
   $('lobbyQuizTitle').textContent=hostRoom.quiz.title||'Quiz';
   $('roomCodeDisplay').textContent=hostRoom.code||'----';
   const join = previewMode ? 'Preview mode' : getJoinUrl(hostRoom.code);
@@ -6219,6 +6365,7 @@ function applyHostTimerVisual(room,q){
 function renderHostQuestion(){
   $('hostLobby').classList.add('hidden');
   $('hostQuestionPanel').classList.remove('hidden');
+  $('hostQuestionPanel').style.display='grid';
   $('hostTimer').classList.remove('hidden');
   $('hostProgressFill').classList.remove('hidden');
   const progress=$('hostProgressFill').parentElement;
