@@ -4301,6 +4301,95 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   stroke:#1f2937 !important;
 }
 
+
+/* ===== V12.43 SETTINGS EXPORT IMPORT QUIZZES ===== */
+.settings-actions-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+#backupStatus{
+  margin-top:12px;
+  font-weight:700;
+}
+
+
+/* ===== V12.44 EDITOR BANNER WIDTH + STICKY FIX ===== */
+
+/* Keep editor banner same visual width as main app, not full-bleed */
+#editor-screen > div{
+  width:100% !important;
+}
+
+#editor-screen .topbar{
+  width:min(1440px, calc(100vw - 32px)) !important;
+  max-width:1440px !important;
+  margin:16px auto 0 auto !important;
+  border-radius:18px !important;
+  position:sticky !important;
+  top:0 !important;
+  z-index:3000 !important;
+}
+
+/* Pull editor workspace under centered banner */
+#editor-screen .editor-shell.editor-three-col{
+  width:min(1440px, calc(100vw - 32px)) !important;
+  max-width:1440px !important;
+  margin:0 auto !important;
+}
+
+/* Side columns align under sticky banner */
+#editor-screen .editor-questions-panel,
+#editor-screen .editor-question-panel,
+#editor-screen .editor-right-settings{
+  top:98px !important;
+}
+
+/* Mobile keeps banner readable and sticky */
+@media(max-width:820px){
+  #editor-screen .topbar{
+    width:calc(100vw - 20px) !important;
+    margin:10px auto 0 auto !important;
+    border-radius:14px !important;
+    top:0 !important;
+  }
+
+  #editor-screen .editor-shell.editor-three-col{
+    width:100% !important;
+    margin:0 !important;
+  }
+}
+
+
+/* ===== V12.45 SMALL UI POLISH ===== */
+
+/* Uniform answer letter color in Quiz Editor */
+.answer-letter,
+.answer-edit .answer-letter,
+.answer-edit[data-color="3"] .answer-letter{
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+
+/* Remove awkward host placeholder when question has no media */
+#hostMedia:empty::before{
+  content:'' !important;
+  display:none !important;
+}
+
+/* If no media, make left media column visually disappear so host content does not look odd */
+.host-left-media-col:has(#hostMedia:empty){
+  display:none !important;
+}
+
+#hostQuestionPanel.host-question-layout:has(#hostMedia:empty){
+  grid-template-columns:minmax(420px, 900px) !important;
+  justify-content:center !important;
+}
+
 </style>
 </head>
 <body>
@@ -4494,7 +4583,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
             </div>
             <label class="quiz-settings-check">
               <input id="shuffleAnswersInput" type="checkbox">
-              <span>Shuffle answer order during game</span>
+              <span>Shuffle answer order</span>
             </label>
           </div>
         </aside></div>
@@ -4696,6 +4785,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
     <div class="settings-tabs">
       <button type="button" class="settings-tab active" data-settings-tab="defaults">Defaults</button>
       <button type="button" class="settings-tab" data-settings-tab="sharing">Sharing</button>
+      <button type="button" class="settings-tab" data-settings-tab="backup">Backup</button>
       <button type="button" class="settings-tab admin-only hidden" data-settings-tab="admin">Admin Access</button>
     </div>
 
@@ -4711,6 +4801,21 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
     <section id="settingsTab-sharing" class="settings-section hidden">
       <div class="settings-panel-title">Shared with me</div>
       <div id="sharedInboxList" class="settings-list"></div>
+    </section>
+
+    <section id="settingsTab-backup" class="settings-section hidden">
+      <div class="settings-panel-title">Export / Import Quizzes</div>
+      <div class="settings-note">Export saves a JSON backup of your quiz library. Import adds quizzes from a TapBlast JSON backup into this account.</div>
+      <div class="settings-actions-row">
+        <button id="exportQuizzesBtn" type="button" class="btn accent">
+          <span class="material-symbols-outlined">download</span>Export quizzes
+        </button>
+        <button id="importQuizzesBtn" type="button" class="btn outline">
+          <span class="material-symbols-outlined">upload</span>Import quizzes
+        </button>
+        <input id="importQuizzesInput" type="file" accept="application/json,.json" class="hidden">
+      </div>
+      <div id="backupStatus" class="settings-note"></div>
     </section>
 
     <section id="settingsTab-admin" class="settings-section hidden">
@@ -4817,6 +4922,8 @@ const ICONS = {
   content_copy:  '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',
   create_new_folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 11v6M9 14h6"/>',
   delete:        '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>',
+  download:      '<path d=\"M12 3v12M7 10l5 5 5-5\"/><path d=\"M5 21h14\"/>',
+  upload:        '<path d=\"M12 21V9M7 14l5-5 5 5\"/><path d=\"M5 3h14\"/>',
   drive_file_move: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M10 14h6M13 11l3 3-3 3"/>',
   edit:          '<path d="M4 20h4L20 8l-4-4L4 16z"/><path d="M14 6l4 4"/>',
   folder:        '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
@@ -6587,6 +6694,88 @@ async function declineSharedQuiz(itemId){
   await loadSharedInbox();
 }
 
+
+function makeQuizExportPayload(){
+  return {
+    app:'TapBlast',
+    type:'tapblast_quiz_export',
+    version:1,
+    exportedAt:new Date().toISOString(),
+    exportedBy:currentTeacher ? {uid:currentTeacher.uid,email:currentTeacher.email||''} : null,
+    quizzes:clone(quizzes||[]),
+    folders:clone(folders||[])
+  };
+}
+function downloadTextFile(filename,text){
+  const blob=new Blob([text],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function exportQuizzes(){
+  const payload=makeQuizExportPayload();
+  const date=new Date().toISOString().slice(0,10);
+  downloadTextFile('tapblast-quizzes-'+date+'.json', JSON.stringify(payload,null,2));
+  $('backupStatus').textContent='Exported '+payload.quizzes.length+' quiz'+(payload.quizzes.length===1?'':'zes')+'.';
+}
+function normalizeImportedQuiz(q){
+  const copy=clone(q||{});
+  copy.id=genId();
+  copy.title=(copy.title||'Imported Quiz').trim()||'Imported Quiz';
+  copy.folderId='';
+  copy.updatedAt=Date.now();
+  copy.questions=Array.isArray(copy.questions)&&copy.questions.length ? copy.questions : [defaultQuestion()];
+  copy.questions=copy.questions.map(question=>{
+    const nq=clone(question||{});
+    nq.id=genId();
+    nq.type=nq.type||'quiz';
+    nq.text=nq.text||'';
+    nq.seconds=Math.max(5,Math.min(120,Number(nq.seconds||appSettings.defaultSeconds||20)));
+    nq.media=nq.media||null;
+    nq.correctIndex=Number.isFinite(Number(nq.correctIndex))?Number(nq.correctIndex):0;
+    nq.typeAnswer=nq.typeAnswer||'';
+    if(!Array.isArray(nq.answers)) nq.answers=[];
+    nq.answers=nq.answers.slice(0,4).map(a=>({id:genId(),text:(a&&a.text)||'',media:(a&&a.media)||null}));
+    while(nq.answers.length<4) nq.answers.push({id:genId(),text:'',media:null});
+    return nq;
+  });
+  return copy;
+}
+async function importQuizzesFromFile(file){
+  if(!file || !currentTeacher) return;
+  $('backupStatus').textContent='Importing…';
+  try{
+    const text=await file.text();
+    const parsed=JSON.parse(text);
+    const list=Array.isArray(parsed) ? parsed : (Array.isArray(parsed.quizzes) ? parsed.quizzes : []);
+    if(!list.length){
+      $('backupStatus').textContent='No quizzes found in this file.';
+      return;
+    }
+    if(!confirm('Import '+list.length+' quiz'+(list.length===1?'':'zes')+' into your library?')) {
+      $('backupStatus').textContent='Import canceled.';
+      return;
+    }
+    const updates={};
+    list.forEach(item=>{
+      const q=normalizeImportedQuiz(item);
+      updates[q.id]=q;
+    });
+    await qRef(currentTeacher.uid).update(updates);
+    $('backupStatus').textContent='Imported '+list.length+' quiz'+(list.length===1?'':'zes')+'.';
+  }catch(err){
+    console.error(err);
+    $('backupStatus').textContent='Import failed. Make sure this is a TapBlast JSON export.';
+  }finally{
+    if($('importQuizzesInput')) $('importQuizzesInput').value='';
+  }
+}
+
 function bindEvents(){
   $('googleLoginBtn').onclick=signInTeacher;
   $('logoutBtn').onclick=logoutTeacher;
@@ -6602,6 +6791,9 @@ function bindEvents(){
   $('settingsBtn').onclick=()=>openSettings('defaults');
   $('settingsCloseBtn').onclick=closeSettings;
   document.querySelectorAll('[data-settings-tab]').forEach(btn=>btn.onclick=()=>setSettingsTab(btn.dataset.settingsTab));
+  $('exportQuizzesBtn').onclick=exportQuizzes;
+  $('importQuizzesBtn').onclick=()=>$('importQuizzesInput').click();
+  $('importQuizzesInput').onchange=e=>importQuizzesFromFile((e.target.files||[])[0]);
   $('saveDefaultsBtn').onclick=saveDefaultSettings;
   $('addWhitelistBtn').onclick=addWhitelistEmail;
   $('whitelistEmailInput').onkeydown=e=>{ if(e.key==='Enter') addWhitelistEmail(); };
