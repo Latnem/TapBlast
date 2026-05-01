@@ -5208,20 +5208,21 @@ async function signInTeacher(){
       btn.style.opacity='.7';
     }
 
-    const isMobile=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-
-    if(isMobile){
-      // Mobile browsers are more reliable with redirect than popup.
-      await auth.signInWithRedirect(provider);
-      return;
-    }
-
+    // Use popup only. Redirect can fail with "missing initial state" when
+    // browser sessionStorage is blocked/partitioned.
     const result=await auth.signInWithPopup(provider);
     currentTeacher=result.user||auth.currentUser;
     await enterTeacherApp();
   }catch(err){
     console.error(err);
-    $('loginError').textContent=(err && err.message) || 'Login failed';
+    const code=(err&&err.code)||'';
+    if(code.includes('popup-blocked')){
+      $('loginError').textContent='Popup was blocked. Allow popups for this site and try again.';
+    }else if(code.includes('popup-closed')){
+      $('loginError').textContent='Google sign-in was closed before finishing.';
+    }else{
+      $('loginError').textContent=(err && err.message) || 'Login failed';
+    }
   }finally{
     if(btn){
       btn.disabled=false;
@@ -5229,18 +5230,9 @@ async function signInTeacher(){
     }
   }
 }
+
 async function logoutTeacher(){try{stopDataListeners(); await auth.signOut();}catch(err){console.error(err);}}
 
-auth.getRedirectResult().then(async result=>{
-  if(result && result.user){
-    currentTeacher=result.user;
-    if(location.hash!=='#student-join') await enterTeacherApp();
-  }
-}).catch(err=>{
-  console.error(err);
-  const loginError=$('loginError');
-  if(loginError) loginError.textContent=(err && err.message) || 'Google redirect login failed';
-});
 
 auth.onAuthStateChanged(async user=>{
   currentTeacher=user||null;
