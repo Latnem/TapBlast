@@ -5301,7 +5301,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 let currentTeacher=null, currentRole='teacher', appSettings={defaultSeconds:20,defaultQuestionType:'quiz'}, folderManageMode=false,
     folders=[], quizzes=[], sharedInbox=[], selectedFolderId='all', searchTerm='',
     editorQuiz=null, selectedQuestionId=null,
-    hostRoom=null, hostRoomUnsub=null, foldersUnsub=null, quizzesUnsub=null, hostTimerHandle=null, revealHandle=null,
+    hostRoom=null, hostRoomUnsub=null, hostPlayersUnsub=null, foldersUnsub=null, quizzesUnsub=null, hostTimerHandle=null, revealHandle=null,
     pendingFolderAction=null, pendingFolderId=null, pendingShareQuizId=null, pendingSharedItem=null,
     studentPlayerId=null, studentRoomUnsub=null,
     previewMode=false,
@@ -6104,12 +6104,23 @@ async function startHosting(quizId){
 }
 function cleanupHost(){
   if(hostRoomUnsub){hostRoomUnsub(); hostRoomUnsub=null;}
+  if(hostPlayersUnsub){hostPlayersUnsub(); hostPlayersUnsub=null;}
   if(hostTimerHandle){clearInterval(hostTimerHandle); hostTimerHandle=null;}
   if(revealHandle){clearTimeout(revealHandle); revealHandle=null;}
 }
+
+function renderHostPlayersFast(playersObj){
+  if(!hostRoom || hostRoom.phase!=='lobby') return;
+  hostRoom.players=playersObj||{};
+  const players=sortedPlayers(hostRoom);
+  $('playerCountText').textContent=String(players.length);
+  $('playerChips').innerHTML=players.map(p=>`<div class="player-chip"><span class="player-avatar-dot" style="background:${p.avatarColor||'#2563eb'}">${p.avatarEmoji||'🐶'}</span>${esc(p.name)}</div>`).join('') || '<div style="opacity:.6;font-size:.88rem">Waiting for players to join…</div>';
+}
+
 function startHostListener(code){
   cleanupHost();
   const ref=roomRef(code);
+  try{ ref.keepSynced(true); }catch(e){}
   const cb=snap=>{
     if(!snap.exists()){ endHostToLibrary(false); return; }
     hostRoom=snap.val();
@@ -6117,6 +6128,13 @@ function startHostListener(code){
   };
   ref.on('value',cb);
   hostRoomUnsub=()=>ref.off('value',cb);
+
+  const playersRef=roomRef(code).child('players');
+  try{ playersRef.keepSynced(true); }catch(e){}
+  const playersCb=snap=>renderHostPlayersFast(snap.val()||{});
+  playersRef.on('value',playersCb);
+  hostPlayersUnsub=()=>playersRef.off('value',playersCb);
+
   showScreen('host-screen');
 }
 function renderHost(){
@@ -6598,7 +6616,7 @@ async function studentJoin(){
     showScreen('student-screen');
     $('studentPhase').textContent='Joining…';
     $('studentTopName').textContent=name;
-    const snap=await roomRef(code).get();
+    const snap=await roomRef(code).once('value');
     if(!snap.exists()){ $('studentJoinError').textContent='Room not found. Check the code and try again.'; return; }
     const room=snap.val();
     if(room.phase==='ended'){ $('studentJoinError').textContent='This game has ended.'; return; }
@@ -6622,6 +6640,7 @@ function cleanupStudent(){ if(studentRoomUnsub){studentRoomUnsub(); studentRoomU
 function startStudentListener(code){
   cleanupStudent();
   const ref=roomRef(code);
+  try{ ref.keepSynced(true); }catch(e){}
   const cb=snap=>{
     if(!snap.exists()) return renderStudentEnded('Game ended');
     const room=snap.val();
