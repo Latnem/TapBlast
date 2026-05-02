@@ -5059,7 +5059,7 @@ body.android-desktop-mode #hostLobby.lobby-combined{
 .progress{
   height:30px !important;
   min-height:30px !important;
-  background:#e5e7eb !important;
+  background:#3b4c71 !important;
   border-radius:0 !important;
   overflow:hidden !important;
   position:relative !important;
@@ -5128,7 +5128,7 @@ body.android-desktop-mode #hostLobby.lobby-combined{
   right:0 !important;
   height:100% !important;
   width:0%;
-  background:#e5e7eb !important;
+  background:#3b4c71 !important;
   border-radius:0 !important;
   z-index:2 !important;
   transition:width .18s linear !important;
@@ -5136,6 +5136,17 @@ body.android-desktop-mode #hostLobby.lobby-combined{
 
 #hostProgressMask.hidden{
   display:none !important;
+}
+
+
+/* ===== V12.59 COUNTDOWN MASK COLOR MATCH ===== */
+.host-top .progress,
+.progress{
+  background:#3b4c71 !important;
+}
+
+#hostProgressMask{
+  background:#3b4c71 !important;
 }
 
 </style>
@@ -6680,7 +6691,7 @@ function applyHostTimerVisual(room,q){
     mask.style.setProperty('right','0','important');
     mask.style.setProperty('height','100%','important');
     mask.style.setProperty('width',hiddenPct+'%','important');
-    mask.style.setProperty('background','#e5e7eb','important');
+    mask.style.setProperty('background','#3b4c71','important');
     mask.style.setProperty('border-radius','0','important');
     mask.style.setProperty('transition','width .18s linear','important');
     mask.style.setProperty('z-index','2','important');
