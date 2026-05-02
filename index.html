@@ -5087,6 +5087,57 @@ body.android-desktop-mode #hostLobby.lobby-combined{
   box-shadow:none !important;
 }
 
+
+/* ===== V12.58 TRUE PREVIEW-STYLE MASK COUNTDOWN BAR ===== */
+
+/* Exact concept from smooth_gradient_countdown_preview.html:
+   bar-fill is always full gradient.
+   bar-mask grows from the RIGHT, covering green first, then yellow, then orange, leaving red last. */
+.host-top .progress,
+.progress{
+  height:30px !important;
+  min-height:30px !important;
+  background:#e5e7eb !important;
+  border-radius:0 !important;
+  overflow:hidden !important;
+  position:relative !important;
+}
+
+#hostProgressFill{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  border-radius:0 !important;
+  background:linear-gradient(
+    to right,
+    #dc2626 0%,
+    #f59e0b 32%,
+    #d7d528 62%,
+    #18a558 100%
+  ) !important;
+  transform:none !important;
+  clip-path:none !important;
+  z-index:1 !important;
+  box-shadow:none !important;
+}
+
+#hostProgressMask{
+  position:absolute !important;
+  top:0 !important;
+  right:0 !important;
+  height:100% !important;
+  width:0%;
+  background:#e5e7eb !important;
+  border-radius:0 !important;
+  z-index:2 !important;
+  transition:width .18s linear !important;
+}
+
+#hostProgressMask.hidden{
+  display:none !important;
+}
+
 </style>
 </head>
 <body>
@@ -5293,7 +5344,7 @@ body.android-desktop-mode #hostLobby.lobby-combined{
   <div style="width:100%">
     <div class="host-top">
       <div class="brand">Tap<em>Blast</em></div>
-      <div class="progress"><div id="hostProgressFill"></div></div>
+      <div class="progress"><div id="hostProgressFill"></div><div id="hostProgressMask"></div></div>
       <div id="hostTimer" class="timer">20</div>
     </div>
     <div class="host-content">
@@ -6568,8 +6619,12 @@ function renderHostLobby(){
   $('playerChips').innerHTML=players.map(p=>`<div class="player-chip"><span class="player-avatar-dot" style="background:${p.avatarColor||'#2563eb'}">${p.avatarEmoji||'🐶'}</span>${esc(p.name)}</div>`).join('') || '<div style="opacity:.6;font-size:.88rem">Waiting for players to join…</div>';
   $('hostTimer').textContent='';
   $('hostTimer').classList.add('hidden');
-  $('hostProgressFill').style.transform='scaleX(0)';
+  $('hostProgressFill').style.transform='none';
   $('hostProgressFill').classList.add('hidden');
+  if($('hostProgressMask')){
+    $('hostProgressMask').style.width='100%';
+    $('hostProgressMask').classList.add('hidden');
+  }
   const progress=$('hostProgressFill').parentElement;
   if(progress) progress.classList.add('hidden');
 }
@@ -6594,8 +6649,10 @@ function applyHostTimerVisual(room,q){
   const total=Math.max(1,(q.seconds||20)*1000);
   const remaining=Math.max(0,room.currentRemainingMs||0);
   const ratio=Math.max(0,Math.min(1,remaining/total));
+  const hiddenPct=(1-ratio)*100;
 
   const fill=$('hostProgressFill');
+  const mask=$('hostProgressMask');
   const timerEl=$('hostTimer');
 
   const gradient='linear-gradient(to right,#dc2626 0%,#f59e0b 32%,#d7d528 62%,#18a558 100%)';
@@ -6603,21 +6660,30 @@ function applyHostTimerVisual(room,q){
   if(fill){
     fill.style.setProperty('display','block','important');
     fill.style.setProperty('position','absolute','important');
-    fill.style.setProperty('left','0','important');
-    fill.style.setProperty('top','0','important');
-    fill.style.setProperty('height','100%','important');
+    fill.style.setProperty('inset','0','important');
     fill.style.setProperty('width','100%','important');
-    fill.style.setProperty('min-width','0','important');
-    const hiddenPct=(1-ratio)*100;
-    fill.style.setProperty('transform-origin','left center','important');
+    fill.style.setProperty('height','100%','important');
     fill.style.setProperty('transform','none','important');
-    fill.style.setProperty('clip-path','inset(0 '+hiddenPct+'% 0 0)','important');
+    fill.style.setProperty('clip-path','none','important');
     fill.style.setProperty('background',gradient,'important');
     fill.style.setProperty('background-image',gradient,'important');
     fill.style.setProperty('background-size','100% 100%','important');
     fill.style.setProperty('background-position','left center','important');
     fill.style.setProperty('border-radius','0','important');
     fill.style.setProperty('box-shadow','none','important');
+  }
+
+  if(mask){
+    mask.style.setProperty('display','block','important');
+    mask.style.setProperty('position','absolute','important');
+    mask.style.setProperty('top','0','important');
+    mask.style.setProperty('right','0','important');
+    mask.style.setProperty('height','100%','important');
+    mask.style.setProperty('width',hiddenPct+'%','important');
+    mask.style.setProperty('background','#e5e7eb','important');
+    mask.style.setProperty('border-radius','0','important');
+    mask.style.setProperty('transition','width .18s linear','important');
+    mask.style.setProperty('z-index','2','important');
   }
 
   if(timerEl){
@@ -6632,6 +6698,7 @@ function renderHostQuestion(){
   $('hostQuestionPanel').style.display='grid';
   $('hostTimer').classList.remove('hidden');
   $('hostProgressFill').classList.remove('hidden');
+  if($('hostProgressMask')) $('hostProgressMask').classList.remove('hidden');
   const progress=$('hostProgressFill').parentElement;
   if(progress) progress.classList.remove('hidden');
   const q=hostRoom.quiz.questions[hostRoom.currentQ];
