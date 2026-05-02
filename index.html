@@ -7541,21 +7541,18 @@ document.addEventListener('keydown', e=>{
 <script>
 (function(){
   function applyDesktopRequestClass(){
-    var isAndroid = /Android/i.test(navigator.userAgent);
-    var wideViewport = window.innerWidth >= 900 || document.documentElement.clientWidth >= 900;
-    var largePhysicalScreen = Math.max(screen.width || 0, screen.height || 0) >= 900;
+    var width = window.innerWidth || document.documentElement.clientWidth || 0;
 
-    if(wideViewport){
-      document.body.classList.add('force-desktop-layout');
-    }else{
-      document.body.classList.remove('force-desktop-layout');
-    }
+    // Android Chrome "Desktop site" usually reports a wide CSS viewport.
+    // Normal mobile stays narrow, so it must remain mobile.
+    var desktopSiteLikely = width >= 900;
 
-    if(isAndroid && (wideViewport || largePhysicalScreen)){
-      document.body.classList.add('android-desktop-mode');
-    }
+    document.body.classList.toggle('force-desktop-layout', desktopSiteLikely);
+    document.body.classList.toggle('android-desktop-mode', desktopSiteLikely && /Android/i.test(navigator.userAgent));
   }
+
   window.addEventListener('resize', applyDesktopRequestClass);
+  window.addEventListener('orientationchange', function(){ setTimeout(applyDesktopRequestClass, 250); });
   document.addEventListener('DOMContentLoaded', applyDesktopRequestClass);
   applyDesktopRequestClass();
 })();
