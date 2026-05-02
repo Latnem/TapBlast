@@ -4839,6 +4839,146 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   }
 }
 
+
+/* ===== V12.52 GAMEPLAY FLOW FIX ===== */
+
+#hostLobby.hidden{
+  display:none !important;
+}
+
+#hostQuestionPanel.hidden{
+  display:none !important;
+}
+
+#hostLobby .lobby-subtitle:empty{
+  display:none !important;
+}
+
+/* A/B/C/D answers: 2 by 2 */
+#hostQuestionPanel .host-answers{
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:12px !important;
+  align-content:stretch !important;
+  overflow:hidden !important;
+}
+
+#hostQuestionPanel .host-answer{
+  min-height:92px !important;
+  height:auto !important;
+  padding:14px 16px !important;
+}
+
+/* During results, hide full colored answer boxes */
+#hostQuestionPanel .host-answer.hidden{
+  display:none !important;
+}
+
+/* Results: compact count-only summary */
+#hostQuestionPanel .answer-dist{
+  width:min(520px, 60%) !important;
+  max-width:520px !important;
+  grid-template-columns:1fr !important;
+  gap:8px !important;
+  align-self:flex-start !important;
+}
+
+#hostQuestionPanel .dist-row{
+  display:flex !important;
+  align-items:center !important;
+  gap:10px !important;
+  padding:9px 12px !important;
+  border-radius:12px !important;
+}
+
+#hostQuestionPanel .dist-label{
+  font-weight:800 !important;
+  font-size:.95rem !important;
+}
+
+#hostQuestionPanel .dist-bar,
+#hostQuestionPanel .dist-count{
+  display:none !important;
+}
+
+@media(max-width:760px){
+  #hostQuestionPanel .host-answers{
+    grid-template-columns:1fr !important;
+  }
+  #hostQuestionPanel .answer-dist{
+    width:100% !important;
+  }
+}
+
+
+/* ===== V12.53 ANDROID DESKTOP MODE SUPPORT ===== */
+
+body.force-desktop-layout #library-screen .app-container,
+body.android-desktop-mode #library-screen .app-container{
+  grid-template-columns:260px 1fr !important;
+}
+
+body.force-desktop-layout #library-screen .left-pane,
+body.android-desktop-mode #library-screen .left-pane{
+  position:relative !important;
+  transform:none !important;
+  width:auto !important;
+  max-width:none !important;
+  height:auto !important;
+  z-index:auto !important;
+  box-shadow:none !important;
+  border-right:1px solid var(--line) !important;
+}
+
+body.force-desktop-layout #mobileFoldersBtn,
+body.android-desktop-mode #mobileFoldersBtn,
+body.force-desktop-layout #mobileFoldersCloseBtn,
+body.android-desktop-mode #mobileFoldersCloseBtn,
+body.force-desktop-layout #foldersBackdrop,
+body.android-desktop-mode #foldersBackdrop{
+  display:none !important;
+}
+
+body.force-desktop-layout .quiz-grid,
+body.android-desktop-mode .quiz-grid{
+  grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)) !important;
+}
+
+body.force-desktop-layout #editor-screen .editor-shell.editor-three-col,
+body.android-desktop-mode #editor-screen .editor-shell.editor-three-col{
+  display:grid !important;
+  grid-template-columns:280px minmax(560px, 1fr) 320px !important;
+}
+
+body.force-desktop-layout #editor-screen .editor-questions-panel,
+body.android-desktop-mode #editor-screen .editor-questions-panel,
+body.force-desktop-layout #editor-screen .editor-question-panel,
+body.android-desktop-mode #editor-screen .editor-question-panel,
+body.force-desktop-layout #editor-screen .editor-right-settings,
+body.android-desktop-mode #editor-screen .editor-right-settings{
+  position:sticky !important;
+  top:82px !important;
+}
+
+body.force-desktop-layout #editor-screen .editor-questions-panel,
+body.android-desktop-mode #editor-screen .editor-questions-panel,
+body.force-desktop-layout #editor-screen .editor-right-settings,
+body.android-desktop-mode #editor-screen .editor-right-settings{
+  height:calc(100vh - 82px) !important;
+  max-height:calc(100vh - 82px) !important;
+}
+
+body.force-desktop-layout #editor-screen .editor-questions-panel .question-list,
+body.android-desktop-mode #editor-screen .editor-questions-panel .question-list{
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+}
+
+body.force-desktop-layout #hostLobby.lobby-combined,
+body.android-desktop-mode #hostLobby.lobby-combined{
+  grid-template-columns:1fr 1fr !important;
+}
+
 </style>
 </head>
 <body>
@@ -5052,7 +5192,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
       <div id="hostLobby" class="lobby-card lobby-combined">
         <div class="lobby-left-panel">
           <div class="lobby-title" id="lobbyQuizTitle"></div>
-          <div class="lobby-subtitle">Join with code or QR</div>
+          <div class="lobby-subtitle"></div>
           <div id="roomCodeDisplay" class="code">----</div>
           <div id="joinUrlLabel" class="join-url"></div>
           <div class="qr-box"><img id="qrImage" alt="Join QR"></div>
@@ -6261,6 +6401,12 @@ function renderHostPlayersFast(playersObj){
   $('playerCountText').textContent=String(players.length);
   $('playerChips').innerHTML=players.map(p=>`<div class="player-chip"><span class="player-avatar-dot" style="background:${p.avatarColor||'#2563eb'}">${p.avatarEmoji||'🐶'}</span>${esc(p.name)}</div>`).join('') || '<div style="opacity:.6;font-size:.88rem">Waiting for players to join…</div>';
 }
+function upsertHostPlayerFast(id,player){
+  if(!hostRoom || hostRoom.phase!=='lobby') return;
+  hostRoom.players=hostRoom.players||{};
+  hostRoom.players[id]=player||{};
+  renderHostPlayersFast(hostRoom.players);
+}
 
 function startHostListener(code){
   cleanupHost();
@@ -6276,9 +6422,16 @@ function startHostListener(code){
 
   const playersRef=roomRef(code).child('players');
   try{ playersRef.keepSynced(true); }catch(e){}
-  const playersCb=snap=>renderHostPlayersFast(snap.val()||{});
-  playersRef.on('value',playersCb);
-  hostPlayersUnsub=()=>playersRef.off('value',playersCb);
+  const childCb=snap=>upsertHostPlayerFast(snap.key,snap.val());
+  playersRef.once('value').then(snap=>renderHostPlayersFast(snap.val()||{})).catch(err=>console.warn('Initial players load failed:',err));
+  playersRef.on('child_added',childCb);
+  playersRef.on('child_changed',childCb);
+  playersRef.on('child_removed',snap=>{ if(hostRoom&&hostRoom.players){ delete hostRoom.players[snap.key]; renderHostPlayersFast(hostRoom.players); } });
+  hostPlayersUnsub=()=>{
+    playersRef.off('child_added',childCb);
+    playersRef.off('child_changed',childCb);
+    playersRef.off('child_removed');
+  };
 
   showScreen('host-screen');
 }
@@ -6294,6 +6447,7 @@ function renderHost(){
 }
 function renderHostLobby(){
   $('hostLobby').classList.remove('hidden');
+  $('hostLobby').style.display='grid';
   $('hostQuestionPanel').classList.add('hidden');
   $('hostQuestionPanel').style.display='none';
   $('lobbyQuizTitle').textContent=hostRoom.quiz.title||'Quiz';
@@ -6364,6 +6518,7 @@ function applyHostTimerVisual(room,q){
 }
 function renderHostQuestion(){
   $('hostLobby').classList.add('hidden');
+  $('hostLobby').style.display='none';
   $('hostQuestionPanel').classList.remove('hidden');
   $('hostQuestionPanel').style.display='grid';
   $('hostTimer').classList.remove('hidden');
@@ -6400,7 +6555,7 @@ function renderHostQuestion(){
     } else $('hostMedia').innerHTML=`<img src="${q.media.dataUrl}" alt="">`;
   }
 
-  const showAnswers=!['countdown','question_media'].includes(hostRoom.phase);
+  const showAnswers=!['countdown','question_media','answer_results'].includes(hostRoom.phase);
   const isTypeQuestion=(q.type==='type');
   const answers=isTypeQuestion?[]:displayAnswersFor(hostRoom,q);
   $('hostAnswers').innerHTML=isTypeQuestion
@@ -6438,8 +6593,7 @@ function renderHostQuestion(){
         {label:'Incorrect',count:wrongCount,color:'orange'}
       ].map(row=>`<div class="dist-row">
         <div class="dist-shape ${row.color}">${row.label[0]}</div>
-        <div class="dist-bar"><div class="dist-bar-fill ${row.color}" style="width:${(row.count/max)*100}%"></div></div>
-        <div class="dist-count">${row.count}</div>
+        <div class="dist-label">${row.label}: ${row.count} player${row.count===1?'':'s'}</div>
       </div>`).join('');
     }else{
       const counts = answers.map(a=>players.filter(p=>p.answerQ===hostRoom.currentQ && p.currentAnswerIndex===a.index).length);
@@ -6449,8 +6603,7 @@ function renderHostQuestion(){
         const pct = (c/max)*100;
         return `<div class="dist-row">
           <div class="dist-shape ${answerColors[idx%4]}">${answerShapes[idx]}</div>
-          <div class="dist-bar"><div class="dist-bar-fill ${answerColors[idx%4]}" style="width:${pct}%"></div></div>
-          <div class="dist-count">${c}</div>
+          <div class="dist-label">${c} player${c===1?'':'s'}</div>
         </div>`;
       }).join('');
     }
@@ -6763,17 +6916,12 @@ async function studentJoin(){
     showScreen('student-screen');
     $('studentPhase').textContent='Joining…';
     $('studentTopName').textContent=name;
-    const snap=await roomRef(code).once('value');
-    if(!snap.exists()){ $('studentJoinError').textContent='Room not found. Check the code and try again.'; return; }
-    const room=snap.val();
-    if(room.phase==='ended'){ $('studentJoinError').textContent='This game has ended.'; return; }
+    const phaseSnap=await roomRef(code).child('phase').once('value');
+    if(!phaseSnap.exists()){ $('studentJoinError').textContent='Room not found. Check the code and try again.'; showScreen('student-join-screen'); return; }
+    if(phaseSnap.val()==='ended'){ $('studentJoinError').textContent='This game has ended.'; showScreen('student-join-screen'); return; }
     studentPlayerId=sessionStorage.getItem('tapblast_player_'+code)||db.ref().push().key;
     sessionStorage.setItem('tapblast_player_'+code, studentPlayerId);
-    const existing=(room.players||{})[studentPlayerId];
-    const payload=existing||{name,score:0,joinedAt:Date.now(),currentAnswerIndex:null,answerAt:0,answerQ:-1,lastDelta:0,streak:0,streakMsg:''};
-    payload.name=name;
-    payload.avatarEmoji=selectedStudentAvatar;
-    payload.avatarColor=selectedStudentColor;
+    const payload={name,score:0,joinedAt:Date.now(),currentAnswerIndex:null,answerAt:0,answerQ:-1,lastDelta:0,streak:0,streakMsg:'',avatarEmoji:selectedStudentAvatar,avatarColor:selectedStudentColor};
     await roomRef(code).child('players').child(studentPlayerId).update(payload);
     startStudentListener(code);
   }catch(err){
@@ -7389,5 +7537,29 @@ document.addEventListener('keydown', e=>{
   if(e.key==='Escape') document.body.classList.remove('folders-open');
 });
 </script>
+
+<script>
+(function(){
+  function applyDesktopRequestClass(){
+    var isAndroid = /Android/i.test(navigator.userAgent);
+    var wideViewport = window.innerWidth >= 900 || document.documentElement.clientWidth >= 900;
+    var largePhysicalScreen = Math.max(screen.width || 0, screen.height || 0) >= 900;
+
+    if(wideViewport){
+      document.body.classList.add('force-desktop-layout');
+    }else{
+      document.body.classList.remove('force-desktop-layout');
+    }
+
+    if(isAndroid && (wideViewport || largePhysicalScreen)){
+      document.body.classList.add('android-desktop-mode');
+    }
+  }
+  window.addEventListener('resize', applyDesktopRequestClass);
+  document.addEventListener('DOMContentLoaded', applyDesktopRequestClass);
+  applyDesktopRequestClass();
+})();
+</script>
+
 </body>
 </html>
