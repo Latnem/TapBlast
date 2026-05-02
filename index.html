@@ -4979,6 +4979,76 @@ body.android-desktop-mode #hostLobby.lobby-combined{
   grid-template-columns:1fr 1fr !important;
 }
 
+
+/* ===== V12.55 TRUE 2x2 ANSWER TILE GRID ===== */
+
+#hostQuestionPanel .host-answers{
+  display:grid !important;
+  grid-template-columns:repeat(2, minmax(220px, 1fr)) !important;
+  gap:16px !important;
+  width:100% !important;
+  align-items:stretch !important;
+}
+
+#hostQuestionPanel .host-answer{
+  min-height:140px !important;
+  height:140px !important;
+  border-radius:22px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  padding:16px !important;
+}
+
+#hostQuestionPanel .host-answer-shape{
+  margin-bottom:10px !important;
+}
+
+#hostQuestionPanel .label-text{
+  text-align:center !important;
+  width:100% !important;
+}
+
+.student-answers{
+  display:grid !important;
+  grid-template-columns:repeat(2, minmax(140px, 1fr)) !important;
+  gap:14px !important;
+}
+
+.student-answer{
+  min-height:120px !important;
+  border-radius:20px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+}
+
+#hostQuestionPanel.tf-question .host-answers,
+.student-answers.tf{
+  grid-template-columns:1fr 1fr !important;
+}
+
+@media(max-width:760px){
+  #hostQuestionPanel .host-answers,
+  .student-answers{
+    grid-template-columns:1fr 1fr !important;
+    gap:10px !important;
+  }
+
+  #hostQuestionPanel .host-answer{
+    min-height:110px !important;
+    height:110px !important;
+  }
+
+  .student-answer{
+    min-height:96px !important;
+  }
+}
+
 </style>
 </head>
 <body>
