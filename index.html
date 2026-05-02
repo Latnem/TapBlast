@@ -5049,6 +5049,37 @@ body.android-desktop-mode #hostLobby.lobby-combined{
   }
 }
 
+
+/* ===== V12.56 SMOOTH GRADIENT COUNTDOWN BAR ===== */
+
+#hostProgressTrack,
+.host-progress-track{
+  overflow:hidden !important;
+  border-radius:999px !important;
+}
+
+#hostProgressFill,
+.host-progress-fill{
+  background:linear-gradient(
+    to left,
+    #22c55e 0%,
+    #eab308 42%,
+    #f97316 70%,
+    #dc2626 100%
+  ) !important;
+  transform-origin:right center !important;
+  transition:width .18s linear !important;
+  border-radius:0 !important;
+}
+
+/* flat line appearance */
+#hostProgressFill::before,
+#hostProgressFill::after,
+.host-progress-fill::before,
+.host-progress-fill::after{
+  display:none !important;
+}
+
 </style>
 </head>
 <body>
