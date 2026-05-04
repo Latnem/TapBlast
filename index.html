@@ -7204,6 +7204,18 @@ function renderStudentEnded(msg){
 function renderStudent(room,player){
   $('studentTopName').textContent=player.name||'Player';
   $('studentTopScore').textContent=String(player.score||0);
+
+  // Lobby/waiting state: student has joined, but host has NOT started the quiz yet.
+  // Do not show question or answer boxes during lobby.
+  if(room.phase==='lobby'){
+    $('studentPhase').textContent='Waiting for host';
+    $('studentMedia').innerHTML='';
+    $('studentQuestion').textContent='You are in! Wait for the game to start.';
+    $('studentAnswerGrid').innerHTML='';
+    $('studentResult').textContent='';
+    return;
+  }
+
   if(room.phase==='ended') return renderStudentEnded('Game ended');
   if(room.phase==='leaderboard'){
     $('studentPhase').textContent='Scoreboard';
@@ -7229,6 +7241,16 @@ function renderStudent(room,player){
     $('studentResult').textContent='';
     return;
   }
+  const activeQuestionPhases=['question_media','question_answers','paused','locked','answer_results'];
+  if(!activeQuestionPhases.includes(room.phase)){
+    $('studentPhase').textContent='Waiting';
+    $('studentMedia').innerHTML='';
+    $('studentQuestion').textContent='Please wait for the host.';
+    $('studentAnswerGrid').innerHTML='';
+    $('studentResult').textContent='';
+    return;
+  }
+
   const q=room.quiz.questions[room.currentQ];
   if(!q) return;
   const isTypeQuestion=(q.type==='type');
