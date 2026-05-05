@@ -4475,7 +4475,7 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   align-items:center !important;
   gap:7px !important;
 }
-.player-avatar-dot{
+.player-avatar-square{
   width:26px;
   height:26px;
   border-radius:999px;
@@ -5383,6 +5383,71 @@ body.android-desktop-mode #hostLobby.lobby-combined{
   background:rgba(250,204,21,.16);
 }
 
+
+/* ===== V12.71 GOOGLE DRIVE BACKUP ===== */
+.backup-drive-actions{
+  margin-bottom:18px !important;
+}
+
+.backup-small-title{
+  margin-top:18px !important;
+  font-size:.95rem !important;
+}
+
+.backup-status{
+  margin-top:14px !important;
+  font-weight:800 !important;
+}
+
+
+/* ===== V12.72 BIG AVATAR PLAYER LIST ===== */
+
+/* Player list is not a button/pill anymore: big emoji tile + name beside it */
+#playerChips .player-chip,
+.player-chip.player-chip-clean{
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  padding:6px 4px !important;
+  border-radius:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  color:var(--ink-900) !important;
+  font-weight:800 !important;
+}
+
+.player-avatar-square{
+  width:52px !important;
+  height:52px !important;
+  min-width:52px !important;
+  border-radius:14px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:2rem !important;
+  line-height:1 !important;
+  box-shadow:0 8px 18px rgba(15,23,42,.18), inset 0 1px 0 rgba(255,255,255,.25) !important;
+}
+
+.player-chip-name{
+  font-size:1rem !important;
+  line-height:1.2 !important;
+  color:var(--ink-900) !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+
+/* Student final list also keeps clean readable names */
+.student-final-row .player-avatar-square{
+  width:44px !important;
+  height:44px !important;
+  min-width:44px !important;
+  font-size:1.7rem !important;
+  border-radius:12px !important;
+}
+
 </style>
 </head>
 <body>
@@ -5802,18 +5867,31 @@ body.android-desktop-mode #hostLobby.lobby-combined{
     </section>
 
     <section id="settingsTab-backup" class="settings-section hidden">
-      <div class="settings-panel-title">Export / Import Quizzes</div>
-      <div class="settings-note">Export saves a JSON backup of your quiz library. Import adds quizzes from a TapBlast JSON backup into this account.</div>
+      <div class="settings-panel-title">Google Drive Backup</div>
+      <div class="settings-note">Save your quiz library to the signed-in Google account. Each backup replaces the same Drive file: <strong>tapblast_backup.json</strong>.</div>
+
+      <div class="settings-actions-row backup-drive-actions">
+        <button id="driveBackupBtn" type="button" class="btn accent">
+          <span class="material-symbols-outlined">cloud_upload</span>Backup to Google Drive
+        </button>
+        <button id="driveRestoreBtn" type="button" class="btn outline">
+          <span class="material-symbols-outlined">cloud_download</span>Restore from Google Drive
+        </button>
+      </div>
+
+      <div class="settings-panel-title backup-small-title">Local JSON</div>
+      <div class="settings-note">Optional manual backup if you want a downloaded file.</div>
       <div class="settings-actions-row">
-        <button id="exportQuizzesBtn" type="button" class="btn accent">
-          <span class="material-symbols-outlined">download</span>Export quizzes
+        <button id="exportQuizzesBtn" type="button" class="btn outline">
+          <span class="material-symbols-outlined">download</span>Download JSON
         </button>
         <button id="importQuizzesBtn" type="button" class="btn outline">
-          <span class="material-symbols-outlined">upload</span>Import quizzes
+          <span class="material-symbols-outlined">upload</span>Import JSON
         </button>
         <input id="importQuizzesInput" type="file" accept="application/json,.json" class="hidden">
       </div>
-      <div id="backupStatus" class="settings-note"></div>
+
+      <div id="backupStatus" class="settings-note backup-status"></div>
     </section>
 
     <section id="settingsTab-admin" class="settings-section hidden">
@@ -5894,6 +5972,7 @@ const answerShapes=['A','B','C','D'];
 const avatarAnimals=['🐶','🐱','🦊','🐼','🐯','🦁','🐸','🐵','🐧','🦉','🐢','🦄'];
 const avatarColors=['#2563eb','#16a34a','#f97316','#dc2626','#7c3aed','#0891b2','#ca8a04','#db2777'];
 let selectedStudentAvatar=avatarAnimals[0], selectedStudentColor=avatarColors[0];
+let googleDriveAccessToken=sessionStorage.getItem('tapblast_drive_token')||'';
 const showScreen = id => {
   document.body.setAttribute('data-screen', id);
   document.body.classList.remove('folders-open');
@@ -6162,6 +6241,7 @@ async function signInTeacher(){
   try{
     await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     const provider=new firebase.auth.GoogleAuthProvider();
+    provider.addScope('https://www.googleapis.com/auth/drive.file');
     provider.setCustomParameters({prompt:'select_account'});
     if(btn){
       btn.disabled=true;
@@ -6171,6 +6251,11 @@ async function signInTeacher(){
     // Use popup only. Redirect can fail with "missing initial state" when
     // browser sessionStorage is blocked/partitioned.
     const result=await auth.signInWithPopup(provider);
+    const credential=firebase.auth.GoogleAuthProvider.credentialFromResult(result);
+    if(credential&&credential.accessToken){
+      googleDriveAccessToken=credential.accessToken;
+      sessionStorage.setItem('tapblast_drive_token',googleDriveAccessToken);
+    }
     currentTeacher=result.user||auth.currentUser;
     await enterTeacherApp();
   }catch(err){
@@ -6803,7 +6888,7 @@ function renderHostPlayersFast(playersObj){
   hostRoom.players=playersObj||{};
   const players=sortedPlayers(hostRoom);
   $('playerCountText').textContent=String(players.length);
-  $('playerChips').innerHTML=players.map(p=>`<div class="player-chip"><span class="player-avatar-dot" style="background:${p.avatarColor||'#2563eb'}">${p.avatarEmoji||'🐶'}</span>${esc(p.name)}</div>`).join('') || '<div style="opacity:.6;font-size:.88rem">Waiting for players to join…</div>';
+  $('playerChips').innerHTML=players.map(p=>`<div class="player-chip player-chip-clean"><span class="player-avatar-square" style="background:${p.avatarColor||'#2563eb'}">${p.avatarEmoji||'🐶'}</span><span class="player-chip-name">${esc(p.name)}</span></div>`).join('') || '<div style="opacity:.6;font-size:.88rem">Waiting for players to join…</div>';
 }
 function upsertHostPlayerFast(id,player){
   if(!hostRoom || hostRoom.phase!=='lobby') return;
@@ -6861,7 +6946,7 @@ function renderHostLobby(){
   $('qrImage').src = previewMode ? '' : qrUrl(join);
   const players=sortedPlayers(hostRoom);
   $('playerCountText').textContent=String(players.length);
-  $('playerChips').innerHTML=players.map(p=>`<div class="player-chip"><span class="player-avatar-dot" style="background:${p.avatarColor||'#2563eb'}">${p.avatarEmoji||'🐶'}</span>${esc(p.name)}</div>`).join('') || '<div style="opacity:.6;font-size:.88rem">Waiting for players to join…</div>';
+  $('playerChips').innerHTML=players.map(p=>`<div class="player-chip player-chip-clean"><span class="player-avatar-square" style="background:${p.avatarColor||'#2563eb'}">${p.avatarEmoji||'🐶'}</span><span class="player-chip-name">${esc(p.name)}</span></div>`).join('') || '<div style="opacity:.6;font-size:.88rem">Waiting for players to join…</div>';
   $('hostTimer').textContent='';
   $('hostTimer').classList.add('hidden');
   $('hostProgressFill').style.transform='none';
@@ -7970,6 +8055,138 @@ async function importQuizzesFromFile(file){
   }
 }
 
+
+async function ensureDriveAccessToken(){
+  if(googleDriveAccessToken) return googleDriveAccessToken;
+  const provider=new firebase.auth.GoogleAuthProvider();
+  provider.addScope('https://www.googleapis.com/auth/drive.file');
+  provider.setCustomParameters({prompt:'consent select_account'});
+  const result=await auth.signInWithPopup(provider);
+  const credential=firebase.auth.GoogleAuthProvider.credentialFromResult(result);
+  if(!credential || !credential.accessToken) throw new Error('Google Drive permission was not granted.');
+  googleDriveAccessToken=credential.accessToken;
+  sessionStorage.setItem('tapblast_drive_token',googleDriveAccessToken);
+  currentTeacher=result.user||auth.currentUser;
+  return googleDriveAccessToken;
+}
+async function driveFetch(url,options={}){
+  const token=await ensureDriveAccessToken();
+  const res=await fetch(url,{
+    ...options,
+    headers:{
+      ...(options.headers||{}),
+      Authorization:'Bearer '+token
+    }
+  });
+  if(res.status===401 || res.status===403){
+    googleDriveAccessToken='';
+    sessionStorage.removeItem('tapblast_drive_token');
+    throw new Error('Google Drive permission expired. Try again.');
+  }
+  return res;
+}
+function driveSafeName(){
+  return 'tapblast_backup.json';
+}
+async function findDriveBackupFile(){
+  const q=encodeURIComponent("name = '"+driveSafeName()+"' and trashed = false");
+  const url='https://www.googleapis.com/drive/v3/files?q='+q+'&spaces=drive&fields=files(id,name,modifiedTime)&pageSize=10';
+  const res=await driveFetch(url);
+  if(!res.ok) throw new Error('Could not search Google Drive backup file.');
+  const data=await res.json();
+  return (data.files||[])[0]||null;
+}
+async function uploadDriveBackupFile(fileId,content){
+  if(fileId){
+    const res=await driveFetch('https://www.googleapis.com/upload/drive/v3/files/'+fileId+'?uploadType=media',{
+      method:'PATCH',
+      headers:{'Content-Type':'application/json'},
+      body:content
+    });
+    if(!res.ok) throw new Error('Could not update Google Drive backup.');
+    return await res.json().catch(()=>({id:fileId}));
+  }
+
+  const boundary='tapblast_boundary_'+Date.now();
+  const metadata={name:driveSafeName(),mimeType:'application/json'};
+  const body=[
+    '--'+boundary,
+    'Content-Type: application/json; charset=UTF-8',
+    '',
+    JSON.stringify(metadata),
+    '--'+boundary,
+    'Content-Type: application/json',
+    '',
+    content,
+    '--'+boundary+'--'
+  ].join('\r\n');
+
+  const res=await driveFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,modifiedTime',{
+    method:'POST',
+    headers:{'Content-Type':'multipart/related; boundary='+boundary},
+    body
+  });
+  if(!res.ok) throw new Error('Could not create Google Drive backup.');
+  return await res.json();
+}
+async function backupQuizzesToDrive(){
+  if(!currentTeacher) return;
+  const btn=$('driveBackupBtn');
+  try{
+    if(btn){ btn.disabled=true; btn.style.opacity='.7'; }
+    $('backupStatus').textContent='Preparing Google Drive backup…';
+    const payload=makeQuizExportPayload();
+    const content=JSON.stringify(payload,null,2);
+    $('backupStatus').textContent='Connecting to Google Drive…';
+    const existing=await findDriveBackupFile();
+    $('backupStatus').textContent=existing?'Replacing existing tapblast_backup.json…':'Creating tapblast_backup.json…';
+    await uploadDriveBackupFile(existing&&existing.id,content);
+    $('backupStatus').textContent='Backup saved to Google Drive: tapblast_backup.json';
+  }catch(err){
+    console.error(err);
+    $('backupStatus').textContent=(err&&err.message)||'Google Drive backup failed.';
+  }finally{
+    if(btn){ btn.disabled=false; btn.style.opacity=''; }
+  }
+}
+async function restoreQuizzesFromDrive(){
+  if(!currentTeacher) return;
+  const btn=$('driveRestoreBtn');
+  try{
+    if(btn){ btn.disabled=true; btn.style.opacity='.7'; }
+    $('backupStatus').textContent='Finding tapblast_backup.json in Google Drive…';
+    const file=await findDriveBackupFile();
+    if(!file){
+      $('backupStatus').textContent='No tapblast_backup.json found in Google Drive.';
+      return;
+    }
+    if(!confirm('Restore quizzes from tapblast_backup.json? This adds imported quizzes into your library.')) {
+      $('backupStatus').textContent='Restore canceled.';
+      return;
+    }
+    const res=await driveFetch('https://www.googleapis.com/drive/v3/files/'+file.id+'?alt=media');
+    if(!res.ok) throw new Error('Could not download Google Drive backup.');
+    const parsed=JSON.parse(await res.text());
+    const list=Array.isArray(parsed) ? parsed : (Array.isArray(parsed.quizzes) ? parsed.quizzes : []);
+    if(!list.length){
+      $('backupStatus').textContent='Backup file has no quizzes.';
+      return;
+    }
+    const updates={};
+    list.forEach(item=>{
+      const q=normalizeImportedQuiz(item);
+      updates[q.id]=q;
+    });
+    await qRef(currentTeacher.uid).update(updates);
+    $('backupStatus').textContent='Restored '+list.length+' quiz'+(list.length===1?'':'zes')+' from Google Drive.';
+  }catch(err){
+    console.error(err);
+    $('backupStatus').textContent=(err&&err.message)||'Google Drive restore failed.';
+  }finally{
+    if(btn){ btn.disabled=false; btn.style.opacity=''; }
+  }
+}
+
 function bindEvents(){
   $('googleLoginBtn').onclick=signInTeacher;
   $('logoutBtn').onclick=logoutTeacher;
@@ -7985,6 +8202,8 @@ function bindEvents(){
   $('settingsBtn').onclick=()=>openSettings('defaults');
   $('settingsCloseBtn').onclick=closeSettings;
   document.querySelectorAll('[data-settings-tab]').forEach(btn=>btn.onclick=()=>setSettingsTab(btn.dataset.settingsTab));
+  $('driveBackupBtn').onclick=backupQuizzesToDrive;
+  $('driveRestoreBtn').onclick=restoreQuizzesFromDrive;
   $('exportQuizzesBtn').onclick=exportQuizzes;
   $('importQuizzesBtn').onclick=()=>$('importQuizzesInput').click();
   $('importQuizzesInput').onchange=e=>importQuizzesFromFile((e.target.files||[])[0]);
