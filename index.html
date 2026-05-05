@@ -5333,6 +5333,56 @@ body.android-desktop-mode #hostLobby.lobby-combined{
 /* ===== V12.69 SCORING TIMESTAMP BUG FIX ===== */
 /* Uses Firebase server timestamps for answers and clamps timing safely. */
 
+
+/* ===== V12.70 GAMEPLAY REVEAL + FINAL SCORE FIX ===== */
+
+/* Selected answer only highlights before reveal. No immediate check icon. */
+.student-answer.selected::after{
+  content:none !important;
+  display:none !important;
+}
+
+/* Show correct check only when answer is revealed after timer/results. */
+.student-answer.correct-reveal::after{
+  content:'' !important;
+  display:block !important;
+  position:absolute !important;
+  top:8px !important;
+  right:8px !important;
+  width:28px !important;
+  height:28px !important;
+  border-radius:50% !important;
+  background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231e3a8a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M4 12l5 5L20 6'/></svg>") center/16px no-repeat !important;
+  box-shadow:0 2px 8px rgba(0,0,0,.25) !important;
+}
+
+.student-answer.correct-reveal{
+  outline:4px solid #fff !important;
+  box-shadow:0 0 0 8px rgba(255,255,255,.22), 0 10px 30px rgba(0,0,0,.35) !important;
+}
+
+.student-answer.wrong-selected{
+  filter:saturate(.75) brightness(.82) !important;
+}
+
+.student-final-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  margin:8px 0;
+  border-radius:14px;
+  background:rgba(255,255,255,.10);
+  color:#fff;
+  font-weight:700;
+}
+
+.student-final-row.me{
+  outline:3px solid var(--sun-300);
+  background:rgba(250,204,21,.16);
+}
+
 </style>
 </head>
 <body>
@@ -6994,7 +7044,7 @@ function renderHostQuestion(){
       <div class="host-score-row">
         <span class="host-score-rank">${i+1}</span>
         <span class="host-score-name">${esc(p.name)}</span>
-        <span class="host-score-delta">${p.lastDelta?'+'+p.lastDelta:''}</span>
+        <span class="host-score-delta">${hostRoom.phase==='answer_results'?'+'+Number(p.lastDelta||0):(p.lastDelta?'+'+p.lastDelta:'')}</span>
         <span class="host-score-total">${p.score||0}</span>
       </div>`).join('');
     dist.innerHTML = distRows + `<div class="host-inline-board">
@@ -7277,8 +7327,14 @@ function renderFinal(){
 }
 async function endGame(){
   if(!hostRoom) return;
-  await roomRef(hostRoom.code).update({phase:'ended',updatedAt:Date.now()});
-  await endHostToLibrary(true);
+  if(previewMode){
+    hostRoom.phase='final';
+    hostRoom.updatedAt=Date.now();
+    renderFinal();
+    return;
+  }
+  await roomRef(hostRoom.code).update({phase:'final',endedEarly:true,updatedAt:Date.now()});
+  if(currentTeacher) await hostSessionRef(currentTeacher.uid).remove().catch(console.error);
 }
 async function endHostToLibrary(removeSession){
   cleanupHost();
@@ -7393,10 +7449,15 @@ function renderStudent(room,player){
     return;
   }
   if(room.phase==='final'){
-    $('studentPhase').textContent='Final';
+    $('studentPhase').textContent='Final Scores';
     $('studentMedia').innerHTML='';
-    $('studentQuestion').textContent=`Final score: ${player.score||0}`;
-    $('studentAnswerGrid').innerHTML='';
+    $('studentQuestion').textContent=`Your final score: ${player.score||0}`;
+    const finalPlayers=sortedPlayers(room);
+    $('studentAnswerGrid').innerHTML=finalPlayers.map((p,i)=>`
+      <div class="student-final-row ${p.id===studentPlayerId?'me':''}">
+        <span>${i+1}. ${esc(p.name||'Player')}</span>
+        <strong>${Number(p.score||0)} pts</strong>
+      </div>`).join('');
     $('studentResult').textContent='';
     return;
   }
@@ -7467,7 +7528,10 @@ function renderStudent(room,player){
     $('studentAnswerGrid').innerHTML=answers.map((a,idx)=>{
       const isSelected = hasAnswered && player.currentAnswerIndex===a.index;
       const isLocked = room.phase!=='question_answers' || hasAnswered;
-      return `<button type="button" class="student-answer ${answerColors[idx%4]} ${isSelected?'selected':''} ${isLocked?'locked':''}" data-answer-index="${a.index}">
+      const isReveal=room.phase==='answer_results';
+      const isCorrectAnswer=isReveal && a.index===q.correctIndex;
+      const isWrongSelected=isReveal && isSelected && a.index!==q.correctIndex;
+      return `<button type="button" class="student-answer ${answerColors[idx%4]} ${isSelected?'selected':''} ${isLocked?'locked':''} ${isCorrectAnswer?'correct-reveal':''} ${isWrongSelected?'wrong-selected':''}" data-answer-index="${a.index}">
         <span class="student-answer-shape">${answerShapes[idx]}</span>
         ${a.media?`<span class="thumb">${a.media.type==='video'?`<video src="${a.media.dataUrl}" muted playsinline></video>`:`<img src="${a.media.dataUrl}">`}</span>`:''}
         ${a.text?`<span class="label-text">${esc(a.text)}</span>`:''}
@@ -7481,10 +7545,12 @@ function renderStudent(room,player){
     });
   }
 
-  $('studentResult').textContent=
-    room.phase==='answer_results'?
-      ((player.lastDelta?'+'+player.lastDelta+' pts ':'')+(player.streakMsg||''))
-      : (hasAnswered && room.phase==='question_answers' ? 'Locked in — waiting for others' : '');
+  if(room.phase==='answer_results'){
+    const deltaText='+'+Number(player.lastDelta||0)+' pts';
+    $('studentResult').textContent=deltaText+(player.streakMsg?' '+player.streakMsg:'');
+  }else{
+    $('studentResult').textContent=hasAnswered && room.phase==='question_answers' ? 'Locked in — waiting for others' : '';
+  }
 }
 
 /* =========================================================
