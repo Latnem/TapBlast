@@ -5308,6 +5308,31 @@ body.android-desktop-mode #hostLobby.lobby-combined{
   grid-template-columns:1fr 1fr !important;
 }
 
+
+/* ===== V12.68 REMOVE SIDEBAR BORDER SEAM ===== */
+
+/* Remove the unwanted folder sidebar border line/seam near the top banner */
+#library-screen .left-pane,
+.left-pane,
+.library-sidebar,
+.editor-questions-panel{
+  border-right:0 !important;
+  border-color:transparent !important;
+}
+
+/* Keep folder side panel tight against the top banner */
+#library-screen .app-container{
+  margin-top:0 !important;
+}
+
+#library-screen .topbar{
+  margin-bottom:0 !important;
+}
+
+
+/* ===== V12.69 SCORING TIMESTAMP BUG FIX ===== */
+/* Uses Firebase server timestamps for answers and clamps timing safely. */
+
 </style>
 </head>
 <body>
@@ -7061,10 +7086,14 @@ async function startQuiz(){ await roomRef(hostRoom.code).update({phase:'countdow
 async function beginAnswerPhase(room){
   const q=room.quiz.questions[room.currentQ];
   const now=Date.now();
+  const durationMs=(q.seconds||20)*1000;
   await roomRef(room.code).update({
-    phase:'question_answers',paused:false,currentRemainingMs:0,
-    currentQuestionStartedAt:now,
-    currentQuestionEndsAt:now+(q.seconds||20)*1000,
+    phase:'question_answers',
+    paused:false,
+    currentRemainingMs:0,
+    currentQuestionStartedAt:firebase.database.ServerValue.TIMESTAMP,
+    currentQuestionDurationMs:durationMs,
+    currentQuestionEndsAt:now+durationMs,
     updatedAt:now
   });
 }
@@ -7100,24 +7129,31 @@ function scoreFor(room, player, q){
   if(!correct) return 0;
 
   // Kahoot-style individual timing score.
-  // This is NOT based on who was fastest compared with other players.
-  // Each player gets points based only on their own answer time.
-  // If two players answer at the same speed, they receive the same points.
+  // Not rank-based. Each player is scored only by their own reaction time.
+  // Uses precise milliseconds. Correct answers should not become 0 due to clock skew.
 
-  const totalMs=Math.max(1000,(q.seconds||20)*1000);
-  const startedAt=Number(room.currentQuestionStartedAt||0);
+  const totalMs=Math.max(1000, Number(room.currentQuestionDurationMs || ((q.seconds||20)*1000)));
+  let startedAt=Number(room.currentQuestionStartedAt||0);
   const answeredAt=Number(player.answerAt||0);
 
-  if(!startedAt || !answeredAt || answeredAt<startedAt) return 0;
+  // Backward-compatible fallback for older rooms that do not have currentQuestionStartedAt.
+  if(!startedAt && room.currentQuestionEndsAt){
+    startedAt=Number(room.currentQuestionEndsAt)-totalMs;
+  }
 
+  // If timestamp is missing entirely, give minimum correct score instead of accidental 0.
+  if(!answeredAt || !startedAt) return 500;
+
+  // Clamp negative elapsed to 0 instead of giving 0 points.
+  // This protects against host/phone clock differences and server timestamp delay.
   const elapsedMs=Math.max(0,Math.min(totalMs,answeredAt-startedAt));
-  const ratio=elapsedMs/totalMs;
+
+  // Kahoot behavior: extremely fast correct answers receive full points.
+  if(elapsedMs <= 500) return 1000;
 
   // Kahoot-style formula:
   // points = round((1 - ((answerTime / questionTime) / 2)) * 1000)
-  // instant correct answer = 1000
-  // halfway through = 750
-  // at the end = 500
+  const ratio=elapsedMs/totalMs;
   const points=Math.round((1-(ratio/2))*1000);
 
   return Math.max(500,Math.min(1000,points));
@@ -7415,7 +7451,7 @@ function renderStudent(room,player){
       $('studentTypeSubmit').onclick=async()=>{
         const value=($('studentTypedAnswer')?.value||'').trim();
         if(!value) return;
-        await roomRef(room.code).child('players').child(studentPlayerId).update({currentTypedAnswer:value,answerAt:Date.now(),answerQ:room.currentQ,currentAnswerIndex:null});
+        await roomRef(room.code).child('players').child(studentPlayerId).update({currentTypedAnswer:value,answerAt:firebase.database.ServerValue.TIMESTAMP,answerQ:room.currentQ,currentAnswerIndex:null});
       };
       $('studentTypedAnswer').addEventListener('keydown',e=>{
         if(e.key==='Enter') $('studentTypeSubmit').click();
@@ -7441,7 +7477,7 @@ function renderStudent(room,player){
       if(room.phase!=='question_answers') return;
       if(hasAnswered) return;
       const idx=parseInt(btn.dataset.answerIndex,10);
-      await roomRef(room.code).child('players').child(studentPlayerId).update({currentAnswerIndex:idx,currentTypedAnswer:null,answerAt:Date.now(),answerQ:room.currentQ});
+      await roomRef(room.code).child('players').child(studentPlayerId).update({currentAnswerIndex:idx,currentTypedAnswer:null,answerAt:firebase.database.ServerValue.TIMESTAMP,answerQ:room.currentQ});
     });
   }
 
@@ -7484,10 +7520,12 @@ function previewStartQuiz(){
 function previewBeginAnswerPhase(){
   const q = hostRoom.quiz.questions[hostRoom.currentQ];
   const now=Date.now();
+  const durationMs=(q.seconds || 20) * 1000;
   hostRoom.phase = 'question_answers'; hostRoom.paused = false;
   hostRoom.currentRemainingMs = 0;
   hostRoom.currentQuestionStartedAt = now;
-  hostRoom.currentQuestionEndsAt = now + ((q.seconds || 20) * 1000);
+  hostRoom.currentQuestionDurationMs = durationMs;
+  hostRoom.currentQuestionEndsAt = now + durationMs;
   hostRoom.updatedAt = now;
   renderHost();
 }
