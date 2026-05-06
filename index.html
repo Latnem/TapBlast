@@ -5448,6 +5448,174 @@ body.android-desktop-mode #hostLobby.lobby-combined{
   border-radius:12px !important;
 }
 
+
+/* ===== V12.73 QUESTION PROGRESS + REVEAL ICON FIX ===== */
+
+.game-question-progress{
+  align-self:flex-start;
+  font-weight:900;
+  font-size:.9rem;
+  letter-spacing:.02em;
+  color:#ffffff;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:999px;
+  padding:6px 12px;
+  margin:-2px 0 4px;
+}
+
+.student-question-progress{
+  display:inline-flex;
+  align-self:center;
+  justify-content:center;
+  font-weight:900;
+  font-size:.92rem;
+  color:#ffffff;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:999px;
+  padding:6px 12px;
+  margin:0 auto 10px;
+}
+
+/* Thin visual progress bar under the label */
+.game-question-progress::after,
+.student-question-progress::after{
+  content:"";
+  display:block;
+  height:4px;
+  width:100%;
+  margin-top:5px;
+  border-radius:999px;
+  background:linear-gradient(90deg, var(--sun-300), rgba(255,255,255,.25));
+}
+
+/* Only the selected correct answer gets a check. The correct answer can highlight without icon. */
+.student-answer.correct-answer-reveal{
+  outline:3px solid rgba(255,255,255,.75) !important;
+}
+
+.student-answer.correct-answer-reveal:not(.correct-reveal)::after{
+  content:none !important;
+  display:none !important;
+}
+
+/* Selected wrong answer gets red X only at reveal */
+.student-answer.wrong-selected::after{
+  content:'×' !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  position:absolute !important;
+  top:8px !important;
+  right:8px !important;
+  width:28px !important;
+  height:28px !important;
+  border-radius:50% !important;
+  background:#dc2626 !important;
+  color:#ffffff !important;
+  font-size:24px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  box-shadow:0 2px 8px rgba(0,0,0,.25) !important;
+}
+
+/* Unanswered players: no answer icon at all */
+.student-answer.locked:not(.selected)::after{
+  content:none !important;
+  display:none !important;
+}
+
+
+/* ===== V12.74 STUDENT WAITING PROFILE EDIT ===== */
+
+.student-waiting-profile{
+  margin-top:18px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:22px;
+  padding:16px;
+  color:#fff;
+}
+
+.student-wait-title{
+  font-size:1.05rem;
+  font-weight:900;
+  text-align:center;
+}
+
+.student-wait-note{
+  text-align:center;
+  color:rgba(255,255,255,.72);
+  font-size:.88rem;
+  margin:4px 0 14px;
+}
+
+.student-profile-preview{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+.student-profile-emoji-preview{
+  width:64px;
+  height:64px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:2.4rem;
+  box-shadow:0 10px 24px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.22);
+}
+
+#studentProfileNameInput{
+  flex:1;
+  min-width:0;
+  height:44px;
+  border:1px solid rgba(255,255,255,.24);
+  border-radius:14px;
+  background:rgba(255,255,255,.92);
+  color:#172033;
+  padding:0 12px;
+  font-weight:800;
+  font-size:1rem;
+}
+
+#studentWaitingAnimalGrid{
+  grid-template-columns:repeat(6, 1fr);
+  margin-bottom:10px;
+}
+
+#studentWaitingAnimalGrid .avatar-animal{
+  height:42px;
+  font-size:1.6rem;
+}
+
+#studentWaitingColorGrid{
+  justify-content:center;
+  margin-bottom:14px;
+}
+
+#studentWaitingColorGrid .avatar-color{
+  width:30px;
+  height:30px;
+}
+
+.student-profile-saved{
+  min-height:20px;
+  margin-top:8px;
+  text-align:center;
+  font-weight:800;
+  color:var(--sun-300);
+}
+
+@media(max-width:520px){
+  #studentWaitingAnimalGrid{
+    grid-template-columns:repeat(4, 1fr);
+  }
+}
+
 </style>
 </head>
 <body>
@@ -5686,6 +5854,7 @@ body.android-desktop-mode #hostLobby.lobby-combined{
         </div>
         <div class="host-right-content-col">
           <div id="hostPhaseTag" class="phase-tag"></div>
+          <div id="hostQuestionProgress" class="game-question-progress"></div>
           <div id="hostQuestionText" class="host-question"></div>
           <div id="hostAnswers" class="host-answers"></div>
           <div id="hostDistribution" class="answer-dist hidden"></div>
@@ -5799,10 +5968,23 @@ body.android-desktop-mode #hostLobby.lobby-combined{
   <div class="student-main">
     <div class="student-card">
       <div id="studentPhase" class="student-phase"></div>
+      <div id="studentQuestionProgress" class="student-question-progress"></div>
       <div id="studentMedia" class="student-media"></div>
       <div id="studentQuestion" class="student-question"></div>
       <div id="studentAnswerGrid" class="student-grid"></div>
       <div id="studentResult" class="student-result"></div>
+      <div id="studentWaitingProfile" class="student-waiting-profile hidden">
+        <div class="student-wait-title">Waiting for host to start</div>
+        <div class="student-wait-note">You can still edit your name, emoji, and color.</div>
+        <div class="student-profile-preview">
+          <div id="studentProfileEmojiPreview" class="student-profile-emoji-preview">🐶</div>
+          <input id="studentProfileNameInput" type="text" maxlength="20" placeholder="Nickname">
+        </div>
+        <div id="studentWaitingAnimalGrid" class="avatar-animal-grid"></div>
+        <div id="studentWaitingColorGrid" class="avatar-color-grid"></div>
+        <button id="studentSaveProfileBtn" type="button" class="btn accent" style="width:100%">Update Profile</button>
+        <div id="studentProfileSavedLine" class="student-profile-saved"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -7044,6 +7226,8 @@ function renderHostQuestion(){
   const progress=$('hostProgressFill').parentElement;
   if(progress) progress.classList.remove('hidden');
   const q=hostRoom.quiz.questions[hostRoom.currentQ];
+  const totalQuestions=(hostRoom.quiz.questions||[]).length;
+  if($('hostQuestionProgress')) $('hostQuestionProgress').textContent='Question '+((hostRoom.currentQ||0)+1)+'/'+totalQuestions;
   const hostPanel=$('hostQuestionPanel');
   hostPanel.classList.toggle('has-media', !!(q&&q.media));
   hostPanel.classList.toggle('no-media', !(q&&q.media));
@@ -7509,18 +7693,71 @@ function renderStudentEnded(msg){
   $('studentAnswerGrid').innerHTML='';
   $('studentResult').textContent='';
 }
+
+function renderWaitingProfilePicker(player){
+  if(!$('studentWaitingProfile')) return;
+  const currentName=(player&&player.name)||$('studentName')?.value||'';
+  selectedStudentAvatar=(player&&player.avatarEmoji)||selectedStudentAvatar||avatarAnimals[0];
+  selectedStudentColor=(player&&player.avatarColor)||selectedStudentColor||avatarColors[0];
+
+  $('studentProfileEmojiPreview').textContent=selectedStudentAvatar;
+  $('studentProfileEmojiPreview').style.background=selectedStudentColor;
+  $('studentProfileNameInput').value=currentName;
+
+  $('studentWaitingAnimalGrid').innerHTML=avatarAnimals.map(a=>`<button type="button" class="avatar-animal ${a===selectedStudentAvatar?'active':''}" data-wait-avatar-animal="${a}">${a}</button>`).join('');
+  $('studentWaitingColorGrid').innerHTML=avatarColors.map(c=>`<button type="button" class="avatar-color ${c===selectedStudentColor?'active':''}" style="background:${c}" data-wait-avatar-color="${c}" aria-label="Avatar color"></button>`).join('');
+
+  document.querySelectorAll('[data-wait-avatar-animal]').forEach(btn=>btn.onclick=()=>{
+    selectedStudentAvatar=btn.dataset.waitAvatarAnimal;
+    $('studentProfileEmojiPreview').textContent=selectedStudentAvatar;
+    renderWaitingProfilePicker({name:$('studentProfileNameInput').value,avatarEmoji:selectedStudentAvatar,avatarColor:selectedStudentColor});
+  });
+  document.querySelectorAll('[data-wait-avatar-color]').forEach(btn=>btn.onclick=()=>{
+    selectedStudentColor=btn.dataset.waitAvatarColor;
+    $('studentProfileEmojiPreview').style.background=selectedStudentColor;
+    renderWaitingProfilePicker({name:$('studentProfileNameInput').value,avatarEmoji:selectedStudentAvatar,avatarColor:selectedStudentColor});
+  });
+
+  $('studentSaveProfileBtn').onclick=saveWaitingStudentProfile;
+  $('studentProfileNameInput').onkeydown=e=>{ if(e.key==='Enter') saveWaitingStudentProfile(); };
+}
+async function saveWaitingStudentProfile(){
+  if(!studentPlayerId) return;
+  const code=($('studentCode')?.value||new URLSearchParams(location.search).get('code')||'').replace(/\D/g,'').slice(0,6);
+  const name=($('studentProfileNameInput').value||'').trim().slice(0,20);
+  if(!code || !name) return;
+  try{
+    await roomRef(code).child('players').child(studentPlayerId).update({
+      name,
+      avatarEmoji:selectedStudentAvatar,
+      avatarColor:selectedStudentColor,
+      profileUpdatedAt:firebase.database.ServerValue.TIMESTAMP
+    });
+    $('studentTopName').textContent=name;
+    $('studentProfileSavedLine').textContent='Updated';
+    setTimeout(()=>{ if($('studentProfileSavedLine')) $('studentProfileSavedLine').textContent=''; },1200);
+  }catch(err){
+    console.error(err);
+    $('studentProfileSavedLine').textContent='Could not update profile.';
+  }
+}
+
 function renderStudent(room,player){
   $('studentTopName').textContent=player.name||'Player';
   $('studentTopScore').textContent=String(player.score||0);
+  if($('studentQuestionProgress')) $('studentQuestionProgress').textContent='';
+  if($('studentWaitingProfile')) $('studentWaitingProfile').classList.add('hidden');
 
   // Lobby/waiting state: student has joined, but host has NOT started the quiz yet.
   // Do not show question or answer boxes during lobby.
   if(room.phase==='lobby'){
-    $('studentPhase').textContent='Waiting for host';
+    $('studentPhase').textContent='Waiting Room';
     $('studentMedia').innerHTML='';
-    $('studentQuestion').textContent='You are in! Wait for the game to start.';
+    $('studentQuestion').textContent='You are in! The game will start soon.';
     $('studentAnswerGrid').innerHTML='';
     $('studentResult').textContent='';
+    $('studentWaitingProfile').classList.remove('hidden');
+    renderWaitingProfilePicker(player);
     return;
   }
 
@@ -7566,6 +7803,8 @@ function renderStudent(room,player){
 
   const q=room.quiz.questions[room.currentQ];
   if(!q) return;
+  const totalQuestions=(room.quiz.questions||[]).length;
+  if($('studentQuestionProgress')) $('studentQuestionProgress').textContent='Question '+((room.currentQ||0)+1)+'/'+totalQuestions;
   const isTypeQuestion=(q.type==='type');
   $('studentQuestion').textContent=q.text||'';
   $('studentMedia').innerHTML='';
@@ -7614,9 +7853,10 @@ function renderStudent(room,player){
       const isSelected = hasAnswered && player.currentAnswerIndex===a.index;
       const isLocked = room.phase!=='question_answers' || hasAnswered;
       const isReveal=room.phase==='answer_results';
-      const isCorrectAnswer=isReveal && a.index===q.correctIndex;
+      const isSelectedCorrect=isReveal && isSelected && a.index===q.correctIndex;
       const isWrongSelected=isReveal && isSelected && a.index!==q.correctIndex;
-      return `<button type="button" class="student-answer ${answerColors[idx%4]} ${isSelected?'selected':''} ${isLocked?'locked':''} ${isCorrectAnswer?'correct-reveal':''} ${isWrongSelected?'wrong-selected':''}" data-answer-index="${a.index}">
+      const isCorrectAnswer=isReveal && a.index===q.correctIndex;
+      return `<button type="button" class="student-answer ${answerColors[idx%4]} ${isSelected?'selected':''} ${isLocked?'locked':''} ${isSelectedCorrect?'correct-reveal':''} ${isWrongSelected?'wrong-selected':''} ${isCorrectAnswer?'correct-answer-reveal':''}" data-answer-index="${a.index}">
         <span class="student-answer-shape">${answerShapes[idx]}</span>
         ${a.media?`<span class="thumb">${a.media.type==='video'?`<video src="${a.media.dataUrl}" muted playsinline></video>`:`<img src="${a.media.dataUrl}">`}</span>`:''}
         ${a.text?`<span class="label-text">${esc(a.text)}</span>`:''}
