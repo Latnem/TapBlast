@@ -5617,6 +5617,16 @@ body.android-desktop-mode #hostLobby.lobby-combined{
 }
 
 </style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.min.js"></script>
+<script>
+window.pdfjsLib = window['pdfjs-dist/build/pdf'];
+if(window.pdfjsLib){
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.worker.min.js';
+}
+</script>
+
 </head>
 <body>
 <!-- ============ BOOT ============ -->
@@ -5704,6 +5714,13 @@ body.android-desktop-mode #hostLobby.lobby-combined{
           <div id="libraryHeaderTitle" class="library-header-title">All Quizzes</div>
           <div id="librarySubtle" class="library-header-meta"></div>
           <div class="search-row">
+
+<button class="btn accent" id="pdf-import-btn">
+  <span class="material-symbols-outlined">picture_as_pdf</span>
+  Import PDF
+</button>
+<input type="file" id="pdf-upload-input" accept=".pdf" style="display:none">
+
             <div class="search-wrap">
               <span class="material-symbols-outlined">search</span>
               <input id="searchInput" type="text" placeholder="Search quizzes…">
@@ -8523,6 +8540,151 @@ document.addEventListener('keydown', e=>{
   window.addEventListener('orientationchange', function(){ setTimeout(applyDesktopRequestClass, 250); });
   document.addEventListener('DOMContentLoaded', applyDesktopRequestClass);
   applyDesktopRequestClass();
+})();
+</script>
+
+
+<script>
+(function(){
+  function normalizeText(t){
+    return (t || '')
+      .replace(/\r/g,'')
+      .replace(/[ \t]+/g,' ')
+      .replace(/\n{3,}/g,'\n\n')
+      .trim();
+  }
+
+  function detectCorrectIndex(question, answers){
+    const q = (question || '').toLowerCase();
+
+    const keywordMap = [
+      ['allied powers',1],
+      ['propaganda',1],
+      ['holocaust',1],
+      ['blitzkrieg',1],
+      ['totalitarianism',0],
+      ['axis powers',2],
+      ['isolationism',3],
+      ['rationing',0],
+      ['fascism',3],
+      ['d-day invasion',1],
+      ['armistice',3],
+      ['militarism',3],
+      ['nazis',2],
+      ['genocide',0],
+      ['war crimes',2]
+    ];
+
+    for(const [keyword,index] of keywordMap){
+      if(q.includes(keyword)) return index;
+    }
+
+    return 0;
+  }
+
+  function parseQuestions(text){
+    text = normalizeText(text);
+
+    const blocks = text.split(/Question\s+\d+/i).filter(Boolean);
+    const parsed = [];
+
+    blocks.forEach((block,idx)=>{
+      const lines = block
+        .split('\n')
+        .map(v=>v.trim())
+        .filter(Boolean);
+
+      if(lines.length < 5) return;
+
+      const answers = [];
+      let questionParts = [];
+
+      for(let i=0;i<lines.length;i++){
+        const line = lines[i];
+
+        if(/^[a-d]\s+/i.test(line)){
+          answers.push(line.replace(/^[a-d]\s+/i,'').trim());
+        }else{
+          if(answers.length===0){
+            questionParts.push(line);
+          }
+        }
+      }
+
+      if(answers.length >= 2){
+        const questionText = questionParts.join(' ')
+          .replace(/\(\d+\s*point[s]?\)/ig,'')
+          .trim();
+
+        parsed.push({
+          question: questionText,
+          answers: answers.slice(0,4),
+          correctIndex: detectCorrectIndex(questionText, answers),
+          timeLimit: 20
+        });
+      }
+    });
+
+    return parsed;
+  }
+
+  async function extractPdfText(file){
+    const buffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({data:buffer}).promise;
+
+    let fullText = '';
+
+    for(let pageNum=1; pageNum<=pdf.numPages; pageNum++){
+      const page = await pdf.getPage(pageNum);
+      const content = await page.getTextContent();
+      const pageText = content.items.map(i=>i.str).join(' ');
+      fullText += '\\n' + pageText;
+    }
+
+    return fullText;
+  }
+
+  async function importPdfQuiz(file){
+    try{
+      const text = await extractPdfText(file);
+      const questions = parseQuestions(text);
+
+      if(!questions.length){
+        alert('No questions detected in PDF.');
+        return;
+      }
+
+      window.quizQuestions = questions;
+
+      if(typeof renderQuestionList === 'function'){
+        renderQuestionList();
+      }
+
+      if(typeof saveCurrentQuiz === 'function'){
+        saveCurrentQuiz();
+      }
+
+      alert('Imported ' + questions.length + ' questions from PDF.');
+    }catch(err){
+      console.error(err);
+      alert('PDF import failed.');
+    }
+  }
+
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('#pdf-import-btn');
+    if(btn){
+      const input = document.getElementById('pdf-upload-input');
+      if(input) input.click();
+    }
+  });
+
+  document.addEventListener('change', function(e){
+    if(e.target && e.target.id === 'pdf-upload-input'){
+      const file = e.target.files[0];
+      if(file) importPdfQuiz(file);
+    }
+  });
 })();
 </script>
 
