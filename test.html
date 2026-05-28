@@ -5626,140 +5626,182 @@ if (window.pdfjsLib) {
 </script>
 
 
-<style id="tapblast-ui-v2-polish">
-/* ===== TapBlast UI v2 polish: mockup-inspired layout, original color scheme retained ===== */
+
+<style id="tapblast-ui-v2-boxy-android">
+/* ===== TapBlast UI v2: boxy Android-style layout polish =====
+   Color scheme untouched. Quiz image cover/settings are left alone. */
 body{
-  background:
-    radial-gradient(900px 420px at 12% 0%, rgba(59,130,246,.12), transparent 60%),
-    radial-gradient(700px 360px at 90% 10%, rgba(250,204,21,.10), transparent 58%),
-    var(--bg);
+  background:var(--bg);
 }
 .app-container{
   max-width:1480px;
-  margin:18px;
-  min-height:calc(100vh - 36px);
-  border-radius:30px;
+  margin:0 auto;
+  min-height:100vh;
+  border-radius:0;
   overflow:hidden;
-  box-shadow:0 28px 80px rgba(15,32,80,.14), 0 8px 24px rgba(15,32,80,.08);
-  border:1px solid rgba(255,255,255,.75);
+  box-shadow:0 10px 35px rgba(15,32,80,.10);
+  border-left:1px solid var(--line);
+  border-right:1px solid var(--line);
 }
 .left-pane{
-  background:linear-gradient(180deg,#fff 0%, var(--sky-50) 100%);
-  padding:24px 18px;
+  background:linear-gradient(180deg,var(--royal-950),var(--royal-800));
+  color:#fff;
+  padding:28px 18px;
+  border-right:none;
+}
+.left-pane .folder-head-title,
+.left-pane .folder-name{
+  color:#fff;
+}
+.left-pane .folder-count{
+  background:rgba(255,255,255,.14);
+  color:#fff;
+}
+.folder-item{
+  border-radius:4px;
+  color:#fff;
+  padding:14px 14px;
+}
+.folder-item:hover{
+  background:rgba(255,255,255,.12);
+  color:#fff;
+}
+.folder-item.active{
+  background:linear-gradient(180deg,var(--sun-300),var(--sun-500));
+  color:var(--royal-950);
+  border-color:transparent;
+  box-shadow:4px 4px 0 rgba(0,0,0,.18);
+}
+.folder-item.active .folder-name,
+.folder-item.active .material-symbols-outlined{
+  color:var(--royal-950);
+}
+.folder-item.active .folder-count{
+  background:rgba(255,255,255,.55);
+  color:var(--royal-950);
 }
 .topbar{
-  margin:18px 22px 0;
-  border-radius:24px;
-  padding:18px 22px;
-  box-shadow:var(--shadow-royal);
+  background:#fff;
+  color:var(--ink-900);
+  padding:28px 38px 14px;
+  box-shadow:none;
+  border-bottom:none;
+}
+.topbar::before{
+  display:none;
+}
+.topbar .brand{
+  color:var(--ink-900);
 }
 .content-wrap{
-  padding:24px 30px 32px;
+  padding:24px 38px 34px;
+}
+.library-header-title{
+  font-size:2rem;
 }
 .search-row{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:22px;
-  padding:14px;
-  box-shadow:var(--shadow-sm);
+  background:transparent;
+  border:none;
+  border-radius:0;
+  padding:0;
+  box-shadow:none;
+  gap:16px;
 }
 .search-wrap{
-  max-width:none;
+  max-width:390px;
 }
-.search-wrap input{
-  border-radius:999px;
-  background:var(--panel-soft);
+.search-wrap input,
+select,
+input[type=text],
+input[type=number],
+input[type=email],
+input[type=password],
+textarea{
+  border-radius:2px;
+  border:1.5px solid var(--line);
+  box-shadow:none;
 }
 .btn{
-  border-radius:999px;
+  border-radius:2px;
+  box-shadow:none!important;
+}
+.btn.primary,
+.btn.accent{
+  box-shadow:4px 4px 0 rgba(15,32,80,.12)!important;
+}
+.btn:hover{
+  transform:none;
+  filter:brightness(.98);
 }
 .btn.icon{
-  border-radius:50%;
+  border-radius:2px;
 }
 .quiz-grid{
   grid-template-columns:repeat(auto-fill,minmax(285px,1fr));
-  gap:22px;
+  gap:20px;
 }
 .quiz-card{
-  border-radius:24px;
-  border:1px solid rgba(227,232,244,.9);
-  box-shadow:0 8px 22px rgba(15,32,80,.07);
+  border-radius:2px;
+  border:1.5px solid var(--line);
+  box-shadow:0 4px 12px rgba(15,32,80,.06);
 }
 .quiz-card:hover{
-  transform:translateY(-5px);
-  box-shadow:0 24px 54px rgba(15,32,80,.16);
+  transform:none;
+  border-color:var(--sky-400);
+  box-shadow:6px 6px 0 rgba(30,58,138,.10);
 }
-.quiz-cover{
-  height:150px;
-  background:
-    radial-gradient(220px 120px at 80% 10%, rgba(250,204,21,.22), transparent 60%),
-    linear-gradient(135deg, var(--sky-100), #fff);
-}
+/* Intentionally NOT changing .quiz-cover */
 .quiz-body{
   padding:18px;
 }
 .quiz-actions .btn{
-  padding:10px 14px;
+  border-radius:2px;
 }
-.folder-head-title,
-.library-header-meta,
-label{
-  letter-spacing:.7px;
-}
-.folder-item{
-  border-radius:16px;
-  padding:12px 13px;
-}
-.folder-item.active{
-  background:#fff;
-  box-shadow:0 8px 20px rgba(15,32,80,.08);
+.menu-btn,
+.menu-pop,
+.menu-pop button{
+  border-radius:2px;
 }
 .panel,
-.lb-card,
 .modal-card,
+.lb-card,
 .student-card,
 .host-card,
 .lobby-card{
-  border-radius:26px;
+  border-radius:2px;
 }
 .editor-shell{
-  margin:18px 22px 22px;
-  border-radius:28px;
-  overflow:hidden;
-  border:1px solid var(--line);
-  box-shadow:var(--shadow);
-  min-height:calc(100vh - 126px);
+  margin:0;
+  border-radius:0;
+  border-top:1px solid var(--line);
+  box-shadow:none;
 }
 .editor-left{
-  background:linear-gradient(180deg,var(--sky-50),#fff);
+  background:#fff;
 }
-.question-card{
-  border-radius:18px;
+.question-card,
+.answer-edit,
+.media-drop{
+  border-radius:2px;
 }
-.answer-edit{
-  border-radius:20px;
-}
+.google-btn,
 .login-card{
-  border-radius:30px;
+  border-radius:2px;
 }
-.google-btn{
-  border-radius:999px;
+.login-divider,
+.student-link{
+  display:none!important;
 }
 @media(max-width:820px){
   .app-container{
     margin:0;
-    min-height:100vh;
     border-radius:0;
   }
   .topbar{
-    margin:12px;
-    border-radius:20px;
+    padding:20px 18px 10px;
   }
   .content-wrap{
     padding:18px;
-  }
-  .search-row{
-    border-radius:20px;
   }
 }
 </style>
