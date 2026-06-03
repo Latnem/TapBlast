@@ -5618,330 +5618,152 @@ body.android-desktop-mode #hostLobby.lobby-combined{
 
 
 
-/* ===== SCHEME 1 MIX — CLEAN SIDEBAR + BORDERLESS ICONS ===== */
-:root{
-  --scheme1-sidebar:#263142;
-  --scheme1-sidebar-2:#303c50;
-  --scheme1-sidebar-3:#3c4b62;
-  --scheme1-line:#46566f;
-  --scheme1-text:#eaf1fb;
-  --scheme1-muted:#aebbd0;
-  --scheme1-active:#5e789e;
-  --scheme1-accent:#93c5fd;
+/* ===== DASHBOARD OPTION 2 TRANSFORM — CLEAN SIDEBAR + CREATE TILE ===== */
+body[data-screen="library-screen"] .app-shell{background:#edf2f8;}
+body[data-screen="library-screen"] .app-container.dashboard-v2-shell{
+  grid-template-columns:220px minmax(0,1fr) !important;
+  max-width:1440px;
+  background:#f7f9fd;
 }
-
-body[data-screen="library-screen"] .app-shell{
-  background:#eef3fb !important;
-}
-
-body[data-screen="library-screen"] #library-screen .app-container{
-  background:#fff !important;
-}
-
-@media (min-width:981px){
-  body[data-screen="library-screen"] #library-screen .app-container,
-  #library-screen .app-container{
-    grid-template-columns:236px 1fr !important;
-    max-width:1440px !important;
-  }
-}
-
-/* Sidebar surface */
-#library-screen .library-sidebar,
-body[data-screen="library-screen"] #library-screen .library-sidebar{
-  background:linear-gradient(180deg,var(--scheme1-sidebar),#202a39) !important;
+.dashboard-sidebar{
+  background:#2f3a4d !important;
+  background-image:none !important;
+  color:#e7edf7 !important;
+  padding:18px 12px !important;
   border-right:0 !important;
-  color:var(--scheme1-text) !important;
-  padding:14px 12px !important;
-  box-shadow:inset -1px 0 rgba(255,255,255,.04) !important;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
 }
-
-/* Sidebar top tools */
-#library-screen .library-sidebar .folder-head{
-  padding:0 2px 12px !important;
-  margin:0 0 10px !important;
-  border-bottom:1px solid rgba(255,255,255,.08) !important;
-  display:flex !important;
-  align-items:center !important;
-}
-
-#library-screen .library-sidebar .folder-head-title{
-  display:block !important;
-  width:auto !important;
-  height:auto !important;
-  overflow:visible !important;
-  visibility:visible !important;
-  color:#fff !important;
-  font-size:.76rem !important;
-  letter-spacing:.9px !important;
-  text-transform:uppercase !important;
-  font-weight:800 !important;
-}
-
-#library-screen .library-sidebar .folder-head-actions{
-  display:flex !important;
-  align-items:center !important;
-  gap:5px !important;
-}
-
-/* Clean icons: no border, no square box */
-#library-screen .library-sidebar #newFolderBtn,
-#library-screen .library-sidebar #folderManageBtn,
-#library-screen .library-sidebar #mobileFoldersCloseBtn,
-#library-screen .library-sidebar .btn.icon,
-#library-screen .library-sidebar button.btn.icon.ghost{
-  background:transparent !important;
-  border:0 !important;
-  outline:0 !important;
-  box-shadow:none !important;
+.sidebar-brand-block{padding:4px 10px 18px;border-bottom:1px solid rgba(255,255,255,.10);margin-bottom:12px;}
+.sidebar-brand{font-size:1.55rem !important;color:#fff;}
+.sidebar-brand em{color:#facc15;}
+.sidebar-subtle{color:#bac7da !important;font-size:.72rem !important;opacity:1 !important;}
+.sidebar-nav{flex:1;min-height:0;overflow:auto;padding-top:4px;}
+.dashboard-sidebar .folder-list{gap:3px !important;}
+.dashboard-sidebar .folder-item{
+  min-height:38px !important;
+  padding:8px 9px !important;
+  gap:9px !important;
   border-radius:0 !important;
-  width:30px !important;
-  height:30px !important;
-  min-width:30px !important;
-  min-height:30px !important;
-  padding:0 !important;
-  color:#dce8f8 !important;
-}
-
-#library-screen .library-sidebar #newFolderBtn:hover,
-#library-screen .library-sidebar #folderManageBtn:hover,
-#library-screen .library-sidebar #mobileFoldersCloseBtn:hover,
-#library-screen .library-sidebar .btn.icon:hover{
   background:transparent !important;
-  color:#fff !important;
-  transform:translateY(-1px) !important;
+  color:#dce6f4 !important;
+  border:0 !important;
+  border-left:4px solid transparent !important;
+  box-shadow:none !important;
 }
-
-#library-screen .library-sidebar #newFolderBtn .material-symbols-outlined,
-#library-screen .library-sidebar #folderManageBtn svg,
-#library-screen .library-sidebar #mobileFoldersCloseBtn .material-symbols-outlined{
+.dashboard-sidebar .folder-item:hover{background:#414f67 !important;color:#fff !important;}
+.dashboard-sidebar .folder-item.active{
+  background:#52627d !important;
+  color:#fff !important;
+  border-left-color:#93c5fd !important;
+}
+.dashboard-sidebar .folder-clean-icon,
+.dashboard-sidebar .folder-item .material-symbols-outlined{
+  display:inline-flex !important;
+  color:#b9c7dc !important;
+  font-size:20px !important;
   width:22px !important;
   height:22px !important;
-  font-size:22px !important;
-  stroke-width:2 !important;
-  filter:none !important;
-}
-
-#library-screen .library-sidebar #newFolderBtn:focus-visible,
-#library-screen .library-sidebar #folderManageBtn:focus-visible,
-#library-screen .library-sidebar #mobileFoldersCloseBtn:focus-visible{
-  outline:2px solid var(--scheme1-accent) !important;
-  outline-offset:3px !important;
-}
-
-/* Folder list */
-#library-screen .library-sidebar .folder-list{
-  gap:4px !important;
-  padding-top:2px !important;
-}
-
-#library-screen .library-sidebar .folder-item{
-  min-height:36px !important;
-  padding:8px 10px !important;
-  gap:8px !important;
-  border:0 !important;
-  border-left:3px solid transparent !important;
-  border-radius:0 !important;
-  background:transparent !important;
-  color:#dce6f3 !important;
-  font-size:.86rem !important;
-  line-height:1.2 !important;
-  box-shadow:none !important;
-}
-
-#library-screen .library-sidebar .folder-item:hover{
-  background:rgba(255,255,255,.075) !important;
-  color:#fff !important;
-}
-
-#library-screen .library-sidebar .folder-item.active{
-  background:rgba(147,197,253,.15) !important;
-  color:#fff !important;
-  border-left-color:var(--scheme1-accent) !important;
-}
-
-/* No boxed/outlined folder icons */
-#library-screen .library-sidebar .folder-item .material-symbols-outlined,
-#library-screen .library-sidebar .folder-item .icon,
-#library-screen .library-sidebar .folder-item svg{
-  display:inline-flex !important;
-  width:18px !important;
-  height:18px !important;
-  color:#bcc9dc !important;
+  align-items:center !important;
+  justify-content:center !important;
   background:transparent !important;
   border:0 !important;
   outline:0 !important;
   box-shadow:none !important;
   border-radius:0 !important;
-  padding:0 !important;
 }
-
-#library-screen .library-sidebar .folder-item.active .material-symbols-outlined,
-#library-screen .library-sidebar .folder-item.active .icon,
-#library-screen .library-sidebar .folder-item.active svg{
-  color:#fff !important;
-}
-
-#library-screen .library-sidebar .folder-name{
-  color:inherit !important;
-  font-weight:700 !important;
-  overflow:hidden !important;
-  text-overflow:ellipsis !important;
-  white-space:nowrap !important;
-}
-
-#library-screen .library-sidebar .folder-count{
-  height:20px !important;
-  min-width:24px !important;
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  background:rgba(255,255,255,.18) !important;
+.dashboard-sidebar .folder-item.active .material-symbols-outlined{color:#fff !important;}
+.dashboard-sidebar .folder-name{font-size:.88rem !important;font-weight:700 !important;color:inherit !important;}
+.dashboard-sidebar .folder-count{
+  margin-left:auto !important;
+  background:rgba(255,255,255,.12) !important;
   color:#fff !important;
   border:0 !important;
   border-radius:999px !important;
+  min-width:24px !important;
+  height:20px !important;
   padding:0 7px !important;
-  font-size:.7rem !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:.69rem !important;
   font-weight:800 !important;
-  box-shadow:none !important;
 }
-
-#library-screen .library-sidebar .folder-item.active .folder-count{
-  background:#dbeafe !important;
-  color:#17346d !important;
+.sidebar-folder-tools{border-top:1px solid rgba(255,255,255,.10);padding-top:10px;margin-top:10px;display:flex;flex-direction:column;gap:4px;}
+.sidebar-tool-btn,.sidebar-settings-btn{
+  display:flex;align-items:center;gap:10px;width:100%;min-height:38px;
+  padding:9px 10px;border:0;background:transparent;color:#dce6f4;
+  cursor:pointer;font-weight:700;font-size:.86rem;border-radius:0;text-align:left;
 }
-
-#library-screen .library-sidebar .folder-item [data-folder-menu]{
-  width:26px !important;
-  height:26px !important;
-  border:0 !important;
-  border-radius:0 !important;
-  background:transparent !important;
-  box-shadow:none !important;
-  color:#c8d4e6 !important;
-  opacity:.65 !important;
+.sidebar-tool-btn:hover,.sidebar-settings-btn:hover{background:#414f67;color:#fff;}
+.sidebar-tool-btn.active{background:#52627d;color:#fff;}
+.sidebar-tool-btn .material-symbols-outlined,.sidebar-settings-btn .material-symbols-outlined{font-size:20px;width:22px;text-align:center;}
+.sidebar-tool-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.sidebar-bottom{border-top:1px solid rgba(255,255,255,.10);padding-top:10px;margin-top:10px;}
+.dashboard-main{background:#f7f9fd;}
+.dashboard-topbar{
+  min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 26px;background:#fff;color:var(--ink-900);border-bottom:1px solid var(--line);
+  box-shadow:0 1px 0 rgba(15,32,80,.02);
 }
-
-#library-screen .library-sidebar .folder-item:hover [data-folder-menu]{opacity:1 !important;}
-#library-screen .library-sidebar .folder-item [data-folder-menu]:hover{
-  background:transparent !important;
-  color:#fff !important;
+.dashboard-title-wrap{display:flex;align-items:center;gap:14px;min-width:0;}
+.dashboard-top-actions{display:flex;align-items:center;gap:12px;}
+.teacher-name{font-weight:700;font-size:.9rem;color:var(--ink-500);}
+.logout-icon-btn{
+  display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;
+  border:0;background:transparent;color:var(--ink-500);cursor:pointer;border-radius:0;
 }
-
-/* Current design retained, but dashboard is cleaner */
-#library-screen .topbar{
-  min-height:66px !important;
-  padding:14px 24px !important;
-  background:linear-gradient(120deg,#152b68 0%,#24489f 100%) !important;
-  border-bottom:0 !important;
+.logout-icon-btn:hover{color:var(--danger);background:#fee2e2;}
+.logout-icon-btn .material-symbols-outlined{font-size:22px;}
+.dashboard-content{padding:22px 26px !important;}
+.dashboard-utility-row{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.dashboard-search{max-width:520px;flex:1;min-width:260px;}
+.dashboard-search input{height:42px;border-radius:0 !important;}
+.pdf-import-clean{border-radius:0 !important;height:42px;}
+.dashboard-quiz-grid{grid-template-columns:repeat(auto-fill,minmax(245px,1fr)) !important;gap:16px !important;align-items:stretch;}
+.create-quiz-tile{
+  min-height:252px;background:#fff;border:2px dashed #b8c5db;color:var(--royal-700);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  cursor:pointer;box-shadow:var(--shadow-sm);border-radius:0;text-align:center;padding:18px;
+  transition:background .15s,border-color .15s,transform .15s,box-shadow .15s;
 }
-
-#library-screen .content-wrap{
-  padding:24px 28px !important;
-  background:#fff !important;
+.create-quiz-tile:hover{background:var(--sky-50);border-color:var(--sky-500);transform:translateY(-2px);box-shadow:var(--shadow);}
+.create-quiz-tile .material-symbols-outlined{font-size:48px;color:var(--royal-600);}
+.create-quiz-tile strong{font-size:1.08rem;font-weight:800;color:var(--ink-900);}
+.create-quiz-tile small{font-size:.82rem;color:var(--ink-500);font-weight:600;}
+body[data-screen="library-screen"] .quiz-card{border-radius:0 !important;box-shadow:var(--shadow-sm);}
+body[data-screen="library-screen"] .quiz-card:hover{transform:translateY(-2px);}
+body[data-screen="library-screen"] .quiz-cover{border-radius:0 !important;height:112px !important;}
+body[data-screen="library-screen"] .quiz-actions-v2{display:grid;grid-template-columns:1fr 38px;gap:8px;}
+body[data-screen="library-screen"] .host-card-btn{height:36px !important;border-radius:0 !important;font-size:.86rem !important;}
+body[data-screen="library-screen"] .card-more-btn,
+body[data-screen="library-screen"] .clean-card-menu{
+  border:0 !important;background:transparent !important;box-shadow:none !important;border-radius:0 !important;color:var(--ink-500) !important;
 }
-
-#library-screen .library-header-title{
-  font-size:1.75rem !important;
-  margin-bottom:6px !important;
+body[data-screen="library-screen"] .card-more-btn:hover,
+body[data-screen="library-screen"] .clean-card-menu:hover{background:var(--line-soft) !important;color:var(--ink-900) !important;}
+body[data-screen="library-screen"] .quiz-head .menu-wrap{display:none;}
+body[data-screen="library-screen"] .menu-pop{border-radius:0 !important;bottom:42px !important;}
+body[data-screen="library-screen"] .library-header-title{font-size:1.72rem;margin-bottom:2px;}
+body[data-screen="library-screen"] .library-header-meta{margin-bottom:0;color:var(--ink-500);}
+/* remove old compact/dark overrides that hid sidebar icons */
+@media(min-width:981px){
+  #library-screen .library-sidebar .folder-item .material-symbols-outlined,
+  #library-screen .library-sidebar .folder-item .icon{display:inline-flex !important;}
+  #library-screen .app-container.dashboard-v2-shell{grid-template-columns:220px minmax(0,1fr) !important;}
 }
-
-#library-screen .library-header-meta{
-  margin-bottom:20px !important;
-}
-
-#library-screen .search-row{
-  margin-bottom:18px !important;
-  gap:10px !important;
-}
-
-#library-screen .search-wrap{
-  max-width:460px !important;
-}
-
-#library-screen .search-wrap input{
-  border-radius:8px !important;
-  border:1px solid #d9e1ee !important;
-  height:38px !important;
-}
-
-#library-screen #pdf-import-btn,
-#library-screen #newQuizBtn{
-  border-radius:8px !important;
-}
-
-#library-screen .quiz-grid{
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr)) !important;
-  gap:16px !important;
-  max-width:880px !important;
-}
-
-#library-screen .quiz-card{
-  border-radius:0 !important;
-  border:1px solid #e0e6f1 !important;
-  box-shadow:0 2px 8px rgba(15,32,80,.08) !important;
-  overflow:visible !important;
-}
-
-#library-screen .quiz-card:hover{
-  transform:translateY(-2px) !important;
-  border-color:#bfd0eb !important;
-  box-shadow:0 10px 24px rgba(15,32,80,.13) !important;
-}
-
-#library-screen .quiz-cover{
-  height:104px !important;
-  border-radius:0 !important;
-}
-
-#library-screen .quiz-body{
-  padding:14px !important;
-}
-
-#library-screen .quiz-title{
-  font-size:.98rem !important;
-}
-
-#library-screen .quiz-actions .btn{
-  height:30px !important;
-  min-height:30px !important;
-  border-radius:8px !important;
-}
-
-#library-screen .menu-btn{
-  border:0 !important;
-  background:transparent !important;
-  box-shadow:none !important;
-  border-radius:0 !important;
-}
-
-/* Topbar clean icon buttons: no heavy bordered icon boxes */
-#library-screen .topbar .btn.icon.outline,
-#library-screen .topbar .btn.icon.ghost{
-  background:rgba(255,255,255,.94) !important;
-  border:0 !important;
-  box-shadow:none !important;
-  border-radius:8px !important;
-  color:#132554 !important;
-}
-
-#library-screen .topbar .btn.icon.outline:hover,
-#library-screen .topbar .btn.icon.ghost:hover{
-  background:#fff !important;
-}
-
 @media(max-width:980px){
-  #library-screen .library-sidebar{
-    width:min(84vw,300px) !important;
-    padding:14px 12px !important;
-  }
-  #library-screen .content-wrap{
-    padding:18px !important;
-  }
-  #library-screen .quiz-grid{
-    max-width:none !important;
-  }
+  #library-screen .app-container.dashboard-v2-shell{display:block;}
+  #library-screen .dashboard-sidebar{position:fixed;top:0;left:0;width:min(84vw,320px);height:100vh;z-index:120;transform:translateX(-105%);transition:transform .22s ease;box-shadow:0 20px 50px rgba(0,0,0,.25);}
+  body.folders-open #library-screen .dashboard-sidebar{transform:translateX(0);}
+  .sidebar-close{position:absolute;top:12px;right:10px;color:#fff !important;}
+  .dashboard-topbar{padding:14px 16px;}
+  .dashboard-utility-row{flex-direction:column;align-items:stretch;}
+  .dashboard-search{max-width:none;min-width:0;}
+  .dashboard-quiz-grid{grid-template-columns:1fr !important;}
 }
+
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -5985,70 +5807,77 @@ if (window.pdfjsLib) {
 <div id="library-screen" class="screen">
   <div id="foldersBackdrop" class="folders-backdrop"></div>
   <div class="app-shell">
-    <div class="app-container">
-      <aside class="left-pane library-sidebar">
-        <div class="folder-head">
-          <div class="folder-head-title">Library</div>
-          <div class="folder-head-actions">
-            <button id="newFolderBtn" class="btn icon ghost" type="button" title="New folder">
-              <span class="material-symbols-outlined">create_new_folder</span>
-            </button>
-            <button id="folderManageBtn" class="btn icon ghost" type="button" title="Manage folders" aria-label="Manage folders">
-              <svg viewBox="0 0 24 24" aria-hidden="true" class="folder-manage-svg">
-                <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z"/>
-                <path d="M14 7l3 3"/>
-              </svg>
-            </button>
-            <button id="mobileFoldersCloseBtn" class="btn icon ghost mobile-only" type="button" title="Close folders" aria-label="Close folders">
-              <span class="material-symbols-outlined">close</span>
-            </button>
-          </div>
+    <div class="app-container dashboard-v2-shell">
+      <aside class="left-pane library-sidebar dashboard-sidebar">
+        <div class="sidebar-brand-block">
+          <div class="brand sidebar-brand">Tap<em>Blast</em></div>
+          <div class="subtle sidebar-subtle">Teacher Dashboard</div>
         </div>
-        <div id="folderList" class="folder-list"></div>
+
+        <button id="mobileFoldersCloseBtn" class="btn icon ghost mobile-only sidebar-close" type="button" title="Close folders" aria-label="Close folders">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <nav class="sidebar-nav" aria-label="Quiz folders">
+          <div id="folderList" class="folder-list"></div>
+        </nav>
+
+        <div class="sidebar-folder-tools">
+          <button id="newFolderBtn" class="sidebar-tool-btn" type="button" title="New folder">
+            <span class="material-symbols-outlined">create_new_folder</span>
+            <span>New Folder</span>
+          </button>
+          <button id="folderManageBtn" class="sidebar-tool-btn" type="button" title="Manage folders" aria-label="Manage folders">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="folder-manage-svg">
+              <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z"/>
+              <path d="M14 7l3 3"/>
+            </svg>
+            <span>Manage Folders</span>
+          </button>
+        </div>
+
+        <div class="sidebar-bottom">
+          <button id="settingsBtn" type="button" class="sidebar-settings-btn" title="Settings" aria-label="Settings">
+            <span class="material-symbols-outlined">settings</span>
+            <span>Settings</span>
+          </button>
+        </div>
       </aside>
-      <section class="main-pane">
-        <div class="topbar">
-          <div>
-            <div class="brand">Tap<em>Blast</em></div>
-            <div class="subtle">Teacher Dashboard</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+
+      <section class="main-pane dashboard-main">
+        <div class="dashboard-topbar">
+          <div class="dashboard-title-wrap">
             <button id="mobileFoldersBtn" class="mobile-menu-btn" type="button" aria-label="Open folders">
-  <span></span>
-  <span></span>
-  <span></span>
-</button>
-            <div id="teacherName" style="font-weight:600;font-size:.92rem;opacity:.9"></div>
-            <button id="settingsBtn" type="button" class="btn icon outline" title="Settings" aria-label="Settings">
-              <svg viewBox="0 0 24 24" aria-hidden="true" class="settings-gear-svg">
-                <circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/>
-                <path d="M19.4 15a1.7 1.7 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.82-.33 1.7 1.7 0 0 0-1 1.52V21a2 2 0 1 1-4 0v-.08a1.7 1.7 0 0 0-1-1.52 1.7 1.7 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .33-1.82 1.7 1.7 0 0 0-1.52-1H3a2 2 0 1 1 0-4h.08a1.7 1.7 0 0 0 1.52-1 1.7 1.7 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.82.33h.01a1.7 1.7 0 0 0 1-1.52V3a2 2 0 1 1 4 0v.08a1.7 1.7 0 0 0 1 1.52h.01a1.7 1.7 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.33 1.82v.01a1.7 1.7 0 0 0 1.52 1H21a2 2 0 1 1 0 4h-.08a1.7 1.7 0 0 0-1.52 1z"
-                  fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+              <span></span><span></span><span></span>
             </button>
-            <button id="newQuizBtn" type="button" class="btn accent">
-              <span class="material-symbols-outlined">add</span>New Quiz
+            <div>
+              <div id="libraryHeaderTitle" class="library-header-title">All Quizzes</div>
+              <div id="librarySubtle" class="library-header-meta"></div>
+            </div>
+          </div>
+
+          <div class="dashboard-top-actions">
+            <div id="teacherName" class="teacher-name"></div>
+            <button id="logoutBtn" type="button" class="logout-icon-btn" title="Sign Out" aria-label="Sign Out">
+              <span class="material-symbols-outlined">logout</span>
             </button>
-            <button id="logoutBtn" type="button" class="btn outline">Logout</button>
           </div>
         </div>
-        <div class="content-wrap">
-          <div id="libraryHeaderTitle" class="library-header-title">All Quizzes</div>
-          <div id="librarySubtle" class="library-header-meta"></div>
-          <div class="search-row">
 
-<button class="btn accent" id="pdf-import-btn" type="button">
-  <span class="material-symbols-outlined">picture_as_pdf</span>
-  Import PDF
-</button>
-<input type="file" id="pdf-upload-input" accept="application/pdf,.pdf" style="display:none">
-
-            <div class="search-wrap">
+        <div class="content-wrap dashboard-content">
+          <div class="dashboard-utility-row">
+            <div class="search-wrap dashboard-search">
               <span class="material-symbols-outlined">search</span>
               <input id="searchInput" type="text" placeholder="Search quizzes…">
             </div>
+            <button class="btn outline pdf-import-clean" id="pdf-import-btn" type="button">
+              <span class="material-symbols-outlined">picture_as_pdf</span>
+              Import PDF
+            </button>
+            <input type="file" id="pdf-upload-input" accept="application/pdf,.pdf" style="display:none">
           </div>
-          <div id="quizGrid" class="quiz-grid"></div>
+
+          <div id="quizGrid" class="quiz-grid dashboard-quiz-grid"></div>
           <div id="emptyState" class="library-empty hidden">
             <span class="material-symbols-outlined">quiz</span>
             <strong>No quizzes here yet</strong>
@@ -6933,7 +6762,7 @@ function renderFolders(){
   ];
   $('folderList').innerHTML=items.map(item=>`
     <div class="folder-item ${selectedFolderId===item.id?'active':''}" data-folder-id="${item.id}">
-      <span class="material-symbols-outlined">${item.icon}</span>
+      <span class="material-symbols-outlined folder-clean-icon">${item.icon}</span>
       <div class="folder-name">${esc(item.name)}</div>
       <span class="folder-count">${quizCountForFolder(item.id)}</span>
       ${item.id!=='all'&&item.id!=='unsorted'?`
@@ -6996,11 +6825,16 @@ function filterQuizzes(){
 function renderLibrary(){
   const headerName = selectedFolderId==='all'?'All Quizzes':folderNameById(selectedFolderId==='unsorted'?'':selectedFolderId);
   $('libraryHeaderTitle').textContent = headerName;
-  const filtered=filterQuizzes();
+  const filtered=filterQuizzes().sort((a,b)=>(b.updatedAt||b.createdAt||0)-(a.updatedAt||a.createdAt||0));
   const countText = filtered.length===1 ? '1 quiz' : `${filtered.length} quizzes`;
   $('librarySubtle').textContent = countText + (searchTerm.trim() ? ` matching "${searchTerm.trim()}"` : '');
   $('emptyState').classList.toggle('hidden', filtered.length!==0);
-  $('quizGrid').innerHTML=filtered.map(q=>{
+  const createTile = `<button id="newQuizTile" type="button" class="create-quiz-tile">
+      <span class="material-symbols-outlined">add_circle</span>
+      <strong>Create Quiz</strong>
+      <small>Start a new teacher-hosted game</small>
+    </button>`;
+  const cards=filtered.map(q=>{
     const qCount = (q.questions||[]).length;
     return `<div class="quiz-card" draggable="true" data-quiz-id="${q.id}">
       <div class="quiz-cover" data-edit-cover="${q.id}" title="Edit quiz">${q.cover?`<img src="${q.cover}" alt="">`:`<span class="material-symbols-outlined">quiz</span>`}</div>
@@ -7008,12 +6842,11 @@ function renderLibrary(){
         <div class="quiz-head">
           <h3 class="quiz-title">${esc(q.title)}</h3>
           <div class="menu-wrap">
-            <button class="menu-btn" type="button" data-menu-btn="${q.id}"><span class="material-symbols-outlined">more_vert</span></button>
+            <button class="menu-btn clean-card-menu" type="button" data-menu-btn="${q.id}" title="More options" aria-label="More options"><span class="material-symbols-outlined">more_vert</span></button>
             <div class="menu-pop hidden" id="menu-${q.id}">
+              <button type="button" data-edit="${q.id}"><span class="material-symbols-outlined">edit</span>Edit</button>
               <button type="button" data-duplicate="${q.id}"><span class="material-symbols-outlined">content_copy</span>Duplicate</button>
-              <button type="button" data-share="${q.id}"><span class="material-symbols-outlined">share</span>Share quiz</button>
               <button type="button" data-move="${q.id}"><span class="material-symbols-outlined">drive_file_move</span>Move to folder</button>
-              <button type="button" data-rename="${q.id}"><span class="material-symbols-outlined">edit</span>Rename</button>
               <button type="button" data-delete="${q.id}"><span class="material-symbols-outlined">delete</span>Delete</button>
             </div>
           </div>
@@ -7023,13 +6856,16 @@ function renderLibrary(){
           <span class="dot-sep"></span>
           <span>${esc(folderNameById(q.folderId))}</span>
         </div>
-        <div class="quiz-actions">
-          <button class="btn outline" type="button" data-edit="${q.id}"><span class="material-symbols-outlined">edit</span>Edit</button>
-          <button class="btn accent" type="button" data-host="${q.id}"><span class="material-symbols-outlined">play_arrow</span>Host</button>
+        <div class="quiz-actions quiz-actions-v2">
+          <button class="btn accent host-card-btn" type="button" data-host="${q.id}"><span class="material-symbols-outlined">cast_connected</span>Host</button>
+          <button class="btn icon outline card-more-btn" type="button" data-menu-btn="${q.id}" title="More options" aria-label="More options"><span class="material-symbols-outlined">more_vert</span></button>
         </div>
       </div>
     </div>`;
   }).join('');
+  $('quizGrid').innerHTML=createTile+cards;
+  const tile=$('newQuizTile');
+  if(tile) tile.onclick=createNewQuiz;
   bindLibraryEvents();
 }
 function closeAllMenus(){ document.querySelectorAll('.menu-pop').forEach(el=>el.classList.add('hidden')); }
@@ -8768,9 +8604,9 @@ async function restoreQuizzesFromDrive(){
 
 function bindEvents(){
   $('googleLoginBtn').onclick=signInTeacher;
-  $('logoutBtn').onclick=logoutTeacher;
+  if($('logoutBtn')) $('logoutBtn').onclick=logoutTeacher;
   $('mobileFoldersBtn').onclick=()=>document.body.classList.toggle('folders-open');
-  $('folderManageBtn').onclick=()=>{ folderManageMode=!folderManageMode; renderFolders(); };
+  if($('folderManageBtn')) $('folderManageBtn').onclick=()=>{ folderManageMode=!folderManageMode; renderFolders(); };
   $('foldersBackdrop').onclick=()=>document.body.classList.remove('folders-open');
   $('mobileFoldersCloseBtn').onclick=()=>document.body.classList.remove('folders-open');
   $('newFolderBtn').onclick=()=>openFolderModal('new');
@@ -8778,7 +8614,7 @@ function bindEvents(){
   $('folderModalSave').onclick=commitFolderModal;
   $('folderNameInput').onkeydown=e=>{ if(e.key==='Enter') commitFolderModal(); };
   $('moveQuizCancel').onclick=closeMoveQuizModal;
-  $('settingsBtn').onclick=()=>openSettings('defaults');
+  if($('settingsBtn')) $('settingsBtn').onclick=()=>openSettings('defaults');
   $('settingsCloseBtn').onclick=closeSettings;
   document.querySelectorAll('[data-settings-tab]').forEach(btn=>btn.onclick=()=>setSettingsTab(btn.dataset.settingsTab));
   $('driveBackupBtn').onclick=backupQuizzesToDrive;
@@ -8797,7 +8633,7 @@ function bindEvents(){
   $('settingsModal').addEventListener('click',e=>{ if(e.target===$('settingsModal')) closeSettings(); });
   $('shareQuizModal').addEventListener('click',e=>{ if(e.target===$('shareQuizModal')) closeShareQuizModal(); });
   $('sharedPreviewModal').addEventListener('click',e=>{ if(e.target===$('sharedPreviewModal')) closeSharedPreview(); });
-  $('newQuizBtn').onclick=createNewQuiz;
+  if($('newQuizBtn')) $('newQuizBtn').onclick=createNewQuiz;
   $('editorBackBtn').onclick=async()=>{ await loadQuizzes(); showScreen('library-screen'); };
   $('previewQuizBtn').onclick=startPreviewHost;
   $('saveQuizBtn').onclick=saveQuiz;
