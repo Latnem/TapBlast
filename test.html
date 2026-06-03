@@ -6152,6 +6152,38 @@ body[data-screen="library-screen"] #library-screen .library-empty .subtle{
   }
 }
 
+
+/* ===== UNIFORM QUIZ GRID CARDS ===== */
+body[data-screen="library-screen"] #library-screen .option2-grid{
+  grid-auto-rows:1fr !important;
+  align-items:stretch !important;
+}
+
+body[data-screen="library-screen"] #library-screen .quiz-card,
+body[data-screen="library-screen"] #library-screen .create-quiz-card,
+body[data-screen="library-screen"] #library-screen .dashboard-create-card,
+body[data-screen="library-screen"] #library-screen [data-create-quiz],
+body[data-screen="library-screen"] #library-screen #createQuizCard{
+  min-height:248px !important;
+  height:100% !important;
+  display:flex !important;
+  flex-direction:column !important;
+  box-sizing:border-box !important;
+}
+
+body[data-screen="library-screen"] #library-screen .create-quiz-card,
+body[data-screen="library-screen"] #library-screen .dashboard-create-card,
+body[data-screen="library-screen"] #library-screen [data-create-quiz],
+body[data-screen="library-screen"] #library-screen #createQuizCard{
+  justify-content:center !important;
+  align-items:center !important;
+}
+
+/* Empty state should occupy the quiz grid area only when truly empty. */
+body[data-screen="library-screen"] #library-screen .library-empty.hidden{
+  display:none !important;
+}
+
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -9320,6 +9352,59 @@ document.addEventListener('keydown', e=>{
       if(file) importPdf(file);
     }
   });
+})();
+</script>
+
+
+<script>
+(function(){
+  function tapblastFixEmptyState(){
+    var grid = document.getElementById('quizGrid');
+    var empty = document.getElementById('emptyState');
+    if(!grid || !empty) return;
+
+    var cards = Array.prototype.slice.call(grid.children || []);
+    var realQuizCards = cards.filter(function(el){
+      if(!el || el.nodeType !== 1) return false;
+      var text = (el.textContent || '').trim().toLowerCase();
+      var cls = el.className || '';
+      var isCreate =
+        el.id === 'createQuizCard' ||
+        el.hasAttribute('data-create-quiz') ||
+        String(cls).indexOf('create-quiz') !== -1 ||
+        String(cls).indexOf('dashboard-create') !== -1 ||
+        text === 'create quiz' ||
+        text.indexOf('create quiz') === 0;
+      var isHidden = el.classList && el.classList.contains('hidden');
+      return !isCreate && !isHidden;
+    });
+
+    if(realQuizCards.length > 0){
+      empty.classList.add('hidden');
+      empty.style.display = 'none';
+    }else{
+      empty.classList.remove('hidden');
+      empty.style.display = '';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    tapblastFixEmptyState();
+    var grid = document.getElementById('quizGrid');
+    if(grid){
+      new MutationObserver(tapblastFixEmptyState).observe(grid, {childList:true, subtree:false, attributes:true});
+    }
+    var folderList = document.querySelector('.folder-list');
+    if(folderList){
+      folderList.addEventListener('click', function(){ setTimeout(tapblastFixEmptyState, 0); setTimeout(tapblastFixEmptyState, 120); });
+    }
+    var search = document.querySelector('#quizSearch, input[type="search"], .dashboard-search input, .search-wrap input');
+    if(search){
+      search.addEventListener('input', function(){ setTimeout(tapblastFixEmptyState, 0); });
+    }
+  });
+
+  window.tapblastFixEmptyState = tapblastFixEmptyState;
 })();
 </script>
 
