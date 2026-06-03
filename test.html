@@ -5997,6 +5997,13 @@ body[data-screen="library-screen"] #library-screen .logout-icon-btn{
 }
 
 
+.logout-btn{
+ background:none;border:0;box-shadow:none;cursor:pointer;
+ color:#64748b;padding:4px;display:inline-flex;align-items:center;justify-content:center;
+}
+.logout-btn:hover{color:#dc2626;}
+
+
 #library-screen .library-sidebar #newFolderBtn .material-symbols-outlined,
 #library-screen .library-sidebar #newFolderBtn .icon,
 #library-screen .library-sidebar #newFolderBtn svg{
@@ -6010,47 +6017,27 @@ body[data-screen="library-screen"] #library-screen .logout-icon-btn{
 }
 
 
-/* ===== CLEAN LIBRARY CARD GROUPING ===== */
+/* ===== SINGLE WHITE QUIZ CARD AREA ===== */
 #library-screen .content-wrap{
-  padding:24px;
+  margin:24px !important;
+  padding:22px !important;
+  background:#ffffff !important;
+  border:1px solid var(--line) !important;
+  border-radius:10px !important;
+  box-shadow:var(--shadow-sm) !important;
 }
 
-/* The existing white area with "Choose a quiz" is the one card. */
-#library-screen .content-wrap > .panel,
-#library-screen .main-pane > .content-wrap > .panel{
-  background:#ffffff;
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:22px;
-  box-shadow:var(--shadow-sm);
-}
-
-/* Search stays inside that same card and is not full width. */
-#library-screen .panel .search-row,
-#library-screen .content-wrap .search-row{
-  margin:16px 0 20px;
-  justify-content:flex-start;
-}
-#library-screen .panel .search-wrap,
-#library-screen .content-wrap .search-wrap{
-  width:50%;
-  max-width:420px;
-  min-width:280px;
-  flex:0 0 auto;
-}
-
-/* Empty state stays visually inside the same white card. */
-#library-screen .panel .library-empty,
-#library-screen .content-wrap .library-empty{
-  border:0;
-  background:#ffffff;
-  box-shadow:none;
-  min-height:220px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  padding:32px;
+/* Remove nested card look from empty state so it belongs to the same white card. */
+#library-screen .library-empty{
+  border:0 !important;
+  background:#ffffff !important;
+  box-shadow:none !important;
+  min-height:220px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex-direction:column !important;
+  padding:32px !important;
 }
 #library-screen .library-empty p,
 #library-screen .library-empty .empty-subtitle,
@@ -6058,7 +6045,19 @@ body[data-screen="library-screen"] #library-screen .logout-icon-btn{
   display:none !important;
 }
 
-/* Visible standalone SVG logout icon. */
+/* Search is inside the same card and only half-width. */
+#library-screen .search-row{
+  margin:16px 0 20px !important;
+  justify-content:flex-start !important;
+}
+#library-screen .search-wrap{
+  width:50% !important;
+  max-width:420px !important;
+  min-width:280px !important;
+  flex:0 0 auto !important;
+}
+
+/* Visible logout SVG. */
 .logout-btn{
   background:transparent;
   border:0;
@@ -6081,11 +6080,14 @@ body[data-screen="library-screen"] #library-screen .logout-icon-btn{
 }
 
 @media(max-width:700px){
-  #library-screen .panel .search-wrap,
-  #library-screen .content-wrap .search-wrap{
-    width:100%;
-    max-width:100%;
-    min-width:0;
+  #library-screen .content-wrap{
+    margin:14px !important;
+    padding:16px !important;
+  }
+  #library-screen .search-wrap{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
   }
 }
 
