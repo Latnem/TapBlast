@@ -6017,20 +6017,91 @@ body[data-screen="library-screen"] #library-screen .logout-icon-btn{
 }
 
 
-/* ===== SINGLE WHITE QUIZ CARD AREA ===== */
-#library-screen .content-wrap{
-  margin:24px !important;
+/* ===== OPTION 2 WHITE CARD STRUCTURE ===== */
+body[data-screen="library-screen"] #library-screen .dashboard-content{
   padding:22px !important;
-  background:#ffffff !important;
-  border:1px solid var(--line) !important;
-  border-radius:10px !important;
-  box-shadow:var(--shadow-sm) !important;
+  background:#f7f9fe !important;
+  overflow:auto !important;
 }
 
-/* Remove nested card look from empty state so it belongs to the same white card. */
-#library-screen .library-empty{
+body[data-screen="library-screen"] #library-screen .option2-hero{
+  background:#fff !important;
+  border:1px solid #e3e8f4 !important;
+  border-radius:0 !important;
+  padding:20px !important;
+  margin-bottom:0 !important;
+  display:block !important;
+  box-shadow:none !important;
+}
+
+body[data-screen="library-screen"] #library-screen .option2-hero-head{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:16px !important;
+  margin-bottom:18px !important;
+}
+
+body[data-screen="library-screen"] #library-screen .option2-hero h1{
+  margin:0 !important;
+  font-size:26px !important;
+  letter-spacing:-.03em !important;
+  color:#0b1431 !important;
+  font-weight:900 !important;
+}
+
+body[data-screen="library-screen"] #library-screen .option2-hero p{
+  margin:6px 0 0 !important;
+  color:#55618a !important;
+  font-weight:600 !important;
+}
+
+body[data-screen="library-screen"] #library-screen .option2-import-btn{
+  height:42px !important;
+  border-radius:0 !important;
+  background:#2447a8 !important;
+  color:#fff !important;
+  box-shadow:none !important;
+  white-space:nowrap !important;
+}
+
+body[data-screen="library-screen"] #library-screen .option2-search-row{
+  display:flex !important;
+  gap:10px !important;
+  margin:0 0 18px !important;
+  align-items:stretch !important;
+}
+
+body[data-screen="library-screen"] #library-screen .dashboard-search{
+  width:380px !important;
+  max-width:50% !important;
+  min-width:280px !important;
+  flex:0 0 380px !important;
+}
+
+body[data-screen="library-screen"] #library-screen .dashboard-search input{
+  width:100% !important;
+  height:46px !important;
+  border:1px solid #cbd5e1 !important;
+  background:#fff !important;
+  border-radius:0 !important;
+  padding:13px 14px 13px 42px !important;
+  font-weight:700 !important;
+  outline:none !important;
+  box-shadow:none !important;
+}
+
+body[data-screen="library-screen"] #library-screen .option2-grid{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr)) !important;
+  gap:14px !important;
+  align-items:stretch !important;
+  overflow:visible !important;
+}
+
+body[data-screen="library-screen"] #library-screen .library-empty{
   border:0 !important;
-  background:#ffffff !important;
+  background:#fff !important;
   box-shadow:none !important;
   min-height:220px !important;
   display:flex !important;
@@ -6038,26 +6109,15 @@ body[data-screen="library-screen"] #library-screen .logout-icon-btn{
   justify-content:center !important;
   flex-direction:column !important;
   padding:32px !important;
+  color:#55618a !important;
 }
-#library-screen .library-empty p,
-#library-screen .library-empty .empty-subtitle,
-#library-screen .library-empty .subtle{
+body[data-screen="library-screen"] #library-screen .library-empty p,
+body[data-screen="library-screen"] #library-screen .library-empty .empty-subtitle,
+body[data-screen="library-screen"] #library-screen .library-empty .subtle{
   display:none !important;
 }
 
-/* Search is inside the same card and only half-width. */
-#library-screen .search-row{
-  margin:16px 0 20px !important;
-  justify-content:flex-start !important;
-}
-#library-screen .search-wrap{
-  width:50% !important;
-  max-width:420px !important;
-  min-width:280px !important;
-  flex:0 0 auto !important;
-}
-
-/* Visible logout SVG. */
+/* Visible SVG logout icon */
 .logout-btn{
   background:transparent;
   border:0;
@@ -6080,14 +6140,15 @@ body[data-screen="library-screen"] #library-screen .logout-icon-btn{
 }
 
 @media(max-width:700px){
-  #library-screen .content-wrap{
-    margin:14px !important;
-    padding:16px !important;
+  body[data-screen="library-screen"] #library-screen .option2-hero-head{
+    flex-direction:column !important;
+    align-items:flex-start !important;
   }
-  #library-screen .search-wrap{
+  body[data-screen="library-screen"] #library-screen .dashboard-search{
     width:100% !important;
     max-width:100% !important;
     min-width:0 !important;
+    flex:1 1 100% !important;
   }
 }
 
@@ -6199,7 +6260,8 @@ if (window.pdfjsLib) {
 
         <div class="content-wrap dashboard-content">
           <div class="option2-hero">
-            <div>
+            <div class="option2-hero-head">
+<div>
               <h1>Choose a quiz</h1>
               <p>Create a new quiz from the first card, or search your library.</p>
             </div>
@@ -6208,9 +6270,8 @@ if (window.pdfjsLib) {
               Import PDF
             </button>
             <input type="file" id="pdf-upload-input" accept="application/pdf,.pdf" style="display:none">
-          </div>
-
-          <div class="dashboard-utility-row option2-search-row">
+            </div>
+<div class="dashboard-utility-row option2-search-row">
             <div class="search-wrap dashboard-search">
               <span class="material-symbols-outlined">search</span>
               <input id="searchInput" type="text" placeholder="Search a quiz">
@@ -6222,6 +6283,7 @@ if (window.pdfjsLib) {
             <svg class="quiz-placeholder-svg" viewBox="0 0 64 64" aria-hidden="true"><rect x="18" y="18" width="28" height="28" fill="none" stroke="#60A5FA" stroke-width="4"/><rect x="26" y="26" width="12" height="12" fill="#60A5FA"/></svg>
             <strong>No quizzes here yet</strong>
             
+          </div>
           </div>
         </div>
       </section>
