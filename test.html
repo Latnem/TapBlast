@@ -5997,13 +5997,6 @@ body[data-screen="library-screen"] #library-screen .logout-icon-btn{
 }
 
 
-.logout-btn{
- background:none;border:0;box-shadow:none;cursor:pointer;
- color:#64748b;padding:4px;display:inline-flex;align-items:center;justify-content:center;
-}
-.logout-btn:hover{color:#dc2626;}
-
-
 #library-screen .library-sidebar #newFolderBtn .material-symbols-outlined,
 #library-screen .library-sidebar #newFolderBtn .icon,
 #library-screen .library-sidebar #newFolderBtn svg{
@@ -6017,30 +6010,38 @@ body[data-screen="library-screen"] #library-screen .logout-icon-btn{
 }
 
 
-/* ===== BASELINE DASHBOARD CONTENT CARD ===== */
+/* ===== CLEAN LIBRARY CARD GROUPING ===== */
 #library-screen .content-wrap{
-  padding:24px !important;
+  padding:24px;
 }
-#library-screen .library-dashboard-card{
+
+/* The existing white area with "Choose a quiz" is the one card. */
+#library-screen .content-wrap > .panel,
+#library-screen .main-pane > .content-wrap > .panel{
   background:#ffffff;
   border:1px solid var(--line);
   border-radius:10px;
   padding:22px;
   box-shadow:var(--shadow-sm);
 }
-#library-screen .library-dashboard-card .library-header-title{
-  margin-top:0;
+
+/* Search stays inside that same card and is not full width. */
+#library-screen .panel .search-row,
+#library-screen .content-wrap .search-row{
+  margin:16px 0 20px;
+  justify-content:flex-start;
 }
-#library-screen .library-dashboard-card .search-row{
-  margin-bottom:20px;
-}
-#library-screen .library-dashboard-card .search-wrap{
+#library-screen .panel .search-wrap,
+#library-screen .content-wrap .search-wrap{
   width:50%;
   max-width:420px;
   min-width:280px;
   flex:0 0 auto;
 }
-#library-screen .library-dashboard-card .library-empty{
+
+/* Empty state stays visually inside the same white card. */
+#library-screen .panel .library-empty,
+#library-screen .content-wrap .library-empty{
   border:0;
   background:#ffffff;
   box-shadow:none;
@@ -6051,20 +6052,13 @@ body[data-screen="library-screen"] #library-screen .logout-icon-btn{
   flex-direction:column;
   padding:32px;
 }
-#library-screen .library-dashboard-card .library-empty p,
-#library-screen .library-dashboard-card .library-empty .empty-subtitle,
-#library-screen .library-dashboard-card .library-empty .subtle{
+#library-screen .library-empty p,
+#library-screen .library-empty .empty-subtitle,
+#library-screen .library-empty .subtle{
   display:none !important;
 }
-@media(max-width:700px){
-  #library-screen .library-dashboard-card .search-wrap{
-    width:100%;
-    max-width:100%;
-    min-width:0;
-  }
-}
 
-
+/* Visible standalone SVG logout icon. */
 .logout-btn{
   background:transparent;
   border:0;
@@ -6084,6 +6078,15 @@ body[data-screen="library-screen"] #library-screen .logout-icon-btn{
 }
 .logout-btn:hover{
   color:#dc2626;
+}
+
+@media(max-width:700px){
+  #library-screen .panel .search-wrap,
+  #library-screen .content-wrap .search-wrap{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+  }
 }
 
 </style>
@@ -6253,8 +6256,7 @@ if (window.pdfjsLib) {
         </aside>
 
         <main class="content-wrap editor-question-panel">
-<div class="library-dashboard-card">
-<div class="panel question-editor-card">
+          <div class="panel question-editor-card">
             <div class="question-editor-head">
               <div class="editor-card-title">Question</div>
               <button id="deleteQuestionBtn" type="button" class="question-delete-icon" title="Delete question" aria-label="Delete question">
@@ -6286,8 +6288,7 @@ if (window.pdfjsLib) {
 
 
           </div>
-</div>
-</main>
+        </main>
 
         <aside class="editor-right-settings">
           <div class="panel quiz-settings-card">
