@@ -1302,19 +1302,29 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   }
 
   #library-screen .library-sidebar #newFolderBtn{
-    width:28px !important;
-    height:28px !important;
-    min-height:28px !important;
-    padding:0 !important;
-    border-radius:8px !important;
-    background:#435168 !important;
-    color:#ffffff !important;
-    border:1px solid #64748b !important;
+    width:100% !important;
+    height:auto !important;
+    min-height:30px !important;
+    padding:5px 7px !important;
+    gap:6px !important;
+    border-radius:4px !important;
+    background:transparent !important;
+    color:#dbe4f0 !important;
+    border:1px solid transparent !important;
+    border-left:3px solid transparent !important;
     box-shadow:none !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    font-size:.78rem !important;
+    font-weight:600 !important;
+    line-height:1.15 !important;
+    white-space:nowrap !important;
   }
 
   #library-screen .library-sidebar #newFolderBtn:hover{
-    background:#5c6d89 !important;
+    background:#435168 !important;
+    color:#ffffff !important;
   }
 
   #library-screen .library-sidebar .folder-list{
@@ -1477,9 +1487,19 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   }
 
   #library-screen .library-sidebar #newFolderBtn{
-    background:#435168 !important;
-    color:#ffffff !important;
-    border:1px solid #64748b !important;
+    width:100% !important;
+    min-height:36px !important;
+    padding:8px 10px !important;
+    gap:8px !important;
+    border-radius:4px !important;
+    background:transparent !important;
+    color:#dbe4f0 !important;
+    border:1px solid transparent !important;
+    box-shadow:none !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    white-space:nowrap !important;
   }
 }
 
@@ -5983,6 +6003,89 @@ body[data-screen="library-screen"] #library-screen .logout-icon-btn{
 }
 .logout-btn:hover{color:#dc2626;}
 
+
+#library-screen .library-sidebar #newFolderBtn .material-symbols-outlined,
+#library-screen .library-sidebar #newFolderBtn .icon,
+#library-screen .library-sidebar #newFolderBtn svg{
+  width:20px !important;
+  height:20px !important;
+  min-width:20px !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:inherit !important;
+}
+
+
+/* ===== BASELINE DASHBOARD CONTENT CARD ===== */
+#library-screen .content-wrap{
+  padding:24px !important;
+}
+#library-screen .library-dashboard-card{
+  background:#ffffff;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:22px;
+  box-shadow:var(--shadow-sm);
+}
+#library-screen .library-dashboard-card .library-header-title{
+  margin-top:0;
+}
+#library-screen .library-dashboard-card .search-row{
+  margin-bottom:20px;
+}
+#library-screen .library-dashboard-card .search-wrap{
+  width:50%;
+  max-width:420px;
+  min-width:280px;
+  flex:0 0 auto;
+}
+#library-screen .library-dashboard-card .library-empty{
+  border:0;
+  background:#ffffff;
+  box-shadow:none;
+  min-height:220px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  padding:32px;
+}
+#library-screen .library-dashboard-card .library-empty p,
+#library-screen .library-dashboard-card .library-empty .empty-subtitle,
+#library-screen .library-dashboard-card .library-empty .subtle{
+  display:none !important;
+}
+@media(max-width:700px){
+  #library-screen .library-dashboard-card .search-wrap{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+  }
+}
+
+
+.logout-btn{
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  cursor:pointer;
+  color:#64748b;
+  padding:4px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1;
+}
+.logout-btn svg{
+  display:block;
+  width:20px;
+  height:20px;
+}
+.logout-btn:hover{
+  color:#dc2626;
+}
+
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -6105,7 +6208,7 @@ if (window.pdfjsLib) {
           <div class="dashboard-utility-row option2-search-row">
             <div class="search-wrap dashboard-search">
               <span class="material-symbols-outlined">search</span>
-              <input id="searchInput" type="text" placeholder="Search quizzes live...">
+              <input id="searchInput" type="text" placeholder="Search a quiz">
             </div>
           </div>
 
@@ -6113,7 +6216,7 @@ if (window.pdfjsLib) {
           <div id="emptyState" class="library-empty hidden">
             <svg class="quiz-placeholder-svg" viewBox="0 0 64 64" aria-hidden="true"><rect x="18" y="18" width="28" height="28" fill="none" stroke="#60A5FA" stroke-width="4"/><rect x="26" y="26" width="12" height="12" fill="#60A5FA"/></svg>
             <strong>No quizzes here yet</strong>
-            Create your first quiz to get started.
+            
           </div>
         </div>
       </section>
@@ -6150,7 +6253,8 @@ if (window.pdfjsLib) {
         </aside>
 
         <main class="content-wrap editor-question-panel">
-          <div class="panel question-editor-card">
+<div class="library-dashboard-card">
+<div class="panel question-editor-card">
             <div class="question-editor-head">
               <div class="editor-card-title">Question</div>
               <button id="deleteQuestionBtn" type="button" class="question-delete-icon" title="Delete question" aria-label="Delete question">
@@ -6182,7 +6286,8 @@ if (window.pdfjsLib) {
 
 
           </div>
-        </main>
+</div>
+</main>
 
         <aside class="editor-right-settings">
           <div class="panel quiz-settings-card">
