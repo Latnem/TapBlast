@@ -5616,6 +5616,332 @@ body.android-desktop-mode #hostLobby.lobby-combined{
   }
 }
 
+
+
+/* ===== SCHEME 1 MIX — CLEAN SIDEBAR + BORDERLESS ICONS ===== */
+:root{
+  --scheme1-sidebar:#263142;
+  --scheme1-sidebar-2:#303c50;
+  --scheme1-sidebar-3:#3c4b62;
+  --scheme1-line:#46566f;
+  --scheme1-text:#eaf1fb;
+  --scheme1-muted:#aebbd0;
+  --scheme1-active:#5e789e;
+  --scheme1-accent:#93c5fd;
+}
+
+body[data-screen="library-screen"] .app-shell{
+  background:#eef3fb !important;
+}
+
+body[data-screen="library-screen"] #library-screen .app-container{
+  background:#fff !important;
+}
+
+@media (min-width:981px){
+  body[data-screen="library-screen"] #library-screen .app-container,
+  #library-screen .app-container{
+    grid-template-columns:236px 1fr !important;
+    max-width:1440px !important;
+  }
+}
+
+/* Sidebar surface */
+#library-screen .library-sidebar,
+body[data-screen="library-screen"] #library-screen .library-sidebar{
+  background:linear-gradient(180deg,var(--scheme1-sidebar),#202a39) !important;
+  border-right:0 !important;
+  color:var(--scheme1-text) !important;
+  padding:14px 12px !important;
+  box-shadow:inset -1px 0 rgba(255,255,255,.04) !important;
+}
+
+/* Sidebar top tools */
+#library-screen .library-sidebar .folder-head{
+  padding:0 2px 12px !important;
+  margin:0 0 10px !important;
+  border-bottom:1px solid rgba(255,255,255,.08) !important;
+  display:flex !important;
+  align-items:center !important;
+}
+
+#library-screen .library-sidebar .folder-head-title{
+  display:block !important;
+  width:auto !important;
+  height:auto !important;
+  overflow:visible !important;
+  visibility:visible !important;
+  color:#fff !important;
+  font-size:.76rem !important;
+  letter-spacing:.9px !important;
+  text-transform:uppercase !important;
+  font-weight:800 !important;
+}
+
+#library-screen .library-sidebar .folder-head-actions{
+  display:flex !important;
+  align-items:center !important;
+  gap:5px !important;
+}
+
+/* Clean icons: no border, no square box */
+#library-screen .library-sidebar #newFolderBtn,
+#library-screen .library-sidebar #folderManageBtn,
+#library-screen .library-sidebar #mobileFoldersCloseBtn,
+#library-screen .library-sidebar .btn.icon,
+#library-screen .library-sidebar button.btn.icon.ghost{
+  background:transparent !important;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+  border-radius:0 !important;
+  width:30px !important;
+  height:30px !important;
+  min-width:30px !important;
+  min-height:30px !important;
+  padding:0 !important;
+  color:#dce8f8 !important;
+}
+
+#library-screen .library-sidebar #newFolderBtn:hover,
+#library-screen .library-sidebar #folderManageBtn:hover,
+#library-screen .library-sidebar #mobileFoldersCloseBtn:hover,
+#library-screen .library-sidebar .btn.icon:hover{
+  background:transparent !important;
+  color:#fff !important;
+  transform:translateY(-1px) !important;
+}
+
+#library-screen .library-sidebar #newFolderBtn .material-symbols-outlined,
+#library-screen .library-sidebar #folderManageBtn svg,
+#library-screen .library-sidebar #mobileFoldersCloseBtn .material-symbols-outlined{
+  width:22px !important;
+  height:22px !important;
+  font-size:22px !important;
+  stroke-width:2 !important;
+  filter:none !important;
+}
+
+#library-screen .library-sidebar #newFolderBtn:focus-visible,
+#library-screen .library-sidebar #folderManageBtn:focus-visible,
+#library-screen .library-sidebar #mobileFoldersCloseBtn:focus-visible{
+  outline:2px solid var(--scheme1-accent) !important;
+  outline-offset:3px !important;
+}
+
+/* Folder list */
+#library-screen .library-sidebar .folder-list{
+  gap:4px !important;
+  padding-top:2px !important;
+}
+
+#library-screen .library-sidebar .folder-item{
+  min-height:36px !important;
+  padding:8px 10px !important;
+  gap:8px !important;
+  border:0 !important;
+  border-left:3px solid transparent !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#dce6f3 !important;
+  font-size:.86rem !important;
+  line-height:1.2 !important;
+  box-shadow:none !important;
+}
+
+#library-screen .library-sidebar .folder-item:hover{
+  background:rgba(255,255,255,.075) !important;
+  color:#fff !important;
+}
+
+#library-screen .library-sidebar .folder-item.active{
+  background:rgba(147,197,253,.15) !important;
+  color:#fff !important;
+  border-left-color:var(--scheme1-accent) !important;
+}
+
+/* No boxed/outlined folder icons */
+#library-screen .library-sidebar .folder-item .material-symbols-outlined,
+#library-screen .library-sidebar .folder-item .icon,
+#library-screen .library-sidebar .folder-item svg{
+  display:inline-flex !important;
+  width:18px !important;
+  height:18px !important;
+  color:#bcc9dc !important;
+  background:transparent !important;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+  border-radius:0 !important;
+  padding:0 !important;
+}
+
+#library-screen .library-sidebar .folder-item.active .material-symbols-outlined,
+#library-screen .library-sidebar .folder-item.active .icon,
+#library-screen .library-sidebar .folder-item.active svg{
+  color:#fff !important;
+}
+
+#library-screen .library-sidebar .folder-name{
+  color:inherit !important;
+  font-weight:700 !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+
+#library-screen .library-sidebar .folder-count{
+  height:20px !important;
+  min-width:24px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  background:rgba(255,255,255,.18) !important;
+  color:#fff !important;
+  border:0 !important;
+  border-radius:999px !important;
+  padding:0 7px !important;
+  font-size:.7rem !important;
+  font-weight:800 !important;
+  box-shadow:none !important;
+}
+
+#library-screen .library-sidebar .folder-item.active .folder-count{
+  background:#dbeafe !important;
+  color:#17346d !important;
+}
+
+#library-screen .library-sidebar .folder-item [data-folder-menu]{
+  width:26px !important;
+  height:26px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:#c8d4e6 !important;
+  opacity:.65 !important;
+}
+
+#library-screen .library-sidebar .folder-item:hover [data-folder-menu]{opacity:1 !important;}
+#library-screen .library-sidebar .folder-item [data-folder-menu]:hover{
+  background:transparent !important;
+  color:#fff !important;
+}
+
+/* Current design retained, but dashboard is cleaner */
+#library-screen .topbar{
+  min-height:66px !important;
+  padding:14px 24px !important;
+  background:linear-gradient(120deg,#152b68 0%,#24489f 100%) !important;
+  border-bottom:0 !important;
+}
+
+#library-screen .content-wrap{
+  padding:24px 28px !important;
+  background:#fff !important;
+}
+
+#library-screen .library-header-title{
+  font-size:1.75rem !important;
+  margin-bottom:6px !important;
+}
+
+#library-screen .library-header-meta{
+  margin-bottom:20px !important;
+}
+
+#library-screen .search-row{
+  margin-bottom:18px !important;
+  gap:10px !important;
+}
+
+#library-screen .search-wrap{
+  max-width:460px !important;
+}
+
+#library-screen .search-wrap input{
+  border-radius:8px !important;
+  border:1px solid #d9e1ee !important;
+  height:38px !important;
+}
+
+#library-screen #pdf-import-btn,
+#library-screen #newQuizBtn{
+  border-radius:8px !important;
+}
+
+#library-screen .quiz-grid{
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr)) !important;
+  gap:16px !important;
+  max-width:880px !important;
+}
+
+#library-screen .quiz-card{
+  border-radius:0 !important;
+  border:1px solid #e0e6f1 !important;
+  box-shadow:0 2px 8px rgba(15,32,80,.08) !important;
+  overflow:visible !important;
+}
+
+#library-screen .quiz-card:hover{
+  transform:translateY(-2px) !important;
+  border-color:#bfd0eb !important;
+  box-shadow:0 10px 24px rgba(15,32,80,.13) !important;
+}
+
+#library-screen .quiz-cover{
+  height:104px !important;
+  border-radius:0 !important;
+}
+
+#library-screen .quiz-body{
+  padding:14px !important;
+}
+
+#library-screen .quiz-title{
+  font-size:.98rem !important;
+}
+
+#library-screen .quiz-actions .btn{
+  height:30px !important;
+  min-height:30px !important;
+  border-radius:8px !important;
+}
+
+#library-screen .menu-btn{
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  border-radius:0 !important;
+}
+
+/* Topbar clean icon buttons: no heavy bordered icon boxes */
+#library-screen .topbar .btn.icon.outline,
+#library-screen .topbar .btn.icon.ghost{
+  background:rgba(255,255,255,.94) !important;
+  border:0 !important;
+  box-shadow:none !important;
+  border-radius:8px !important;
+  color:#132554 !important;
+}
+
+#library-screen .topbar .btn.icon.outline:hover,
+#library-screen .topbar .btn.icon.ghost:hover{
+  background:#fff !important;
+}
+
+@media(max-width:980px){
+  #library-screen .library-sidebar{
+    width:min(84vw,300px) !important;
+    padding:14px 12px !important;
+  }
+  #library-screen .content-wrap{
+    padding:18px !important;
+  }
+  #library-screen .quiz-grid{
+    max-width:none !important;
+  }
+}
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -5624,187 +5950,6 @@ if (window.pdfjsLib) {
   pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 }
 </script>
-
-
-
-<style id="tapblast-ui-v2-boxy-android">
-/* ===== TapBlast UI v2: boxy Android-style layout polish =====
-   Color scheme untouched. Quiz image cover/settings are left alone. */
-body{
-  background:var(--bg);
-}
-.app-container{
-  max-width:1480px;
-  margin:0 auto;
-  min-height:100vh;
-  border-radius:0;
-  overflow:hidden;
-  box-shadow:0 10px 35px rgba(15,32,80,.10);
-  border-left:1px solid var(--line);
-  border-right:1px solid var(--line);
-}
-.left-pane{
-  background:linear-gradient(180deg,var(--royal-950),var(--royal-800));
-  color:#fff;
-  padding:28px 18px;
-  border-right:none;
-}
-.left-pane .folder-head-title,
-.left-pane .folder-name{
-  color:#fff;
-}
-.left-pane .folder-count{
-  background:rgba(255,255,255,.14);
-  color:#fff;
-}
-.folder-item{
-  border-radius:4px;
-  color:#fff;
-  padding:14px 14px;
-}
-.folder-item:hover{
-  background:rgba(255,255,255,.12);
-  color:#fff;
-}
-.folder-item.active{
-  background:linear-gradient(180deg,var(--sun-300),var(--sun-500));
-  color:var(--royal-950);
-  border-color:transparent;
-  box-shadow:4px 4px 0 rgba(0,0,0,.18);
-}
-.folder-item.active .folder-name,
-.folder-item.active .material-symbols-outlined{
-  color:var(--royal-950);
-}
-.folder-item.active .folder-count{
-  background:rgba(255,255,255,.55);
-  color:var(--royal-950);
-}
-.topbar{
-  background:#fff;
-  color:var(--ink-900);
-  padding:28px 38px 14px;
-  box-shadow:none;
-  border-bottom:none;
-}
-.topbar::before{
-  display:none;
-}
-.topbar .brand{
-  color:var(--ink-900);
-}
-.content-wrap{
-  padding:24px 38px 34px;
-}
-.library-header-title{
-  font-size:2rem;
-}
-.search-row{
-  background:transparent;
-  border:none;
-  border-radius:0;
-  padding:0;
-  box-shadow:none;
-  gap:16px;
-}
-.search-wrap{
-  max-width:390px;
-}
-.search-wrap input,
-select,
-input[type=text],
-input[type=number],
-input[type=email],
-input[type=password],
-textarea{
-  border-radius:2px;
-  border:1.5px solid var(--line);
-  box-shadow:none;
-}
-.btn{
-  border-radius:2px;
-  box-shadow:none!important;
-}
-.btn.primary,
-.btn.accent{
-  box-shadow:4px 4px 0 rgba(15,32,80,.12)!important;
-}
-.btn:hover{
-  transform:none;
-  filter:brightness(.98);
-}
-.btn.icon{
-  border-radius:2px;
-}
-.quiz-grid{
-  grid-template-columns:repeat(auto-fill,minmax(285px,1fr));
-  gap:20px;
-}
-.quiz-card{
-  border-radius:2px;
-  border:1.5px solid var(--line);
-  box-shadow:0 4px 12px rgba(15,32,80,.06);
-}
-.quiz-card:hover{
-  transform:none;
-  border-color:var(--sky-400);
-  box-shadow:6px 6px 0 rgba(30,58,138,.10);
-}
-/* Intentionally NOT changing .quiz-cover */
-.quiz-body{
-  padding:18px;
-}
-.quiz-actions .btn{
-  border-radius:2px;
-}
-.menu-btn,
-.menu-pop,
-.menu-pop button{
-  border-radius:2px;
-}
-.panel,
-.modal-card,
-.lb-card,
-.student-card,
-.host-card,
-.lobby-card{
-  border-radius:2px;
-}
-.editor-shell{
-  margin:0;
-  border-radius:0;
-  border-top:1px solid var(--line);
-  box-shadow:none;
-}
-.editor-left{
-  background:#fff;
-}
-.question-card,
-.answer-edit,
-.media-drop{
-  border-radius:2px;
-}
-.google-btn,
-.login-card{
-  border-radius:2px;
-}
-.login-divider,
-.student-link{
-  display:none!important;
-}
-@media(max-width:820px){
-  .app-container{
-    margin:0;
-    border-radius:0;
-  }
-  .topbar{
-    padding:20px 18px 10px;
-  }
-  .content-wrap{
-    padding:18px;
-  }
-}
-</style>
 
 </head>
 <body>
