@@ -5976,6 +5976,13 @@ body[data-screen="library-screen"] #library-screen .logout-icon-btn{
   }
 }
 
+
+.logout-btn{
+ background:none;border:0;box-shadow:none;cursor:pointer;
+ color:#64748b;padding:4px;display:inline-flex;align-items:center;justify-content:center;
+}
+.logout-btn:hover{color:#dc2626;}
+
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -6070,9 +6077,15 @@ if (window.pdfjsLib) {
 
           <div class="dashboard-top-actions">
             <div id="teacherName" class="teacher-name"></div>
-            <button id="logoutBtn" type="button" class="logout-icon-btn" title="Sign Out" aria-label="Sign Out">
-              <span class="material-symbols-outlined">logout</span>
-            </button>
+            
+<button id="logoutBtn" class="logout-btn" title="Sign Out">
+<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+<path d="M10 4H4v16h6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M13 12h8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M17 8l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</button>
+
           </div>
         </div>
 
