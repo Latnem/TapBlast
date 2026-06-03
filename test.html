@@ -6184,6 +6184,22 @@ body[data-screen="library-screen"] #library-screen .library-empty.hidden{
   display:none !important;
 }
 
+
+/* ===== EMPTY FOLDER UNIFORM CARD ===== */
+body[data-screen="library-screen"] #library-screen .empty-folder-card{
+  min-height:248px !important;
+  height:100% !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  border:1px solid #dbe3ef !important;
+  background:#ffffff !important;
+  color:#64748b !important;
+  font-weight:700 !important;
+  box-sizing:border-box !important;
+}
+
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -9405,6 +9421,54 @@ document.addEventListener('keydown', e=>{
   });
 
   window.tapblastFixEmptyState = tapblastFixEmptyState;
+})();
+</script>
+
+
+<script>
+(function(){
+  function tapblastUniformEmptyCard(){
+    var grid=document.getElementById('quizGrid');
+    var empty=document.getElementById('emptyState');
+    if(!grid||!empty) return;
+
+    var existing=document.getElementById('emptyFolderCard');
+    if(existing) existing.remove();
+
+    var cards=[].slice.call(grid.children||[]);
+    var real=cards.filter(function(el){
+      var cls=(el.className||'');
+      var txt=(el.textContent||'').toLowerCase();
+      var isCreate=el.id==='createQuizCard' ||
+                   cls.indexOf('create-quiz')!==-1 ||
+                   cls.indexOf('dashboard-create')!==-1 ||
+                   txt.indexOf('create quiz')!==-1;
+      return !isCreate && !(el.classList&&el.classList.contains('hidden'));
+    });
+
+    if(real.length===0){
+      empty.style.display='none';
+
+      var card=document.createElement('div');
+      card.id='emptyFolderCard';
+      card.className='quiz-card empty-folder-card';
+      card.innerHTML='<div>No quizzes here yet</div>';
+      grid.appendChild(card);
+    }else{
+      empty.style.display='none';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded',function(){
+    tapblastUniformEmptyCard();
+    var grid=document.getElementById('quizGrid');
+    if(grid){
+      new MutationObserver(tapblastUniformEmptyCard)
+        .observe(grid,{childList:true,subtree:false});
+    }
+  });
+
+  window.tapblastUniformEmptyCard=tapblastUniformEmptyCard;
 })();
 </script>
 
