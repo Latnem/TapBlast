@@ -6158,7 +6158,24 @@ body[data-screen="library-screen"] #library-screen .library-empty.hidden{
 
 
 
-/* ===== WHITE ICON-ONLY LOGOUT ===== */
+
+/* ===== STABLE EMPTY INLINE + WHITE LOGOUT ===== */
+#library-screen #emptyState{
+  display:none !important;
+}
+#library-screen .empty-inline-message{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  color:#64748b;
+  font-weight:800;
+  font-size:1rem;
+  padding:0 4px;
+  min-height:0;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+}
 #library-screen #logoutBtn.logout-icon-only,
 .logout-icon-only{
   width:30px !important;
@@ -6198,34 +6215,40 @@ body[data-screen="library-screen"] #library-screen .library-empty.hidden{
   opacity:.82 !important;
 }
 
-/* Empty folder message should sit beside Create Quiz, not as a full bottom block. */
-#library-screen .library-empty:not(.hidden){
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:flex-start !important;
-  min-height:0 !important;
-  height:auto !important;
-  width:auto !important;
-  padding:0 0 0 4px !important;
-  margin:0 !important;
-  border:0 !important;
-  background:transparent !important;
-  box-shadow:none !important;
-  color:#64748b !important;
-  font-weight:700 !important;
-  text-align:left !important;
-}
-#library-screen .library-empty:not(.hidden) .material-symbols-outlined,
-#library-screen .library-empty:not(.hidden) .icon{
-  display:none !important;
-}
-#library-screen .library-empty:not(.hidden) p,
-#library-screen .library-empty:not(.hidden) .empty-subtitle,
-#library-screen .library-empty:not(.hidden) .subtle{
-  display:none !important;
-}
-#library-screen .library-empty.hidden{
-  display:none !important;
+
+/* ===== RESPONSIVE FIT MOBILE SIDEBAR ===== */
+@media(max-width:980px){
+  #library-screen .left-pane,
+  #library-screen .library-sidebar{
+    width:fit-content !important;
+    min-width:210px !important;
+    max-width:min(72vw, 280px) !important;
+    padding:16px 10px !important;
+  }
+
+  #library-screen .folder-list{
+    width:max-content !important;
+    min-width:190px !important;
+    max-width:250px !important;
+  }
+
+  #library-screen .folder-item{
+    width:100% !important;
+    max-width:250px !important;
+    white-space:nowrap !important;
+  }
+
+  #library-screen .folder-name{
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+  }
+
+  #library-screen #newFolderBtn{
+    width:100% !important;
+    max-width:250px !important;
+    white-space:nowrap !important;
+  }
 }
 
 </style>
@@ -7306,7 +7329,7 @@ function renderLibrary(){
   const filtered=filterQuizzes().sort((a,b)=>(b.updatedAt||b.createdAt||0)-(a.updatedAt||a.createdAt||0));
   const countText = filtered.length===1 ? '1 quiz' : `${filtered.length} quizzes`;
   $('librarySubtle').textContent = countText + (searchTerm.trim() ? ` matching "${searchTerm.trim()}"` : '');
-  $('emptyState').classList.toggle('hidden', filtered.length!==0);
+  if($('emptyState')) $('emptyState').classList.add('hidden');
 
   const createTile = `<button id="newQuizTile" type="button" class="create-quiz-tile option2-create-card">
       <span class="option2-plus">＋</span>
@@ -7339,7 +7362,7 @@ function renderLibrary(){
       </div>
     </div>`;
   }).join('');
-  $('quizGrid').innerHTML=createTile+cards;
+  $('quizGrid').innerHTML=createTile + (filtered.length===0 ? '<div class="empty-inline-message">No quizzes here yet</div>' : cards);
   const tile=$('newQuizTile');
   if(tile) tile.onclick=createNewQuiz;
   bindLibraryEvents();
@@ -9400,42 +9423,6 @@ document.addEventListener('keydown', e=>{
 </script>
 
 
-
-<script>
-(function(){
-  function arrangeEmptyStateInline(){
-    var grid = document.getElementById('quizGrid');
-    var empty = document.getElementById('emptyState');
-    if(!grid || !empty) return;
-
-    if(empty.parentElement !== grid){
-      grid.appendChild(empty);
-    }
-
-    var cards = Array.prototype.slice.call(grid.children || []);
-    var realQuizCount = cards.filter(function(el){
-      if(!el || el.id === 'emptyState') return false;
-      var cls = String(el.className || '');
-      var text = String(el.textContent || '').toLowerCase();
-      var isCreate = el.id === 'createQuizCard' ||
-        cls.indexOf('create-quiz') !== -1 ||
-        cls.indexOf('dashboard-create') !== -1 ||
-        text.indexOf('create quiz') !== -1;
-      return !isCreate && !(el.classList && el.classList.contains('hidden'));
-    }).length;
-
-    if(realQuizCount > 0){
-      empty.classList.add('hidden');
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    arrangeEmptyStateInline();
-    document.addEventListener('click', function(){ setTimeout(arrangeEmptyStateInline, 30); });
-    document.addEventListener('input', function(){ setTimeout(arrangeEmptyStateInline, 30); });
-  });
-})();
-</script>
 
 </body>
 </html>
