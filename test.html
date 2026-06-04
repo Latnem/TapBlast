@@ -6157,37 +6157,15 @@ body[data-screen="library-screen"] #library-screen .library-empty.hidden{
 }
 
 
-/* ===== SAFE EMPTY STATE CARD — NO OBSERVER SCRIPT ===== */
-body[data-screen="library-screen"] #library-screen .library-empty:not(.hidden){
-  min-height:248px !important;
-  height:100% !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  text-align:center !important;
-  border:1px solid #dbe3ef !important;
-  background:#ffffff !important;
-  color:#64748b !important;
-  font-weight:700 !important;
-  box-sizing:border-box !important;
-  padding:22px !important;
-}
-body[data-screen="library-screen"] #library-screen .library-empty.hidden{
-  display:none !important;
-}
-body[data-screen="library-screen"] #library-screen .library-empty:not(.hidden) p,
-body[data-screen="library-screen"] #library-screen .library-empty:not(.hidden) .empty-subtitle,
-body[data-screen="library-screen"] #library-screen .library-empty:not(.hidden) .subtle{
-  display:none !important;
-}
 
-
-/* ===== CLEAN ICON ONLY LOGOUT ===== */
+/* ===== WHITE ICON-ONLY LOGOUT ===== */
+#library-screen #logoutBtn.logout-icon-only,
 .logout-icon-only{
-  width:28px !important;
-  height:28px !important;
-  margin-left:8px !important;
+  width:30px !important;
+  height:30px !important;
+  min-width:30px !important;
   padding:0 !important;
+  margin-left:8px !important;
   display:inline-flex !important;
   align-items:center !important;
   justify-content:center !important;
@@ -6197,15 +6175,57 @@ body[data-screen="library-screen"] #library-screen .library-empty:not(.hidden) .
   box-shadow:none !important;
   color:#ffffff !important;
   cursor:pointer !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  line-height:1 !important;
+  overflow:visible !important;
 }
-.logout-icon-only svg{
+#library-screen #logoutBtn.logout-icon-only svg,
+.logout-icon-only svg,
+.logout-svg{
   display:block !important;
   width:24px !important;
   height:24px !important;
-}
-.logout-icon-only:hover{
+  min-width:24px !important;
   color:#ffffff !important;
-  opacity:.85 !important;
+  stroke:#ffffff !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  overflow:visible !important;
+}
+#library-screen #logoutBtn.logout-icon-only:hover,
+.logout-icon-only:hover{
+  opacity:.82 !important;
+}
+
+/* Empty folder message should sit beside Create Quiz, not as a full bottom block. */
+#library-screen .library-empty:not(.hidden){
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  min-height:0 !important;
+  height:auto !important;
+  width:auto !important;
+  padding:0 0 0 4px !important;
+  margin:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:#64748b !important;
+  font-weight:700 !important;
+  text-align:left !important;
+}
+#library-screen .library-empty:not(.hidden) .material-symbols-outlined,
+#library-screen .library-empty:not(.hidden) .icon{
+  display:none !important;
+}
+#library-screen .library-empty:not(.hidden) p,
+#library-screen .library-empty:not(.hidden) .empty-subtitle,
+#library-screen .library-empty:not(.hidden) .subtle{
+  display:none !important;
+}
+#library-screen .library-empty.hidden{
+  display:none !important;
 }
 
 </style>
@@ -6304,7 +6324,7 @@ if (window.pdfjsLib) {
             <div id="teacherName" class="teacher-name"></div>
             
 <button id="logoutBtn" class="logout-icon-only" title="Sign Out" aria-label="Sign Out">
-<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+<svg class="logout-svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
 <path d="M10 4H4v16h6" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M13 12h8" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
 <path d="M17 8l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -9379,6 +9399,43 @@ document.addEventListener('keydown', e=>{
 })();
 </script>
 
+
+
+<script>
+(function(){
+  function arrangeEmptyStateInline(){
+    var grid = document.getElementById('quizGrid');
+    var empty = document.getElementById('emptyState');
+    if(!grid || !empty) return;
+
+    if(empty.parentElement !== grid){
+      grid.appendChild(empty);
+    }
+
+    var cards = Array.prototype.slice.call(grid.children || []);
+    var realQuizCount = cards.filter(function(el){
+      if(!el || el.id === 'emptyState') return false;
+      var cls = String(el.className || '');
+      var text = String(el.textContent || '').toLowerCase();
+      var isCreate = el.id === 'createQuizCard' ||
+        cls.indexOf('create-quiz') !== -1 ||
+        cls.indexOf('dashboard-create') !== -1 ||
+        text.indexOf('create quiz') !== -1;
+      return !isCreate && !(el.classList && el.classList.contains('hidden'));
+    }).length;
+
+    if(realQuizCount > 0){
+      empty.classList.add('hidden');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    arrangeEmptyStateInline();
+    document.addEventListener('click', function(){ setTimeout(arrangeEmptyStateInline, 30); });
+    document.addEventListener('input', function(){ setTimeout(arrangeEmptyStateInline, 30); });
+  });
+})();
+</script>
 
 </body>
 </html>
