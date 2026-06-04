@@ -6216,25 +6216,56 @@ body[data-screen="library-screen"] #library-screen .library-empty.hidden{
 }
 
 
-/* ===== RESPONSIVE FIT MOBILE SIDEBAR ===== */
+
+/* ===== COMPACT CONTENT-FIT MOBILE SIDEBAR ===== */
 @media(max-width:980px){
+  /* Drawer should fit the sidebar content, not stretch full height with empty middle space. */
   #library-screen .left-pane,
   #library-screen .library-sidebar{
-    width:fit-content !important;
-    min-width:210px !important;
-    max-width:min(72vw, 280px) !important;
-    padding:16px 10px !important;
+    width:240px !important;
+    max-width:72vw !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:calc(100vh - 28px) !important;
+    padding:12px 8px !important;
+    overflow-y:auto !important;
+    display:block !important;
+  }
+
+  /* Override older mobile rule that forced full screen height. */
+  body.folders-open #library-screen .left-pane{
+    transform:translateX(0) !important;
+  }
+
+  #library-screen .folder-head{
+    margin:0 0 8px !important;
+    padding:0 !important;
+  }
+
+  #library-screen #newFolderBtn{
+    width:100% !important;
+    min-height:34px !important;
+    padding:7px 9px !important;
+    margin:0 0 8px !important;
+    border-radius:4px !important;
+    white-space:nowrap !important;
   }
 
   #library-screen .folder-list{
-    width:max-content !important;
-    min-width:190px !important;
-    max-width:250px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    gap:4px !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
   }
 
   #library-screen .folder-item{
     width:100% !important;
-    max-width:250px !important;
+    min-height:34px !important;
+    padding:7px 9px !important;
+    gap:8px !important;
+    border-radius:4px !important;
     white-space:nowrap !important;
   }
 
@@ -6244,10 +6275,16 @@ body[data-screen="library-screen"] #library-screen .library-empty.hidden{
     text-overflow:ellipsis !important;
   }
 
-  #library-screen #newFolderBtn{
-    width:100% !important;
-    max-width:250px !important;
-    white-space:nowrap !important;
+  #library-screen .folder-count{
+    margin-left:auto !important;
+  }
+
+  /* Settings should sit naturally after folders, not be pushed far to bottom by flex/100vh. */
+  #library-screen .sidebar-settings,
+  #library-screen [data-sidebar-settings],
+  #library-screen .settings-row,
+  #library-screen #settingsBtn{
+    margin-top:8px !important;
   }
 }
 
