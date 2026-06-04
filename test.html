@@ -6200,6 +6200,39 @@ body[data-screen="library-screen"] #library-screen .empty-folder-card{
   box-sizing:border-box !important;
 }
 
+
+/* ===== CLEAR VISIBLE LOGOUT BUTTON ===== */
+.logout-btn{
+  width:36px;
+  height:36px;
+  padding:0;
+  margin-left:8px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1.5px solid rgba(255,255,255,.55);
+  border-radius:6px;
+  background:rgba(255,255,255,.10);
+  color:#ffffff;
+  box-shadow:none;
+  cursor:pointer;
+  line-height:1;
+  vertical-align:middle;
+}
+.logout-btn svg{
+  display:block;
+  width:22px;
+  height:22px;
+}
+.logout-btn:hover{
+  background:rgba(255,255,255,.22);
+  border-color:#ffffff;
+  color:#ffffff;
+}
+.logout-btn:active{
+  transform:scale(.96);
+}
+
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -6295,11 +6328,11 @@ if (window.pdfjsLib) {
           <div class="dashboard-top-actions">
             <div id="teacherName" class="teacher-name"></div>
             
-<button id="logoutBtn" class="logout-btn" title="Sign Out">
-<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-<path d="M10 4H4v16h6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M13 12h8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M17 8l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<button id="logoutBtn" class="logout-btn" title="Sign Out" aria-label="Sign Out">
+<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+<path d="M10 4H4v16h6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M13 12h8" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+<path d="M17 8l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 </button>
 
@@ -6311,7 +6344,7 @@ if (window.pdfjsLib) {
             <div class="option2-hero-head">
 <div>
               <h1>Choose a quiz</h1>
-              <p>Create a new quiz from the first card, or search your library.</p>
+              <p>Create a new quiz, or search your library.</p>
             </div>
             <button class="btn primary option2-import-btn" id="pdf-import-btn" type="button">
               <span class="material-symbols-outlined">picture_as_pdf</span>
