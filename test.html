@@ -5997,13 +5997,6 @@ body[data-screen="library-screen"] #library-screen .logout-icon-btn{
 }
 
 
-.logout-btn{
- background:none;border:0;box-shadow:none;cursor:pointer;
- color:#64748b;padding:4px;display:inline-flex;align-items:center;justify-content:center;
-}
-.logout-btn:hover{color:#dc2626;}
-
-
 #library-screen .library-sidebar #newFolderBtn .material-symbols-outlined,
 #library-screen .library-sidebar #newFolderBtn .icon,
 #library-screen .library-sidebar #newFolderBtn svg{
@@ -6118,27 +6111,6 @@ body[data-screen="library-screen"] #library-screen .library-empty .subtle{
 }
 
 /* Visible SVG logout icon */
-.logout-btn{
-  background:transparent;
-  border:0;
-  box-shadow:none;
-  cursor:pointer;
-  color:#64748b;
-  padding:4px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  line-height:1;
-}
-.logout-btn svg{
-  display:block;
-  width:20px;
-  height:20px;
-}
-.logout-btn:hover{
-  color:#dc2626;
-}
-
 @media(max-width:700px){
   body[data-screen="library-screen"] #library-screen .option2-hero-head{
     flex-direction:column !important;
@@ -6185,8 +6157,55 @@ body[data-screen="library-screen"] #library-screen .library-empty.hidden{
 }
 
 
-/* ===== EMPTY FOLDER UNIFORM CARD ===== */
-body[data-screen="library-screen"] #library-screen .empty-folder-card{
+/* ===== CLEAR VISIBLE LOGOUT BUTTON ===== */
+#library-screen .logout-visible,
+.logout-visible{
+  height:36px !important;
+  min-width:108px !important;
+  padding:0 10px !important;
+  margin-left:10px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:7px !important;
+  border:1.5px solid rgba(255,255,255,.75) !important;
+  border-radius:6px !important;
+  background:rgba(255,255,255,.16) !important;
+  color:#ffffff !important;
+  box-shadow:none !important;
+  cursor:pointer !important;
+  line-height:1 !important;
+  font-weight:800 !important;
+  font-size:12px !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+#library-screen .logout-visible svg,
+.logout-visible svg{
+  display:block !important;
+  width:22px !important;
+  height:22px !important;
+  min-width:22px !important;
+  color:#ffffff !important;
+  stroke:#ffffff !important;
+  opacity:1 !important;
+}
+#library-screen .logout-visible .logout-text,
+.logout-visible .logout-text{
+  color:#ffffff !important;
+  opacity:1 !important;
+  white-space:nowrap !important;
+}
+#library-screen .logout-visible:hover,
+.logout-visible:hover{
+  background:rgba(255,255,255,.28) !important;
+  border-color:#ffffff !important;
+  color:#ffffff !important;
+}
+
+
+/* ===== SAFE EMPTY STATE CARD — NO OBSERVER SCRIPT ===== */
+body[data-screen="library-screen"] #library-screen .library-empty:not(.hidden){
   min-height:248px !important;
   height:100% !important;
   display:flex !important;
@@ -6198,39 +6217,15 @@ body[data-screen="library-screen"] #library-screen .empty-folder-card{
   color:#64748b !important;
   font-weight:700 !important;
   box-sizing:border-box !important;
+  padding:22px !important;
 }
-
-
-/* ===== CLEAR VISIBLE LOGOUT BUTTON ===== */
-.logout-btn{
-  width:36px;
-  height:36px;
-  padding:0;
-  margin-left:8px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  border:1.5px solid rgba(255,255,255,.55);
-  border-radius:6px;
-  background:rgba(255,255,255,.10);
-  color:#ffffff;
-  box-shadow:none;
-  cursor:pointer;
-  line-height:1;
-  vertical-align:middle;
+body[data-screen="library-screen"] #library-screen .library-empty.hidden{
+  display:none !important;
 }
-.logout-btn svg{
-  display:block;
-  width:22px;
-  height:22px;
-}
-.logout-btn:hover{
-  background:rgba(255,255,255,.22);
-  border-color:#ffffff;
-  color:#ffffff;
-}
-.logout-btn:active{
-  transform:scale(.96);
+body[data-screen="library-screen"] #library-screen .library-empty:not(.hidden) p,
+body[data-screen="library-screen"] #library-screen .library-empty:not(.hidden) .empty-subtitle,
+body[data-screen="library-screen"] #library-screen .library-empty:not(.hidden) .subtle{
+  display:none !important;
 }
 
 </style>
@@ -6328,12 +6323,13 @@ if (window.pdfjsLib) {
           <div class="dashboard-top-actions">
             <div id="teacherName" class="teacher-name"></div>
             
-<button id="logoutBtn" class="logout-btn" title="Sign Out" aria-label="Sign Out">
-<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-<path d="M10 4H4v16h6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M13 12h8" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
-<path d="M17 8l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
+<button id="logoutBtn" class="logout-btn logout-visible" title="Sign Out" aria-label="Sign Out">
+  <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+    <path d="M10 4H4v16h6" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M13 12h8" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+    <path d="M17 8l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span class="logout-text">Sign out</span>
 </button>
 
           </div>
@@ -9404,106 +9400,6 @@ document.addEventListener('keydown', e=>{
 })();
 </script>
 
-
-<script>
-(function(){
-  function tapblastFixEmptyState(){
-    var grid = document.getElementById('quizGrid');
-    var empty = document.getElementById('emptyState');
-    if(!grid || !empty) return;
-
-    var cards = Array.prototype.slice.call(grid.children || []);
-    var realQuizCards = cards.filter(function(el){
-      if(!el || el.nodeType !== 1) return false;
-      var text = (el.textContent || '').trim().toLowerCase();
-      var cls = el.className || '';
-      var isCreate =
-        el.id === 'createQuizCard' ||
-        el.hasAttribute('data-create-quiz') ||
-        String(cls).indexOf('create-quiz') !== -1 ||
-        String(cls).indexOf('dashboard-create') !== -1 ||
-        text === 'create quiz' ||
-        text.indexOf('create quiz') === 0;
-      var isHidden = el.classList && el.classList.contains('hidden');
-      return !isCreate && !isHidden;
-    });
-
-    if(realQuizCards.length > 0){
-      empty.classList.add('hidden');
-      empty.style.display = 'none';
-    }else{
-      empty.classList.remove('hidden');
-      empty.style.display = '';
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    tapblastFixEmptyState();
-    var grid = document.getElementById('quizGrid');
-    if(grid){
-      new MutationObserver(tapblastFixEmptyState).observe(grid, {childList:true, subtree:false, attributes:true});
-    }
-    var folderList = document.querySelector('.folder-list');
-    if(folderList){
-      folderList.addEventListener('click', function(){ setTimeout(tapblastFixEmptyState, 0); setTimeout(tapblastFixEmptyState, 120); });
-    }
-    var search = document.querySelector('#quizSearch, input[type="search"], .dashboard-search input, .search-wrap input');
-    if(search){
-      search.addEventListener('input', function(){ setTimeout(tapblastFixEmptyState, 0); });
-    }
-  });
-
-  window.tapblastFixEmptyState = tapblastFixEmptyState;
-})();
-</script>
-
-
-<script>
-(function(){
-  function tapblastUniformEmptyCard(){
-    var grid=document.getElementById('quizGrid');
-    var empty=document.getElementById('emptyState');
-    if(!grid||!empty) return;
-
-    var existing=document.getElementById('emptyFolderCard');
-    if(existing) existing.remove();
-
-    var cards=[].slice.call(grid.children||[]);
-    var real=cards.filter(function(el){
-      var cls=(el.className||'');
-      var txt=(el.textContent||'').toLowerCase();
-      var isCreate=el.id==='createQuizCard' ||
-                   cls.indexOf('create-quiz')!==-1 ||
-                   cls.indexOf('dashboard-create')!==-1 ||
-                   txt.indexOf('create quiz')!==-1;
-      return !isCreate && !(el.classList&&el.classList.contains('hidden'));
-    });
-
-    if(real.length===0){
-      empty.style.display='none';
-
-      var card=document.createElement('div');
-      card.id='emptyFolderCard';
-      card.className='quiz-card empty-folder-card';
-      card.innerHTML='<div>No quizzes here yet</div>';
-      grid.appendChild(card);
-    }else{
-      empty.style.display='none';
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded',function(){
-    tapblastUniformEmptyCard();
-    var grid=document.getElementById('quizGrid');
-    if(grid){
-      new MutationObserver(tapblastUniformEmptyCard)
-        .observe(grid,{childList:true,subtree:false});
-    }
-  });
-
-  window.tapblastUniformEmptyCard=tapblastUniformEmptyCard;
-})();
-</script>
 
 </body>
 </html>
