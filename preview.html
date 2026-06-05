@@ -6403,9 +6403,10 @@ body[data-screen="login-screen"]{
 
 
 
-/* ===== EDITOR TRUE LIBRARY-MATCH PATCH ===== */
 
-/* Same overall width as Library dashboard. */
+/* ===== FINAL EDITOR LIBRARY ALIGNMENT PATCH ===== */
+
+/* Keep only one visible Quiz Editor title and make editor match Library width. */
 body[data-screen="editor-screen"]{
   background:var(--bg) !important;
 }
@@ -6416,50 +6417,83 @@ body[data-screen="editor-screen"]{
 }
 
 #editor-screen .app-shell{
-  display:flex !important;
-  justify-content:center !important;
   width:100% !important;
   min-height:100vh !important;
+  display:flex !important;
+  justify-content:center !important;
   background:var(--bg) !important;
 }
 
 #editor-screen .app-container{
-  display:grid !important;
-  grid-template-columns:180px minmax(0,1fr) !important;
   max-width:1440px !important;
   width:100% !important;
   min-height:100vh !important;
-  margin:0 auto !important;
+  display:grid !important;
+  grid-template-columns:180px minmax(0,1fr) !important;
   background:var(--panel) !important;
+  margin:0 auto !important;
   box-shadow:0 0 60px rgba(15,32,80,.05) !important;
 }
 
-/* Make editor main area line up with dashboard length/width. */
-#editor-screen .main-pane{
-  width:100% !important;
-  min-width:0 !important;
-  display:flex !important;
-  flex-direction:column !important;
+/* Remove detached gap between top banner and editor/sidebar area. */
+#editor-screen .topbar{
+  margin:0 !important;
+  border-bottom:0 !important;
 }
 
 #editor-screen .editor-shell{
-  display:grid !important;
-  grid-template-columns:260px minmax(0,1fr) !important;
+  margin:0 !important;
+  padding:0 !important;
+  gap:0 !important;
   width:100% !important;
   max-width:none !important;
+  display:grid !important;
+  grid-template-columns:260px minmax(0,1fr) !important;
   min-height:calc(100vh - 50px) !important;
   background:var(--panel) !important;
 }
 
-/* Sidebar can stay dark, matching Library side nav. */
-#editor-screen .editor-left{
-  background:#2f3a4d !important;
-  border-right:1px solid #202938 !important;
-  padding:10px 8px !important;
-  color:var(--ink-900) !important;
+#editor-screen .main-pane{
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
 }
 
-/* Question cards: light theme, boxy, dashboard/library card feel. */
+/* Sidebar remains dark, but the QUESTIONS heading must be white. */
+#editor-screen .editor-left{
+  margin:0 !important;
+  padding:10px 8px !important;
+  background:#2f3a4d !important;
+  border-right:1px solid #202938 !important;
+  border-top:0 !important;
+  color:#ffffff !important;
+}
+
+#editor-screen .editor-left,
+#editor-screen .editor-left *,
+#editor-screen .editor-left label{
+  box-sizing:border-box !important;
+}
+
+#editor-screen .editor-left h1,
+#editor-screen .editor-left h2,
+#editor-screen .editor-left h3,
+#editor-screen .editor-left h4,
+#editor-screen .editor-left h5,
+#editor-screen .editor-left h6,
+#editor-screen .editor-left label,
+#editor-screen .editor-left .folder-head-title,
+#editor-screen .editor-left .section-title,
+#editor-screen .editor-left .sidebar-title,
+#editor-screen .editor-left .questions-title,
+#editor-screen .editor-left [class*="title"],
+#editor-screen .editor-left [class*="Title"]{
+  color:#ffffff !important;
+}
+
+/* Question cards are light theme, not dark. */
 #editor-screen .question-list{
   gap:6px !important;
   padding:0 !important;
@@ -6482,55 +6516,37 @@ body[data-screen="editor-screen"]{
 
 #editor-screen .question-card:hover{
   background:var(--sky-50) !important;
-  color:var(--ink-900) !important;
   border-color:var(--sky-300) !important;
   border-left-color:var(--sky-300) !important;
 }
 
 #editor-screen .question-card.active{
   background:linear-gradient(90deg, var(--sky-50), #ffffff) !important;
-  color:var(--ink-900) !important;
   border-color:var(--sky-300) !important;
   border-left-color:var(--royal-600) !important;
-  box-shadow:none !important;
 }
 
 #editor-screen .question-card-num{
   color:var(--royal-700) !important;
-  font-size:.68rem !important;
-  font-weight:800 !important;
 }
 
 #editor-screen .question-card-preview{
   color:var(--ink-700) !important;
-  font-size:.78rem !important;
-  line-height:1.35 !important;
 }
 
-/* Editor content should be exactly boxy like Library cards. */
+/* Boxy main editor cards and controls, matching Library UI. */
 #editor-screen .content-wrap{
   width:100% !important;
   max-width:none !important;
+  margin:0 !important;
   padding:14px 16px !important;
   background:var(--panel) !important;
-  overflow:visible !important;
 }
 
 #editor-screen .panel,
-#editor-screen .modal-card,
 #editor-screen .answer-edit,
 #editor-screen .media-drop,
-#editor-screen .option-item{
-  border-radius:4px !important;
-  box-shadow:var(--shadow-sm) !important;
-}
-
-#editor-screen .panel{
-  background:#ffffff !important;
-  border:1px solid var(--line) !important;
-}
-
-/* Remove curvy rounded look from all editor controls/cards. */
+#editor-screen .option-item,
 #editor-screen input[type=text],
 #editor-screen input[type=number],
 #editor-screen input[type=email],
@@ -6550,36 +6566,43 @@ body[data-screen="editor-screen"]{
   border-radius:4px !important;
 }
 
-#editor-screen .answer-edit{
+#editor-screen .panel{
   background:#ffffff !important;
   border:1px solid var(--line) !important;
+  box-shadow:var(--shadow-sm) !important;
 }
 
+#editor-screen .answer-edit,
 #editor-screen .answer-edit[data-color="0"],
 #editor-screen .answer-edit[data-color="1"],
 #editor-screen .answer-edit[data-color="2"],
 #editor-screen .answer-edit[data-color="3"]{
   background:#ffffff !important;
-  border-color:var(--line) !important;
+  border:1px solid var(--line) !important;
+  box-shadow:none !important;
 }
 
-/* Keep answer color identity only on the small letter badge, not the whole card background. */
-#editor-screen .answer-edit[data-color="0"] .answer-letter{background:var(--ans-blue) !important;}
-#editor-screen .answer-edit[data-color="1"] .answer-letter{background:var(--ans-green) !important;}
-#editor-screen .answer-edit[data-color="2"] .answer-letter{background:var(--ans-orange) !important;}
-#editor-screen .answer-edit[data-color="3"] .answer-letter{background:var(--ans-yellow) !important;color:#3b2d00 !important;}
-
-/* Library quiz image cover slightly taller. */
+/* Wider desktop editor content so it no longer feels shorter than Library. */
 @media (min-width:981px){
-  #library-screen .quiz-cover{
-    height:116px !important;
+  #editor-screen .app-container{
+    max-width:1440px !important;
+    grid-template-columns:180px minmax(0,1fr) !important;
+  }
+
+  #editor-screen .editor-shell{
+    grid-template-columns:260px minmax(0,1fr) !important;
+  }
+}
+
+@media (min-width:1441px){
+  #editor-screen .app-container{
+    max-width:1560px !important;
   }
 }
 
 @media(max-width:980px){
   #editor-screen .app-container{
     grid-template-columns:1fr !important;
-    max-width:1440px !important;
   }
 
   #editor-screen .editor-shell{
@@ -6590,22 +6613,6 @@ body[data-screen="editor-screen"]{
     border-right:none !important;
     border-bottom:1px solid #202938 !important;
   }
-
-  #library-screen .quiz-cover{
-    height:120px !important;
-  }
-}
-
-
-/* White Questions heading in editor sidebar */
-#editor-screen .editor-left h1,
-#editor-screen .editor-left h2,
-#editor-screen .editor-left h3,
-#editor-screen .editor-left h4,
-#editor-screen .editor-left .section-title,
-#editor-screen .editor-left .sidebar-title,
-#editor-screen .editor-left .questions-title{
-  color:#ffffff !important;
 }
 
 </style>
@@ -6753,7 +6760,6 @@ if (window.pdfjsLib) {
     <div class="topbar">
       <div>
         <div class="brand">Tap<em>Blast</em></div>
-        <div class="subtle"></div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button id="editorBackBtn" type="button" class="btn outline">
