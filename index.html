@@ -146,24 +146,6 @@ button,input,textarea,select{font:inherit;color:inherit}
 .screen{display:none;min-height:100vh}
 .screen.active{display:flex;width:100%}
 
-/* ===== BOOT SCREEN ===== */
-.boot-screen{
-  display:flex;align-items:center;justify-content:center;min-height:100vh;
-  background:radial-gradient(120% 80% at 50% 0%, var(--royal-700), var(--royal-950));
-}
-.boot-mark{
-  font-family:'Fraunces', serif;
-  font-size:2.8rem;font-weight:900;color:#fff;
-  letter-spacing:-.02em;
-  animation:bootPulse 1.2s ease-out;
-}
-.boot-mark em{font-style:italic;color:var(--sun-400)}
-@keyframes bootPulse{
-  0%{opacity:0;transform:scale(.92)}
-  60%{opacity:1;transform:scale(1.02)}
-  100%{opacity:1;transform:scale(1)}
-}
-
 /* ===== BRAND MARK ===== */
 .brand{
   font-family:'Fraunces', serif;
@@ -6401,6 +6383,269 @@ body[data-screen="login-screen"]{
   display:none !important;
 }
 
+
+
+
+/* ===== FINAL EDITOR LIBRARY ALIGNMENT PATCH ===== */
+
+/* Keep only one visible Quiz Editor title and make editor match Library width. */
+body[data-screen="editor-screen"]{
+  background:var(--bg) !important;
+}
+
+#editor-screen.screen.active{
+  display:flex !important;
+  width:100% !important;
+}
+
+#editor-screen .app-shell{
+  width:100% !important;
+  min-height:100vh !important;
+  display:flex !important;
+  justify-content:center !important;
+  background:var(--bg) !important;
+}
+
+#editor-screen .app-container{
+  max-width:1440px !important;
+  width:100% !important;
+  min-height:100vh !important;
+  display:grid !important;
+  grid-template-columns:180px minmax(0,1fr) !important;
+  background:var(--panel) !important;
+  margin:0 auto !important;
+  box-shadow:0 0 60px rgba(15,32,80,.05) !important;
+}
+
+/* Remove detached gap between top banner and editor/sidebar area. */
+#editor-screen .topbar{
+  margin:0 !important;
+  border-bottom:0 !important;
+}
+
+#editor-screen .editor-shell{
+  margin:0 !important;
+  padding:0 !important;
+  gap:0 !important;
+  width:100% !important;
+  max-width:none !important;
+  display:grid !important;
+  grid-template-columns:260px minmax(0,1fr) !important;
+  min-height:calc(100vh - 50px) !important;
+  background:var(--panel) !important;
+}
+
+#editor-screen .main-pane{
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+/* Sidebar remains dark, but the QUESTIONS heading must be white. */
+#editor-screen .editor-left{
+  margin:0 !important;
+  padding:10px 8px !important;
+  background:#2f3a4d !important;
+  border-right:1px solid #202938 !important;
+  border-top:0 !important;
+  color:#ffffff !important;
+}
+
+#editor-screen .editor-left,
+#editor-screen .editor-left *,
+#editor-screen .editor-left label{
+  box-sizing:border-box !important;
+}
+
+#editor-screen .editor-left h1,
+#editor-screen .editor-left h2,
+#editor-screen .editor-left h3,
+#editor-screen .editor-left h4,
+#editor-screen .editor-left h5,
+#editor-screen .editor-left h6,
+#editor-screen .editor-left label,
+#editor-screen .editor-left .folder-head-title,
+#editor-screen .editor-left .section-title,
+#editor-screen .editor-left .sidebar-title,
+#editor-screen .editor-left .questions-title,
+#editor-screen .editor-left [class*="title"],
+#editor-screen .editor-left [class*="Title"]{
+  color:#ffffff !important;
+}
+
+/* Question cards are light theme, not dark. */
+#editor-screen .question-list{
+  gap:6px !important;
+  padding:0 !important;
+}
+
+#editor-screen .question-card{
+  background:#ffffff !important;
+  color:var(--ink-900) !important;
+  border:1px solid var(--line) !important;
+  border-left:3px solid transparent !important;
+  border-radius:4px !important;
+  padding:9px 10px 9px 22px !important;
+  box-shadow:none !important;
+}
+
+#editor-screen .question-card::before{
+  left:7px !important;
+  color:var(--ink-300) !important;
+}
+
+#editor-screen .question-card:hover{
+  background:var(--sky-50) !important;
+  border-color:var(--sky-300) !important;
+  border-left-color:var(--sky-300) !important;
+}
+
+#editor-screen .question-card.active{
+  background:linear-gradient(90deg, var(--sky-50), #ffffff) !important;
+  border-color:var(--sky-300) !important;
+  border-left-color:var(--royal-600) !important;
+}
+
+#editor-screen .question-card-num{
+  color:var(--royal-700) !important;
+}
+
+#editor-screen .question-card-preview{
+  color:var(--ink-700) !important;
+}
+
+/* Boxy main editor cards and controls, matching Library UI. */
+#editor-screen .content-wrap{
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:14px 16px !important;
+  background:var(--panel) !important;
+}
+
+#editor-screen .panel,
+#editor-screen .answer-edit,
+#editor-screen .media-drop,
+#editor-screen .option-item,
+#editor-screen input[type=text],
+#editor-screen input[type=number],
+#editor-screen input[type=email],
+#editor-screen input[type=password],
+#editor-screen textarea,
+#editor-screen select,
+#editor-screen .btn,
+#editor-screen .btn.lg,
+#editor-screen .btn.icon,
+#editor-screen .menu-btn,
+#editor-screen .menu-pop,
+#editor-screen .answer-letter,
+#editor-screen .media-preview img,
+#editor-screen .media-preview video,
+#editor-screen .answer-media-preview img,
+#editor-screen .answer-media-preview video{
+  border-radius:4px !important;
+}
+
+#editor-screen .panel{
+  background:#ffffff !important;
+  border:1px solid var(--line) !important;
+  box-shadow:var(--shadow-sm) !important;
+}
+
+#editor-screen .answer-edit,
+#editor-screen .answer-edit[data-color="0"],
+#editor-screen .answer-edit[data-color="1"],
+#editor-screen .answer-edit[data-color="2"],
+#editor-screen .answer-edit[data-color="3"]{
+  background:#ffffff !important;
+  border:1px solid var(--line) !important;
+  box-shadow:none !important;
+}
+
+/* Wider desktop editor content so it no longer feels shorter than Library. */
+@media (min-width:981px){
+  #editor-screen .app-container{
+    max-width:1440px !important;
+    grid-template-columns:180px minmax(0,1fr) !important;
+  }
+
+  #editor-screen .editor-shell{
+    grid-template-columns:260px minmax(0,1fr) !important;
+  }
+}
+
+@media (min-width:1441px){
+  #editor-screen .app-container{
+    max-width:1560px !important;
+  }
+}
+
+@media(max-width:980px){
+  #editor-screen .app-container{
+    grid-template-columns:1fr !important;
+  }
+
+  #editor-screen .editor-shell{
+    grid-template-columns:1fr !important;
+  }
+
+  #editor-screen .editor-left{
+    border-right:none !important;
+    border-bottom:1px solid #202938 !important;
+  }
+}
+
+
+/* ===== FINAL BOOT REMOVAL + EDITOR TIGHT GAP PATCH ===== */
+
+/* Bootup logo/loading screen is intentionally disabled. */
+#boot-screen,
+.boot-screen,
+.boot-mark{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+
+/* Editor top banner and section should touch with no gap. */
+body[data-screen="editor-screen"] #editor-screen,
+body[data-screen="editor-screen"] #editor-screen.screen,
+body[data-screen="editor-screen"] #editor-screen.screen.active{
+  margin:0 !important;
+  padding:0 !important;
+}
+
+#editor-screen .app-shell,
+#editor-screen .app-container,
+#editor-screen .main-pane{
+  margin:0 auto !important;
+  padding:0 !important;
+}
+
+#editor-screen .topbar{
+  margin:0 !important;
+  border-bottom:0 !important;
+}
+
+#editor-screen .editor-shell{
+  margin:0 !important;
+  padding:0 !important;
+  gap:0 !important;
+  border-top:0 !important;
+}
+
+#editor-screen .editor-left,
+#editor-screen .content-wrap{
+  margin-top:0 !important;
+}
+
+#editor-screen .content-wrap{
+  padding-top:14px !important;
+}
+
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -6413,8 +6658,6 @@ if (window.pdfjsLib) {
 </head>
 <body>
 <!-- ============ BOOT ============ -->
-<div id="boot-screen" class="boot-screen">
-  <div class="boot-mark">Tap<em>Blast</em></div>
 </div>
 
 <!-- ============ LOGIN ============ -->
@@ -6546,7 +6789,6 @@ if (window.pdfjsLib) {
     <div class="topbar">
       <div>
         <div class="brand">Tap<em>Blast</em></div>
-        <div class="subtle">Quiz Editor</div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button id="editorBackBtn" type="button" class="btn outline">
@@ -6571,13 +6813,13 @@ if (window.pdfjsLib) {
         <main class="content-wrap editor-question-panel">
           <div class="panel question-editor-card">
             <div class="question-editor-head">
-              <div class="editor-card-title">Question</div>
+              <div class="editor-card-title">Quiz Editor</div>
               <button id="deleteQuestionBtn" type="button" class="question-delete-icon" title="Delete question" aria-label="Delete question">
                 <span class="material-symbols-outlined">delete</span>
               </button>
             </div>
             <div class="field">
-              <label for="questionText">Question</label>
+              <label for="questionText">Quiz Editor</label>
               <textarea id="questionText" placeholder="Type your question…"></textarea>
             </div>
             <div class="field question-media-field">
@@ -6595,7 +6837,7 @@ if (window.pdfjsLib) {
               </div>
             </div>
             <div class="field">
-              <label>Answers (tick the correct one)</label>
+              <label>Answers</label>
               <div id="answersGrid" class="answers-grid"></div>
             </div>
 
