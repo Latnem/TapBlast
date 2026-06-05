@@ -7,7 +7,48 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,800;0,9..144,900;1,9..144,800&family=Material+Symbols+Outlined&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js">
+/* ===== STUDENT MOBILE PHASE FORCE PATCH ===== */
+(function(){
+  window.tapblastForceStudentVisible = function(){
+    try{
+      var join = document.getElementById('student-join-screen');
+      var screen = document.getElementById('student-screen');
+      if(join) join.classList.remove('active');
+      if(screen){
+        screen.classList.remove('hidden');
+        screen.classList.add('active');
+        screen.style.display='flex';
+        screen.style.visibility='visible';
+        screen.style.opacity='1';
+      }
+      document.body.setAttribute('data-screen','student-screen');
+      ['studentPhase','studentQuestion','studentQuestionProgress','studentAnswerGrid','studentResult'].forEach(function(id){
+        var el=document.getElementById(id);
+        if(el){
+          el.classList.remove('hidden');
+          el.style.display='';
+          el.style.visibility='visible';
+          el.style.opacity='1';
+        }
+      });
+    }catch(e){}
+  };
+
+  window.tapblastStudentLoadingFallback = function(message){
+    try{
+      tapblastForceStudentVisible();
+      var phase=document.getElementById('studentPhase');
+      var q=document.getElementById('studentQuestion');
+      var grid=document.getElementById('studentAnswerGrid');
+      if(phase) phase.textContent='Connected';
+      if(q) q.textContent=message || 'Waiting for the question to appear…';
+      if(grid) grid.innerHTML='';
+    }catch(e){}
+  };
+})();
+
+</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
@@ -6725,6 +6766,330 @@ body[data-screen="editor-screen"] #editor-screen.screen.active{
   }
 }
 
+
+/* ===== HOST ANSWERS FIRST + END GAME VISIBILITY PATCH ===== */
+
+/* A/B/C/D answer distribution stays first/left; CURRENT SCORES stays second/right. */
+#hostQuestionPanel .answer-dist{
+  display:grid !important;
+  grid-template-columns:minmax(300px, 1fr) minmax(260px, .7fr) !important;
+  grid-auto-flow:row !important;
+  gap:10px !important;
+  align-items:start !important;
+}
+
+/* Ensure answer rows occupy the first column. */
+#hostQuestionPanel .answer-dist > .dist-row{
+  grid-column:1 !important;
+  min-width:0 !important;
+  padding:8px 10px !important;
+  border-radius:4px !important;
+}
+
+/* Ensure CURRENT SCORES occupies the second column. */
+#hostQuestionPanel .answer-dist > .host-inline-board{
+  grid-column:2 !important;
+  grid-row:1 / span 4 !important;
+  align-self:start !important;
+  margin-top:0 !important;
+  border-radius:4px !important;
+  max-height:235px !important;
+  overflow:auto !important;
+}
+
+/* Make End Game easier to find in host controls. */
+#host-screen button[id*="end" i],
+#host-screen button[data-action*="end" i],
+#host-screen .control-row button:last-child{
+  background:var(--danger) !important;
+  color:#ffffff !important;
+  border-color:var(--danger) !important;
+  font-weight:800 !important;
+}
+
+/* Keep stacked only on smaller screens. */
+@media(max-width:760px){
+  #hostQuestionPanel .answer-dist{
+    grid-template-columns:1fr !important;
+  }
+
+  #hostQuestionPanel .answer-dist > .dist-row,
+  #hostQuestionPanel .answer-dist > .host-inline-board{
+    grid-column:1 !important;
+    grid-row:auto !important;
+    max-height:none !important;
+  }
+}
+
+
+/* ===== MOBILE STUDENT GAMEPLAY STABILITY PATCH ===== */
+@media(max-width:760px){
+  #student-screen.screen.active,
+  #student-screen.student-shell{
+    display:flex !important;
+    flex-direction:column !important;
+    min-height:100dvh !important;
+    height:auto !important;
+    overflow:auto !important;
+  }
+
+  #student-screen .student-top{
+    flex:0 0 auto !important;
+    position:sticky !important;
+    top:0 !important;
+    z-index:20 !important;
+  }
+
+  #student-screen .student-main{
+    width:100% !important;
+    max-width:none !important;
+    padding:12px !important;
+    margin:0 !important;
+    flex:1 1 auto !important;
+  }
+
+  #student-screen .student-card{
+    width:100% !important;
+    min-height:auto !important;
+    padding:16px !important;
+    margin:0 !important;
+  }
+
+  #student-screen .student-question{
+    display:block !important;
+    visibility:visible !important;
+    font-size:1.15rem !important;
+    line-height:1.35 !important;
+    margin:8px 0 0 !important;
+    min-height:1.5em !important;
+  }
+
+  #student-screen .student-media img,
+  #student-screen .student-media video{
+    max-height:34vh !important;
+    width:auto !important;
+    max-width:100% !important;
+    object-fit:contain !important;
+  }
+
+  #student-screen .student-grid{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:10px !important;
+    margin-top:14px !important;
+  }
+
+  #student-screen .student-answer{
+    min-height:76px !important;
+    padding-top:12px !important;
+    padding-bottom:12px !important;
+  }
+}
+
+
+/* ===== STUDENT MOBILE QUESTION VISIBILITY HARD FIX ===== */
+@media(max-width:900px){
+  body[data-screen="student-screen"] #student-screen{
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    min-height:100dvh !important;
+    height:auto !important;
+    overflow-y:auto !important;
+  }
+
+  body[data-screen="student-screen"] #student-join-screen{
+    display:none !important;
+  }
+
+  #student-screen .student-main,
+  #student-screen .student-card,
+  #studentQuestion,
+  #studentAnswerGrid{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+  }
+
+  #studentAnswerGrid.student-grid,
+  #student-screen .student-grid{
+    display:grid !important;
+  }
+
+  #studentQuestion{
+    min-height:38px !important;
+    color:var(--ink-900) !important;
+    word-break:break-word !important;
+  }
+
+  #studentQuestion:empty::after{
+    content:"Waiting for question...";
+    color:var(--ink-500);
+    font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+    font-size:1rem;
+    font-weight:800;
+  }
+}
+
+
+/* ===== JOINING STUCK SAFETY PATCH ===== */
+#studentJoinBtn:disabled{
+  opacity:.75 !important;
+}
+body[data-screen="student-screen"] #student-screen{
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+body[data-screen="student-screen"] #student-join-screen{
+  display:none !important;
+}
+
+
+/* ===== TEACHER HOST LIGHT QUESTION CARD + NEXT BUTTON PATCH ===== */
+
+/* Half-light / half-dark host gameplay:
+   keep the full host background dark, but make question/media/control card white. */
+#host-screen .host-shell{
+  background:
+    radial-gradient(900px 520px at 12% 10%, rgba(59,130,246,.20), transparent 62%),
+    linear-gradient(160deg, var(--royal-950) 0%, var(--royal-900) 52%, var(--royal-800) 100%) !important;
+}
+
+#hostQuestionPanel.host-card,
+#host-screen .host-card{
+  background:#ffffff !important;
+  color:var(--ink-900) !important;
+  border:1px solid var(--line) !important;
+  border-radius:4px !important;
+  box-shadow:0 14px 34px rgba(15,32,80,.22) !important;
+  backdrop-filter:none !important;
+}
+
+#hostQuestionPanel .phase-tag,
+#host-screen .host-card .phase-tag{
+  color:var(--royal-700) !important;
+}
+
+#hostQuestionPanel .host-question,
+#host-screen .host-card .host-question{
+  color:var(--ink-900) !important;
+}
+
+#hostQuestionPanel .host-question.countdown,
+#host-screen .host-card .host-question.countdown{
+  color:var(--sun-500) !important;
+}
+
+#hostQuestionPanel .host-media,
+#host-screen .host-card .host-media{
+  background:#ffffff !important;
+}
+
+#hostQuestionPanel .host-media img,
+#hostQuestionPanel .host-media video,
+#host-screen .host-card .host-media img,
+#host-screen .host-card .host-media video{
+  background:#ffffff !important;
+  border:1px solid var(--line) !important;
+  border-radius:4px !important;
+  box-shadow:0 4px 12px rgba(15,32,80,.12) !important;
+}
+
+#hostQuestionPanel .notice,
+#host-screen .host-card .notice{
+  color:var(--ink-500) !important;
+}
+
+#hostQuestionPanel .stat,
+#host-screen .host-card .stat{
+  background:var(--panel-soft) !important;
+  border:1px solid var(--line) !important;
+  border-radius:4px !important;
+}
+
+#hostQuestionPanel .stat .n,
+#host-screen .host-card .stat .n{
+  color:var(--royal-700) !important;
+}
+
+#hostQuestionPanel .stat-label,
+#host-screen .host-card .stat-label{
+  color:var(--ink-500) !important;
+  opacity:1 !important;
+}
+
+/* Make the teacher's next/progress controls easy to find. */
+#host-screen .control-row{
+  gap:10px !important;
+  margin-top:16px !important;
+}
+
+#host-screen .control-row .btn{
+  min-height:34px !important;
+  border-radius:4px !important;
+  font-weight:800 !important;
+}
+
+/* First primary/accent action in host controls should read visually as the Next Question action. */
+#host-screen .control-row .btn.primary,
+#host-screen .control-row .btn.accent,
+#host-screen button[id*="next" i],
+#host-screen button[data-action*="next" i],
+#host-screen button[id*="continue" i],
+#host-screen button[data-action*="continue" i]{
+  background:linear-gradient(180deg, var(--sun-400), var(--sun-500)) !important;
+  color:var(--royal-950) !important;
+  border:1px solid var(--sun-500) !important;
+  box-shadow:none !important;
+}
+
+/* End Game remains red and separate from Next Question. */
+#host-screen button[id*="end" i],
+#host-screen button[data-action*="end" i]{
+  background:var(--danger) !important;
+  color:#ffffff !important;
+  border-color:var(--danger) !important;
+}
+
+/* Button helper label for very small control sets when the existing text is vague. */
+#host-screen .control-row button:not([id*="end" i]):first-child{
+  font-weight:900 !important;
+}
+
+
+/* ===== STUDENT BLANK SCREEN HARD CSS FIX ===== */
+body[data-screen="student-screen"] #student-screen{
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+body[data-screen="student-screen"] #student-join-screen{
+  display:none !important;
+}
+#student-screen #studentQuestion,
+#student-screen #studentAnswerGrid,
+#student-screen .student-card,
+#student-screen .student-main{
+  visibility:visible !important;
+  opacity:1 !important;
+}
+#student-screen #studentQuestion:empty::after{
+  content:"Loading question...";
+  color:var(--ink-500);
+}
+@media(max-width:900px){
+  #student-screen{
+    min-height:100dvh !important;
+    height:auto !important;
+    overflow-y:auto !important;
+  }
+  #student-screen .student-grid{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+  }
+}
+
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -6984,7 +7349,7 @@ if (window.pdfjsLib) {
             <button id="startQuizBtn" type="button" class="btn accent lg">
               <span class="material-symbols-outlined">play_arrow</span>Start Quiz
             </button>
-            <button id="endLobbyBtn" type="button" class="btn outline">End</button>
+            <button id="endLobbyBtn" type="button" class="btn outline">End Game</button>
           </div>
         </div>
       </div>
@@ -7007,7 +7372,7 @@ if (window.pdfjsLib) {
             <button id="resumeBtn" type="button" class="btn accent hidden">
               <span class="material-symbols-outlined">play_arrow</span>Resume
             </button>
-            <button id="showResultsBtn" type="button" class="btn accent hidden">Show Results</button>
+            <button id="showResultsBtn" type="button" class="btn accent hidden">Show Results / Next</button>
             <button id="nextQuestionBtn" type="button" class="btn accent hidden">Next Question</button>
             <button id="endGameBtn" type="button" class="btn outline" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)">End Game</button>
           </div>
@@ -8790,46 +9155,135 @@ function renderAvatarPicker(){
 }
 async function studentJoin(){
   const code=($('studentCode').value||'').replace(/\D/g,'').slice(0,6);
+  currentStudentRoomCode=code;
   const name=($('studentName').value||'').trim().slice(0,20);
   const btn=$('studentJoinBtn');
   $('studentJoinError').textContent='';
+
   if(!code){ $('studentJoinError').textContent='Enter the 6-digit room code'; return; }
   if(!name){ $('studentJoinError').textContent='Pick a nickname'; return; }
+
+  btn.disabled=true;
+  const oldBtnText=btn.innerHTML;
+  btn.innerHTML='<span class="material-symbols-outlined">hourglass_top</span>Joining…';
+
   try{
-    if(btn){ btn.disabled=true; btn.style.opacity='.7'; }
-    showScreen('student-screen');
-    $('studentPhase').textContent='Joining…';
-    $('studentTopName').textContent=name;
-    const phaseSnap=await roomRef(code).child('phase').once('value');
-    if(!phaseSnap.exists()){ $('studentJoinError').textContent='Room not found. Check the code and try again.'; showScreen('student-join-screen'); return; }
-    if(phaseSnap.val()==='ended'){ $('studentJoinError').textContent='This game has ended.'; showScreen('student-join-screen'); return; }
+    const ref=roomRef(code);
+
+    const roomSnap=await ref.once('value');
+    if(!roomSnap.exists()){
+      $('studentJoinError').textContent='Room not found. Check the code and try again.';
+      return;
+    }
+
+    const room=roomSnap.val()||{};
+    if(room.phase==='ended'){
+      $('studentJoinError').textContent='This game has ended.';
+      return;
+    }
+
     studentPlayerId=sessionStorage.getItem('tapblast_player_'+code)||db.ref().push().key;
     sessionStorage.setItem('tapblast_player_'+code, studentPlayerId);
-    const payload={name,score:0,joinedAt:Date.now(),currentAnswerIndex:null,answerAt:0,answerQ:-1,lastDelta:0,streak:0,streakMsg:'',avatarEmoji:selectedStudentAvatar,avatarColor:selectedStudentColor};
-    await roomRef(code).child('players').child(studentPlayerId).update(payload);
+
+    const existingPlayer=(room.players||{})[studentPlayerId]||{};
+    const newPlayerData={
+      name:name,
+      joinedAt: existingPlayer.joinedAt || Date.now(),
+      lastSeenAt: firebase.database.ServerValue.TIMESTAMP,
+      currentAnswerIndex: (typeof existingPlayer.currentAnswerIndex==='number') ? existingPlayer.currentAnswerIndex : null,
+      currentTypedAnswer: (typeof existingPlayer.currentTypedAnswer==='string') ? existingPlayer.currentTypedAnswer : null,
+      answerAt: existingPlayer.answerAt || 0,
+      answerQ: (typeof existingPlayer.answerQ==='number') ? existingPlayer.answerQ : -1,
+      lastDelta: existingPlayer.lastDelta || 0,
+      streak: existingPlayer.streak || 0,
+      streakMsg: existingPlayer.streakMsg || '',
+      score: (typeof existingPlayer.score==='number') ? existingPlayer.score : 0,
+      avatarEmoji:selectedStudentAvatar,
+      avatarColor:selectedStudentColor
+    };
+
+    await ref.child('players').child(studentPlayerId).update(newPlayerData);
+
+    const playerSnap=await ref.child('players').child(studentPlayerId).once('value');
+    if(!playerSnap.exists()){
+      $('studentJoinError').textContent='Join failed. Try again.';
+      return;
+    }
+
+    showScreen('student-screen');
+    $('studentPhase').textContent='Connected';
+    $('studentQuestion').textContent='Loading game…';
+    $('studentAnswerGrid').innerHTML='';
+    $('studentTopName').textContent=name;
+    $('studentTopScore').textContent=String(newPlayerData.score||0);
+
+    const freshSnap=await ref.once('value');
+    const freshRoom=freshSnap.val()||room;
+    const freshPlayer=((freshRoom.players||{})[studentPlayerId])||newPlayerData;
+    try{ renderStudent(freshRoom,freshPlayer); }catch(renderErr){ console.error('Immediate render failed:', renderErr); }
+
     startStudentListener(code);
+
+    setTimeout(async()=>{
+      try{
+        const currentText=($('studentQuestion').textContent||'').toLowerCase();
+        const phaseText=($('studentPhase').textContent||'').toLowerCase();
+        if(currentText.includes('loading') || phaseText.includes('joining') || phaseText.includes('connected')){
+          const retrySnap=await ref.once('value');
+          if(retrySnap.exists()){
+            const retryRoom=retrySnap.val()||{};
+            const retryPlayer=((retryRoom.players||{})[studentPlayerId]);
+            if(retryPlayer) renderStudent(retryRoom,retryPlayer);
+          }
+        }
+      }catch(e){ console.error('Mobile retry render failed:', e); }
+    }, 2000);
+
   }catch(err){
-    console.error(err);
-    $('studentJoinError').textContent='Could not join. Check connection and try again.';
+    console.error('Join failed:', err);
+    $('studentJoinError').textContent='Could not join. Check internet connection and try again.';
+    showScreen('student-join-screen');
   }finally{
-    if(btn){ btn.disabled=false; btn.style.opacity=''; }
+    btn.disabled=false;
+    btn.innerHTML=oldBtnText;
   }
 }
 function cleanupStudent(){ if(studentRoomUnsub){studentRoomUnsub(); studentRoomUnsub=null;} }
 function startStudentListener(code){
   cleanupStudent();
+  currentStudentRoomCode=code;
   const ref=roomRef(code);
   try{ ref.keepSynced(true); }catch(e){}
+
   const cb=snap=>{
-    if(!snap.exists()) return renderStudentEnded('Game ended');
-    const room=snap.val();
-    const player=(room.players||{})[studentPlayerId];
-    if(!player) return renderStudentEnded('Game ended');
-    renderStudent(room,player);
+    try{
+      if(!snap.exists()) return renderStudentEnded('Game ended');
+      const room=snap.val()||{};
+      studentLastRoomSnapshot=room;
+      const player=(room.players||{})[studentPlayerId];
+      if(!player){
+        $('studentPhase').textContent='Connected';
+        $('studentQuestion').textContent='Player profile is loading…';
+        $('studentAnswerGrid').innerHTML='';
+        return;
+      }
+      showScreen('student-screen');
+      renderStudent(room,player);
+    }catch(err){
+      console.error('Student listener render failed:', err);
+      showScreen('student-screen');
+      $('studentPhase').textContent='Connected';
+      $('studentQuestion').textContent='Game data is loading. Refresh if it stays here.';
+      $('studentAnswerGrid').innerHTML='';
+    }
   };
-  ref.on('value',cb);
+
+  ref.on('value',cb,err=>{
+    console.error('Student listener connection failed:', err);
+    $('studentPhase').textContent='Connection issue';
+    $('studentQuestion').textContent='Could not connect to the live game. Refresh and rejoin.';
+  });
   studentRoomUnsub=()=>ref.off('value',cb);
-  showScreen('student-screen');
 }
 function renderStudentEnded(msg){
   showScreen('student-screen');
@@ -8889,10 +9343,12 @@ async function saveWaitingStudentProfile(){
 }
 
 function renderStudent(room,player){
+  if(window.tapblastForceStudentVisible) tapblastForceStudentVisible();
   $('studentTopName').textContent=player.name||'Player';
   $('studentTopScore').textContent=String(player.score||0);
   if($('studentQuestionProgress')) $('studentQuestionProgress').textContent='';
   if($('studentWaitingProfile')) $('studentWaitingProfile').classList.add('hidden');
+  $('studentWaitingProfile').style.display='none';
 
   // Lobby/waiting state: student has joined, but host has NOT started the quiz yet.
   // Do not show question or answer boxes during lobby.
@@ -8903,6 +9359,7 @@ function renderStudent(room,player){
     $('studentAnswerGrid').innerHTML='';
     $('studentResult').textContent='';
     $('studentWaitingProfile').classList.remove('hidden');
+    $('studentWaitingProfile').style.display='block';
     renderWaitingProfilePicker(player);
     return;
   }
@@ -8937,7 +9394,7 @@ function renderStudent(room,player){
     $('studentResult').textContent='';
     return;
   }
-  const activeQuestionPhases=['question_media','question_answers','paused','locked','answer_results'];
+  const activeQuestionPhases=['question','answers','question_media','question_answers','paused','locked','answer_results','results'];
   if(!activeQuestionPhases.includes(room.phase)){
     $('studentPhase').textContent='Waiting';
     $('studentMedia').innerHTML='';
@@ -8947,9 +9404,17 @@ function renderStudent(room,player){
     return;
   }
 
-  const q=room.quiz.questions[room.currentQ];
-  if(!q) return;
-  const totalQuestions=(room.quiz.questions||[]).length;
+  const questions=(room.quiz&&Array.isArray(room.quiz.questions))?room.quiz.questions:[];
+  const q=questions[room.currentQ];
+  if(!q){
+    $('studentPhase').textContent='Connected';
+    $('studentMedia').innerHTML='';
+    $('studentQuestion').textContent='You are in. Waiting for the next question to load…';
+    $('studentAnswerGrid').innerHTML='';
+    $('studentResult').textContent='';
+    return;
+  }
+  const totalQuestions=questions.length;
   if($('studentQuestionProgress')) $('studentQuestionProgress').textContent='Question '+((room.currentQ||0)+1)+'/'+totalQuestions;
   const isTypeQuestion=(q.type==='type');
   $('studentQuestion').textContent=q.text||'';
@@ -8967,13 +9432,13 @@ function renderStudent(room,player){
   $('studentPhase').textContent=
     room.phase==='paused'?'Paused':
     room.phase==='locked'?"Time's up — results coming":
-    room.phase==='answer_results'?(player.lastCorrect?'Correct!':'Answer revealed'):
+    (room.phase==='answer_results'||room.phase==='results')?(player.lastCorrect?'Correct!':'Answer revealed'):
     isTypeQuestion?'Type your answer':'Tap your answer';
 
   const hasAnswered = playerAnsweredCurrent(player,room);
 
   if(isTypeQuestion){
-    if(room.phase==='question_answers' && !hasAnswered){
+    if((room.phase==='question_answers'||room.phase==='answers'||room.phase==='question') && !hasAnswered){
       $('studentAnswerGrid').innerHTML=`
         <div class="student-type-wrap">
           <input id="studentTypedAnswer" type="text" placeholder="Type answer" autocomplete="off">
@@ -8982,7 +9447,7 @@ function renderStudent(room,player){
       $('studentTypeSubmit').onclick=async()=>{
         const value=($('studentTypedAnswer')?.value||'').trim();
         if(!value) return;
-        await roomRef(room.code).child('players').child(studentPlayerId).update({currentTypedAnswer:value,answerAt:firebase.database.ServerValue.TIMESTAMP,answerQ:room.currentQ,currentAnswerIndex:null});
+        await roomRef(room.code||currentStudentRoomCode).child('players').child(studentPlayerId).update({currentTypedAnswer:value,answerAt:firebase.database.ServerValue.TIMESTAMP,answerQ:room.currentQ,currentAnswerIndex:null});
       };
       $('studentTypedAnswer').addEventListener('keydown',e=>{
         if(e.key==='Enter') $('studentTypeSubmit').click();
@@ -8990,7 +9455,7 @@ function renderStudent(room,player){
     }else{
       $('studentAnswerGrid').innerHTML=`
         <div class="student-type-result">
-          ${room.phase==='answer_results'?`Correct answer: <strong>${esc(q.typeAnswer||'')}</strong>`:(hasAnswered?'Answer locked':'')}
+          ${(room.phase==='answer_results'||room.phase==='results')?`Correct answer: <strong>${esc(q.typeAnswer||'')}</strong>`:(hasAnswered?'Answer locked':'')}
         </div>`;
     }
   }else{
@@ -8998,7 +9463,7 @@ function renderStudent(room,player){
     $('studentAnswerGrid').innerHTML=answers.map((a,idx)=>{
       const isSelected = hasAnswered && player.currentAnswerIndex===a.index;
       const isLocked = room.phase!=='question_answers' || hasAnswered;
-      const isReveal=room.phase==='answer_results';
+      const isReveal=(room.phase==='answer_results'||room.phase==='results');
       const isSelectedCorrect=isReveal && isSelected && a.index===q.correctIndex;
       const isWrongSelected=isReveal && isSelected && a.index!==q.correctIndex;
       const isCorrectAnswer=isReveal && a.index===q.correctIndex;
@@ -9012,15 +9477,15 @@ function renderStudent(room,player){
       if(room.phase!=='question_answers') return;
       if(hasAnswered) return;
       const idx=parseInt(btn.dataset.answerIndex,10);
-      await roomRef(room.code).child('players').child(studentPlayerId).update({currentAnswerIndex:idx,currentTypedAnswer:null,answerAt:firebase.database.ServerValue.TIMESTAMP,answerQ:room.currentQ});
+      await roomRef(room.code||currentStudentRoomCode).child('players').child(studentPlayerId).update({currentAnswerIndex:idx,currentTypedAnswer:null,answerAt:firebase.database.ServerValue.TIMESTAMP,answerQ:room.currentQ});
     });
   }
 
-  if(room.phase==='answer_results'){
+  if((room.phase==='answer_results'||room.phase==='results')){
     const deltaText='+'+Number(player.lastDelta||0)+' pts';
     $('studentResult').textContent=deltaText+(player.streakMsg?' '+player.streakMsg:'');
   }else{
-    $('studentResult').textContent=hasAnswered && room.phase==='question_answers' ? 'Locked in — waiting for others' : '';
+    $('studentResult').textContent=hasAnswered && (room.phase==='question_answers'||room.phase==='answers'||room.phase==='question') ? 'Locked in — waiting for others' : '';
   }
 }
 
@@ -9895,5 +10360,266 @@ document.addEventListener('keydown', e=>{
 
 
 
+<script>
+
+/* ===== HARD STUDENT FALLBACK RENDERER - FIX BLANK GAME SCREEN ===== */
+(function(){
+  const firebaseConfig = {
+  apiKey: "AIzaSyCjh16vsvzWmt9dUkH6O4brRf8hfTOhzYA",
+  authDomain: "tapblast-8e13a.firebaseapp.com",
+  projectId: "tapblast-8e13a",
+  databaseURL: "https://tapblast-8e13a-default-rtdb.firebaseio.com",
+  storageBucket: "tapblast-8e13a.firebasestorage.app",
+  messagingSenderId: "1069456061706",
+  appId: "1:1069456061706:web:0fc650dfac4de09de536f3",
+  measurementId: "G-QLTZFNLH2X"
+};
+  if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  var tbDb = firebase.database();
+  var TB_ROOT = "tapblast_clean_v1";
+  var $tb = function(id){ return document.getElementById(id); };
+  var colors = ['blue','green','orange','yellow'];
+  var shapes = ['A','B','C','D'];
+  var fallbackRoomCode = null;
+  var fallbackPlayerId = null;
+  var fallbackUnsub = null;
+
+  function esc(v){
+    return String(v == null ? '' : v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
+  }
+  function ref(code){ return tbDb.ref(TB_ROOT + '/rooms/' + code); }
+  function forceStudentScreen(){
+    var join=$tb('student-join-screen');
+    var screen=$tb('student-screen');
+    if(join){ join.classList.remove('active'); join.style.display='none'; }
+    if(screen){
+      screen.classList.add('active');
+      screen.classList.remove('hidden');
+      screen.style.display='flex';
+      screen.style.visibility='visible';
+      screen.style.opacity='1';
+    }
+    document.body.setAttribute('data-screen','student-screen');
+  }
+  function getQuestions(room){
+    if(room && room.quiz && Array.isArray(room.quiz.questions)) return room.quiz.questions;
+    if(room && room.quiz && room.quiz.questions && typeof room.quiz.questions==='object') return Object.values(room.quiz.questions);
+    if(room && Array.isArray(room.questions)) return room.questions;
+    return [];
+  }
+  function getQuestion(room){
+    var qs=getQuestions(room);
+    var idx=Number(room.currentQ || room.currentQuestion || room.questionIndex || 0);
+    return { q: qs[idx], idx: idx, total: qs.length };
+  }
+  function getAnswers(room,q){
+    var raw = Array.isArray(q.answers) ? q.answers.map(function(a,i){return Object.assign({index:i}, a);}) : [];
+    var order = Array.isArray(room.answerOrder) ? room.answerOrder : null;
+    if(order && order.length){
+      return order.map(function(i){ return raw[i]; }).filter(Boolean);
+    }
+    return raw;
+  }
+  function answered(player, room){
+    var idx=Number(room.currentQ || room.currentQuestion || room.questionIndex || 0);
+    return player && player.answerQ===idx && (typeof player.currentAnswerIndex==='number' || typeof player.currentTypedAnswer==='string');
+  }
+  async function submitAnswer(room, answerIndex){
+    if(!fallbackRoomCode || !fallbackPlayerId) return;
+    var idx=Number(room.currentQ || room.currentQuestion || room.questionIndex || 0);
+    await ref(fallbackRoomCode).child('players').child(fallbackPlayerId).update({
+      currentAnswerIndex: answerIndex,
+      currentTypedAnswer: null,
+      answerAt: firebase.database.ServerValue.TIMESTAMP,
+      answerQ: idx,
+      lastSeenAt: firebase.database.ServerValue.TIMESTAMP
+    });
+  }
+  function render(room, player){
+    forceStudentScreen();
+    if($tb('studentTopName')) $tb('studentTopName').textContent = (player && player.name) || 'Player';
+    if($tb('studentTopScore')) $tb('studentTopScore').textContent = String((player && player.score) || 0);
+
+    var phase = room.phase || 'lobby';
+    var active = ['question','answers','question_answers','question_media','paused','locked','answer_results','results'].indexOf(phase) >= 0;
+    if(phase==='lobby'){
+      if($tb('studentPhase')) $tb('studentPhase').textContent='Waiting Room';
+      if($tb('studentQuestionProgress')) $tb('studentQuestionProgress').textContent='';
+      if($tb('studentMedia')) $tb('studentMedia').innerHTML='';
+      if($tb('studentQuestion')) $tb('studentQuestion').textContent='You are in! Waiting for the host to start.';
+      if($tb('studentAnswerGrid')) $tb('studentAnswerGrid').innerHTML='';
+      if($tb('studentResult')) $tb('studentResult').textContent='';
+      return;
+    }
+    if(phase==='leaderboard'){
+      if($tb('studentPhase')) $tb('studentPhase').textContent='Scoreboard';
+      if($tb('studentQuestionProgress')) $tb('studentQuestionProgress').textContent='';
+      if($tb('studentMedia')) $tb('studentMedia').innerHTML='';
+      if($tb('studentQuestion')) $tb('studentQuestion').textContent='Get ready for the next question…';
+      if($tb('studentAnswerGrid')) $tb('studentAnswerGrid').innerHTML='';
+      if($tb('studentResult')) $tb('studentResult').textContent=(player && player.lastDelta)?('+'+player.lastDelta+' pts'):'';
+      return;
+    }
+    if(phase==='final' || phase==='ended'){
+      if($tb('studentPhase')) $tb('studentPhase').textContent='Game ended';
+      if($tb('studentQuestion')) $tb('studentQuestion').textContent='Final score: '+String((player&&player.score)||0);
+      if($tb('studentAnswerGrid')) $tb('studentAnswerGrid').innerHTML='';
+      return;
+    }
+    if(!active){
+      if($tb('studentPhase')) $tb('studentPhase').textContent='Connected';
+      if($tb('studentQuestion')) $tb('studentQuestion').textContent='Waiting for question…';
+      if($tb('studentAnswerGrid')) $tb('studentAnswerGrid').innerHTML='';
+      return;
+    }
+
+    var data=getQuestion(room);
+    var q=data.q;
+    if(!q){
+      if($tb('studentPhase')) $tb('studentPhase').textContent='Connected';
+      if($tb('studentQuestionProgress')) $tb('studentQuestionProgress').textContent='';
+      if($tb('studentMedia')) $tb('studentMedia').innerHTML='';
+      if($tb('studentQuestion')) $tb('studentQuestion').textContent='Question is loading…';
+      if($tb('studentAnswerGrid')) $tb('studentAnswerGrid').innerHTML='';
+      return;
+    }
+
+    if($tb('studentPhase')) $tb('studentPhase').textContent = (phase==='answer_results'||phase==='results') ? 'Answer revealed' : (phase==='locked' ? "Time's up" : 'Choose your answer');
+    if($tb('studentQuestionProgress')) $tb('studentQuestionProgress').textContent = 'Question ' + (data.idx+1) + '/' + Math.max(data.total, data.idx+1);
+    if($tb('studentQuestion')) $tb('studentQuestion').textContent = q.text || q.question || '';
+    if($tb('studentMedia')){
+      if(q.media && q.media.dataUrl){
+        $tb('studentMedia').innerHTML = q.media.type==='video' ? '<video src="'+q.media.dataUrl+'" controls playsinline></video>' : '<img src="'+q.media.dataUrl+'" alt="">';
+      }else{
+        $tb('studentMedia').innerHTML='';
+      }
+    }
+
+    var hasAnswered = answered(player, room);
+    var reveal = phase==='answer_results' || phase==='results';
+    var canAnswer = (phase==='question_answers' || phase==='answers' || phase==='question') && !hasAnswered;
+    var answers=getAnswers(room,q);
+    var grid=$tb('studentAnswerGrid');
+    if(!grid) return;
+
+    if(q.type==='type'){
+      if(canAnswer){
+        grid.innerHTML='<div class="student-type-wrap"><input id="tbFallbackTypedAnswer" type="text" placeholder="Type answer" autocomplete="off"><button id="tbFallbackTypeSubmit" type="button" class="btn accent">Submit</button></div>';
+        var btn=$tb('tbFallbackTypeSubmit');
+        if(btn) btn.onclick=async function(){
+          var val=($tb('tbFallbackTypedAnswer')&&$tb('tbFallbackTypedAnswer').value||'').trim();
+          if(!val) return;
+          await ref(fallbackRoomCode).child('players').child(fallbackPlayerId).update({
+            currentTypedAnswer: val,
+            currentAnswerIndex: null,
+            answerAt: firebase.database.ServerValue.TIMESTAMP,
+            answerQ: data.idx,
+            lastSeenAt: firebase.database.ServerValue.TIMESTAMP
+          });
+        };
+      }else{
+        grid.innerHTML='<div class="student-type-result">'+(reveal?'Correct answer: <strong>'+esc(q.typeAnswer||'')+'</strong>':(hasAnswered?'Answer locked':'Waiting...'))+'</div>';
+      }
+      return;
+    }
+
+    if(!answers.length){
+      grid.innerHTML='<div class="student-type-result">Answers are loading…</div>';
+      return;
+    }
+
+    grid.innerHTML = answers.map(function(a,pos){
+      var selected = hasAnswered && player.currentAnswerIndex===a.index;
+      var correct = reveal && a.index===q.correctIndex;
+      var wrong = reveal && selected && a.index!==q.correctIndex;
+      var media = '';
+      if(a.media && a.media.dataUrl){
+        media = '<span class="thumb">'+(a.media.type==='video'?'<video src="'+a.media.dataUrl+'" muted playsinline></video>':'<img src="'+a.media.dataUrl+'">')+'</span>';
+      }
+      return '<button type="button" class="student-answer '+colors[pos%4]+' '+(selected?'selected ':'')+(canAnswer?'':'locked ') +(correct?'correct-answer-reveal ':'')+(wrong?'wrong-selected ':'')+'" data-fallback-answer="'+a.index+'"><span class="student-answer-shape">'+shapes[pos]+'</span>'+media+(a.text?'<span class="label-text">'+esc(a.text)+'</span>':'')+'</button>';
+    }).join('');
+
+    grid.querySelectorAll('[data-fallback-answer]').forEach(function(btn){
+      btn.onclick=function(){
+        if(!canAnswer) return;
+        submitAnswer(room, parseInt(btn.getAttribute('data-fallback-answer'),10));
+      };
+    });
+
+    if($tb('studentResult')) $tb('studentResult').textContent = hasAnswered && !reveal ? 'Locked in — waiting for others' : (reveal && player && player.lastDelta ? '+'+player.lastDelta+' pts' : '');
+  }
+  async function joinNow(){
+    var codeEl=$tb('studentCode'), nameEl=$tb('studentName'), err=$tb('studentJoinError'), btn=$tb('studentJoinBtn');
+    var code=(codeEl&&codeEl.value||'').replace(/\D/g,'').slice(0,6);
+    var name=(nameEl&&nameEl.value||'').trim().slice(0,20);
+    fallbackRoomCode=code;
+    if(err) err.textContent='';
+    if(!code){ if(err) err.textContent='Enter the 6-digit room code'; return; }
+    if(!name){ if(err) err.textContent='Pick a nickname'; return; }
+    if(btn) btn.disabled=true;
+    try{
+      var r=ref(code);
+      var snap=await r.once('value');
+      if(!snap.exists()){ if(err) err.textContent='Room not found. Check the code and try again.'; return; }
+      var room=snap.val()||{};
+      fallbackPlayerId=sessionStorage.getItem('tapblast_player_'+code) || tbDb.ref().push().key;
+      sessionStorage.setItem('tapblast_player_'+code, fallbackPlayerId);
+      var existing=(room.players||{})[fallbackPlayerId]||{};
+      var playerData={
+        name:name,
+        score: typeof existing.score==='number'?existing.score:0,
+        joinedAt: existing.joinedAt || Date.now(),
+        lastSeenAt: firebase.database.ServerValue.TIMESTAMP,
+        currentAnswerIndex: typeof existing.currentAnswerIndex==='number'?existing.currentAnswerIndex:null,
+        currentTypedAnswer: typeof existing.currentTypedAnswer==='string'?existing.currentTypedAnswer:null,
+        answerAt: existing.answerAt || 0,
+        answerQ: typeof existing.answerQ==='number'?existing.answerQ:-1,
+        lastDelta: existing.lastDelta || 0,
+        streak: existing.streak || 0,
+        streakMsg: existing.streakMsg || '',
+        avatarEmoji: window.selectedStudentAvatar || '🐶',
+        avatarColor: window.selectedStudentColor || '#2563eb'
+      };
+      await r.child('players').child(fallbackPlayerId).update(playerData);
+      forceStudentScreen();
+      if($tb('studentPhase')) $tb('studentPhase').textContent='Connected';
+      if($tb('studentQuestion')) $tb('studentQuestion').textContent='Loading game…';
+
+      var fresh=await r.once('value');
+      var freshRoom=fresh.val()||room;
+      var freshPlayer=((freshRoom.players||{})[fallbackPlayerId])||playerData;
+      render(freshRoom,freshPlayer);
+
+      if(fallbackUnsub) fallbackUnsub();
+      var cb=function(s){
+        if(!s.exists()) return;
+        var rm=s.val()||{};
+        var pl=((rm.players||{})[fallbackPlayerId]);
+        if(pl) render(rm,pl);
+      };
+      r.on('value',cb);
+      fallbackUnsub=function(){r.off('value',cb);};
+    }catch(e){
+      console.error('Fallback join failed', e);
+      if(err) err.textContent='Could not join. Refresh and try again.';
+      var join=$tb('student-join-screen'); if(join){join.classList.add('active'); join.style.display='flex';}
+      var screen=$tb('student-screen'); if(screen){screen.classList.remove('active'); screen.style.display='none';}
+      document.body.setAttribute('data-screen','student-join-screen');
+    }finally{
+      if(btn) btn.disabled=false;
+    }
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    var btn=$tb('studentJoinBtn');
+    if(btn){
+      btn.onclick=function(e){ e.preventDefault(); joinNow(); };
+    }
+    var code=$tb('studentCode'), name=$tb('studentName');
+    if(code) code.addEventListener('keydown',function(e){ if(e.key==='Enter') joinNow(); });
+    if(name) name.addEventListener('keydown',function(e){ if(e.key==='Enter') joinNow(); });
+  });
+})();
+
+</script>
 </body>
 </html>
