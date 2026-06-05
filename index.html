@@ -1302,19 +1302,29 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   }
 
   #library-screen .library-sidebar #newFolderBtn{
-    width:28px !important;
-    height:28px !important;
-    min-height:28px !important;
-    padding:0 !important;
-    border-radius:8px !important;
-    background:#435168 !important;
-    color:#ffffff !important;
-    border:1px solid #64748b !important;
+    width:100% !important;
+    height:auto !important;
+    min-height:30px !important;
+    padding:5px 7px !important;
+    gap:6px !important;
+    border-radius:4px !important;
+    background:transparent !important;
+    color:#dbe4f0 !important;
+    border:1px solid transparent !important;
+    border-left:3px solid transparent !important;
     box-shadow:none !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    font-size:.78rem !important;
+    font-weight:600 !important;
+    line-height:1.15 !important;
+    white-space:nowrap !important;
   }
 
   #library-screen .library-sidebar #newFolderBtn:hover{
-    background:#5c6d89 !important;
+    background:#435168 !important;
+    color:#ffffff !important;
   }
 
   #library-screen .library-sidebar .folder-list{
@@ -1477,9 +1487,19 @@ textarea{resize:vertical;min-height:92px;font-family:inherit}
   }
 
   #library-screen .library-sidebar #newFolderBtn{
-    background:#435168 !important;
-    color:#ffffff !important;
-    border:1px solid #64748b !important;
+    width:100% !important;
+    min-height:36px !important;
+    padding:8px 10px !important;
+    gap:8px !important;
+    border-radius:4px !important;
+    background:transparent !important;
+    color:#dbe4f0 !important;
+    border:1px solid transparent !important;
+    box-shadow:none !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    white-space:nowrap !important;
   }
 }
 
@@ -5616,6 +5636,658 @@ body.android-desktop-mode #hostLobby.lobby-combined{
   }
 }
 
+
+
+/* ===== DASHBOARD OPTION 2 TRANSFORM — CLEAN SIDEBAR + CREATE TILE ===== */
+body[data-screen="library-screen"] .app-shell{background:#edf2f8;}
+body[data-screen="library-screen"] .app-container.dashboard-v2-shell{
+  grid-template-columns:220px minmax(0,1fr) !important;
+  max-width:1440px;
+  background:#f7f9fd;
+}
+.dashboard-sidebar{
+  background:#2f3a4d !important;
+  background-image:none !important;
+  color:#e7edf7 !important;
+  padding:18px 12px !important;
+  border-right:0 !important;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+.sidebar-brand-block{padding:4px 10px 18px;border-bottom:1px solid rgba(255,255,255,.10);margin-bottom:12px;}
+.sidebar-brand{font-size:1.55rem !important;color:#fff;}
+.sidebar-brand em{color:#facc15;}
+.sidebar-subtle{color:#bac7da !important;font-size:.72rem !important;opacity:1 !important;}
+.sidebar-nav{flex:1;min-height:0;overflow:auto;padding-top:4px;}
+.dashboard-sidebar .folder-list{gap:3px !important;}
+.dashboard-sidebar .folder-item{
+  min-height:38px !important;
+  padding:8px 9px !important;
+  gap:9px !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#dce6f4 !important;
+  border:0 !important;
+  border-left:4px solid transparent !important;
+  box-shadow:none !important;
+}
+.dashboard-sidebar .folder-item:hover{background:#414f67 !important;color:#fff !important;}
+.dashboard-sidebar .folder-item.active{
+  background:#52627d !important;
+  color:#fff !important;
+  border-left-color:#93c5fd !important;
+}
+.dashboard-sidebar .folder-clean-icon,
+.dashboard-sidebar .folder-item .material-symbols-outlined{
+  display:inline-flex !important;
+  color:#b9c7dc !important;
+  font-size:20px !important;
+  width:22px !important;
+  height:22px !important;
+  align-items:center !important;
+  justify-content:center !important;
+  background:transparent !important;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+  border-radius:0 !important;
+}
+.dashboard-sidebar .folder-item.active .material-symbols-outlined{color:#fff !important;}
+.dashboard-sidebar .folder-name{font-size:.88rem !important;font-weight:700 !important;color:inherit !important;}
+.dashboard-sidebar .folder-count{
+  margin-left:auto !important;
+  background:rgba(255,255,255,.12) !important;
+  color:#fff !important;
+  border:0 !important;
+  border-radius:999px !important;
+  min-width:24px !important;
+  height:20px !important;
+  padding:0 7px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:.69rem !important;
+  font-weight:800 !important;
+}
+.sidebar-folder-tools{border-top:1px solid rgba(255,255,255,.10);padding-top:10px;margin-top:10px;display:flex;flex-direction:column;gap:4px;}
+.sidebar-tool-btn,.sidebar-settings-btn{
+  display:flex;align-items:center;gap:10px;width:100%;min-height:38px;
+  padding:9px 10px;border:0;background:transparent;color:#dce6f4;
+  cursor:pointer;font-weight:700;font-size:.86rem;border-radius:0;text-align:left;
+}
+.sidebar-tool-btn:hover,.sidebar-settings-btn:hover{background:#414f67;color:#fff;}
+.sidebar-tool-btn.active{background:#52627d;color:#fff;}
+.sidebar-tool-btn .material-symbols-outlined,.sidebar-settings-btn .material-symbols-outlined{font-size:20px;width:22px;text-align:center;}
+.sidebar-tool-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.sidebar-bottom{border-top:1px solid rgba(255,255,255,.10);padding-top:10px;margin-top:10px;}
+.dashboard-main{background:#f7f9fd;}
+.dashboard-topbar{
+  min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 26px;background:#fff;color:var(--ink-900);border-bottom:1px solid var(--line);
+  box-shadow:0 1px 0 rgba(15,32,80,.02);
+}
+.dashboard-title-wrap{display:flex;align-items:center;gap:14px;min-width:0;}
+.dashboard-top-actions{display:flex;align-items:center;gap:12px;}
+.teacher-name{font-weight:700;font-size:.9rem;color:var(--ink-500);}
+.logout-icon-btn{
+  display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;
+  border:0;background:transparent;color:var(--ink-500);cursor:pointer;border-radius:0;
+}
+.logout-icon-btn:hover{color:var(--danger);background:#fee2e2;}
+.logout-icon-btn .material-symbols-outlined{font-size:22px;}
+.dashboard-content{padding:22px 26px !important;}
+.dashboard-utility-row{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.dashboard-search{max-width:380px;flex:0 0 380px;min-width:280px;}
+.dashboard-search input{height:42px;border-radius:0 !important;}
+.pdf-import-clean{border-radius:0 !important;height:42px;}
+.dashboard-quiz-grid{grid-template-columns:repeat(auto-fill,minmax(245px,1fr)) !important;gap:16px !important;align-items:stretch;}
+.create-quiz-tile{
+  min-height:252px;background:#fff;border:2px dashed #b8c5db;color:var(--royal-700);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  cursor:pointer;box-shadow:var(--shadow-sm);border-radius:0;text-align:center;padding:18px;
+  transition:background .15s,border-color .15s,transform .15s,box-shadow .15s;
+}
+.create-quiz-tile:hover{background:var(--sky-50);border-color:var(--sky-500);transform:translateY(-2px);box-shadow:var(--shadow);}
+.create-quiz-tile .material-symbols-outlined{font-size:48px;color:var(--royal-600);}
+.create-quiz-tile strong{font-size:1.08rem;font-weight:800;color:var(--ink-900);}
+.create-quiz-tile small{font-size:.82rem;color:var(--ink-500);font-weight:600;}
+body[data-screen="library-screen"] .quiz-card{border-radius:0 !important;box-shadow:var(--shadow-sm);}
+body[data-screen="library-screen"] .quiz-card:hover{transform:translateY(-2px);}
+body[data-screen="library-screen"] .quiz-cover{border-radius:0 !important;height:112px !important;}
+body[data-screen="library-screen"] .quiz-actions-v2{display:grid;grid-template-columns:1fr 38px;gap:8px;}
+body[data-screen="library-screen"] .host-card-btn{height:36px !important;border-radius:0 !important;font-size:.86rem !important;}
+body[data-screen="library-screen"] .card-more-btn,
+body[data-screen="library-screen"] .clean-card-menu{
+  border:0 !important;background:transparent !important;box-shadow:none !important;border-radius:0 !important;color:var(--ink-500) !important;
+}
+body[data-screen="library-screen"] .card-more-btn:hover,
+body[data-screen="library-screen"] .clean-card-menu:hover{background:var(--line-soft) !important;color:var(--ink-900) !important;}
+body[data-screen="library-screen"] .quiz-head .menu-wrap{display:none;}
+body[data-screen="library-screen"] .menu-pop{border-radius:0 !important;bottom:42px !important;}
+body[data-screen="library-screen"] .library-header-title{font-size:1.72rem;margin-bottom:2px;}
+body[data-screen="library-screen"] .library-header-meta{margin-bottom:0;color:var(--ink-500);}
+/* remove old compact/dark overrides that hid sidebar icons */
+@media(min-width:981px){
+  #library-screen .library-sidebar .folder-item .material-symbols-outlined,
+  #library-screen .library-sidebar .folder-item .icon{display:inline-flex !important;}
+  #library-screen .app-container.dashboard-v2-shell{grid-template-columns:220px minmax(0,1fr) !important;}
+}
+@media(max-width:980px){
+  #library-screen .app-container.dashboard-v2-shell{display:block;}
+  #library-screen .dashboard-sidebar{position:fixed;top:0;left:0;width:min(84vw,320px);height:100vh;z-index:120;transform:translateX(-105%);transition:transform .22s ease;box-shadow:0 20px 50px rgba(0,0,0,.25);}
+  body.folders-open #library-screen .dashboard-sidebar{transform:translateX(0);}
+  .sidebar-close{position:absolute;top:12px;right:10px;color:#fff !important;}
+  .dashboard-topbar{padding:14px 16px;}
+  .dashboard-utility-row{flex-direction:column;align-items:stretch;}
+  .dashboard-search{max-width:none;min-width:0;}
+  .dashboard-quiz-grid{grid-template-columns:1fr !important;}
+}
+
+
+
+/* ===== TRUE OPTION 2 DASHBOARD — source of truth, old library design suppressed ===== */
+body[data-screen="library-screen"] #library-screen .app-shell{background:#eef3fb !important;}
+body[data-screen="library-screen"] #library-screen .app-container.dashboard-v2-shell{
+  display:grid !important;
+  grid-template-columns:215px minmax(0,1fr) !important;
+  max-width:1500px !important;
+  width:100% !important;
+  min-height:100vh !important;
+  background:#fff !important;
+  box-shadow:0 16px 44px rgba(15,32,80,.12) !important;
+  border:1px solid #dbe3f1 !important;
+  margin:0 auto !important;
+}
+body[data-screen="library-screen"] #library-screen .dashboard-sidebar{
+  position:static !important;
+  transform:none !important;
+  width:auto !important;
+  max-width:none !important;
+  height:auto !important;
+  min-height:100vh !important;
+  z-index:auto !important;
+  background:#2f3a4d !important;
+  color:#dbe4f0 !important;
+  border:0 !important;
+  box-shadow:none !important;
+  padding:16px 12px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:10px !important;
+  overflow:auto !important;
+}
+body[data-screen="library-screen"] #library-screen .sidebar-brand-block{padding:6px !important;margin-bottom:8px !important;}
+body[data-screen="library-screen"] #library-screen .sidebar-brand{font-size:24px !important;color:#fff !important;}
+body[data-screen="library-screen"] #library-screen .sidebar-subtle{font-size:11px !important;color:#9fb0ca !important;opacity:1 !important;text-transform:uppercase !important;letter-spacing:.08em !important;font-weight:900 !important;}
+body[data-screen="library-screen"] #library-screen .folder-head{display:none !important;}
+body[data-screen="library-screen"] #library-screen .folder-list{gap:0 !important;}
+body[data-screen="library-screen"] #library-screen .folder-item,
+body[data-screen="library-screen"] #library-screen .sidebar-tool-btn,
+body[data-screen="library-screen"] #library-screen .sidebar-settings-btn{
+  display:flex !important;
+  align-items:center !important;
+  gap:9px !important;
+  min-height:34px !important;
+  padding:8px 9px !important;
+  color:#dbe4f0 !important;
+  background:transparent !important;
+  border:0 !important;
+  border-left:3px solid transparent !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  cursor:pointer !important;
+  font-weight:700 !important;
+  font-size:13px !important;
+  line-height:1.15 !important;
+  text-align:left !important;
+}
+body[data-screen="library-screen"] #library-screen .folder-item:hover,
+body[data-screen="library-screen"] #library-screen .sidebar-tool-btn:hover,
+body[data-screen="library-screen"] #library-screen .sidebar-settings-btn:hover{background:#435168 !important;color:#fff !important;}
+body[data-screen="library-screen"] #library-screen .folder-item.active{background:#52627d !important;color:#fff !important;border-left-color:#93c5fd !important;}
+body[data-screen="library-screen"] #library-screen .folder-item .material-symbols-outlined,
+body[data-screen="library-screen"] #library-screen .folder-item .icon,
+body[data-screen="library-screen"] #library-screen .sidebar-tool-btn .material-symbols-outlined,
+body[data-screen="library-screen"] #library-screen .sidebar-settings-btn .material-symbols-outlined{
+  display:inline-flex !important;
+  width:18px !important;
+  height:18px !important;
+  min-width:18px !important;
+  align-items:center !important;
+  justify-content:center !important;
+  color:currentColor !important;
+  background:transparent !important;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+  border-radius:0 !important;
+  font-size:18px !important;
+}
+body[data-screen="library-screen"] #library-screen .folder-name{color:inherit !important;font-weight:700 !important;min-width:0 !important;overflow:hidden !important;text-overflow:ellipsis !important;white-space:nowrap !important;}
+body[data-screen="library-screen"] #library-screen .folder-count{margin-left:auto !important;font-size:11px !important;background:#64748b !important;color:#fff !important;padding:2px 7px !important;border:0 !important;border-radius:0 !important;min-width:auto !important;height:auto !important;}
+body[data-screen="library-screen"] #library-screen .folder-item.active .folder-count{background:#64748b !important;color:#fff !important;}
+body[data-screen="library-screen"] #library-screen .folder-item [data-folder-menu]{display:none !important;}
+body[data-screen="library-screen"] #library-screen .sidebar-folder-tools{border-top:1px solid #49566c !important;padding-top:10px !important;margin-top:10px !important;gap:0 !important;}
+body[data-screen="library-screen"] #library-screen .sidebar-bottom{margin-top:auto !important;border-top:1px solid #49566c !important;padding-top:10px !important;display:block !important;}
+body[data-screen="library-screen"] #library-screen .topbar{display:none !important;}
+body[data-screen="library-screen"] #library-screen .dashboard-main{background:#f7f9fe !important;display:flex !important;flex-direction:column !important;min-width:0 !important;}
+body[data-screen="library-screen"] #library-screen .dashboard-topbar{
+  height:62px !important;
+  min-height:62px !important;
+  background:#0f2050 !important;
+  color:#fff !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:16px !important;
+  padding:0 22px !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+body[data-screen="library-screen"] #library-screen .library-header-title{font-family:'Fraunces',serif !important;font-weight:900 !important;font-size:22px !important;color:#fff !important;margin:0 !important;letter-spacing:-.02em !important;}
+body[data-screen="library-screen"] #library-screen .library-header-meta{display:none !important;}
+body[data-screen="library-screen"] #library-screen .teacher-name{color:#fff !important;font-weight:800 !important;}
+body[data-screen="library-screen"] #library-screen .logout-icon-btn{width:34px !important;height:34px !important;background:transparent !important;color:#fff !important;border:0 !important;border-radius:0 !important;box-shadow:none !important;}
+body[data-screen="library-screen"] #library-screen .logout-icon-btn:hover{background:rgba(255,255,255,.12) !important;color:#facc15 !important;}
+body[data-screen="library-screen"] #library-screen .dashboard-content{padding:22px !important;background:#f7f9fe !important;overflow:auto !important;}
+body[data-screen="library-screen"] #library-screen .option2-hero{
+  background:#fff !important;
+  border:1px solid #e3e8f4 !important;
+  border-radius:0 !important;
+  padding:20px !important;
+  margin-bottom:16px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:16px !important;
+  box-shadow:none !important;
+}
+body[data-screen="library-screen"] #library-screen .option2-hero h1{margin:0 !important;font-size:26px !important;letter-spacing:-.03em !important;color:#0b1431 !important;font-weight:900 !important;}
+body[data-screen="library-screen"] #library-screen .option2-hero p{margin:6px 0 0 !important;color:#55618a !important;font-weight:600 !important;}
+body[data-screen="library-screen"] #library-screen .option2-import-btn{height:42px !important;border-radius:0 !important;background:#2447a8 !important;color:#fff !important;box-shadow:none !important;white-space:nowrap !important;}
+body[data-screen="library-screen"] #library-screen .option2-search-row{display:flex !important;gap:10px !important;margin-bottom:18px !important;align-items:stretch !important;}
+body[data-screen="library-screen"] #library-screen .dashboard-search{width:380px !important;max-width:50% !important;min-width:280px !important;flex:0 0 380px !important;}
+body[data-screen="library-screen"] #library-screen .dashboard-search input{width:100% !important;height:46px !important;border:1px solid #cbd5e1 !important;background:#fff !important;border-radius:0 !important;padding:13px 14px 13px 42px !important;font-weight:700 !important;outline:none !important;box-shadow:none !important;}
+body[data-screen="library-screen"] #library-screen .option2-grid{display:grid !important;grid-template-columns:repeat(auto-fill,minmax(230px,1fr)) !important;gap:14px !important;align-items:stretch !important;overflow:visible !important;}
+body[data-screen="library-screen"] #library-screen .option2-create-card{
+  border:2px dashed #93c5fd !important;
+  background:#f8fbff !important;
+  min-height:217px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex-direction:column !important;
+  gap:10px !important;
+  color:#1e3a8a !important;
+  font-weight:900 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  padding:18px !important;
+}
+body[data-screen="library-screen"] #library-screen .option2-create-card:hover{background:#eff6ff !important;border-color:#3b82f6 !important;transform:none !important;box-shadow:none !important;}
+body[data-screen="library-screen"] #library-screen .option2-plus{font-size:42px !important;line-height:1 !important;color:#1e3a8a !important;}
+body[data-screen="library-screen"] #library-screen .option2-create-card strong{font-size:1rem !important;color:#1e3a8a !important;font-weight:900 !important;}
+body[data-screen="library-screen"] #library-screen .option2-quiz-card{background:#fff !important;border:1px solid #e3e8f4 !important;border-radius:0 !important;box-shadow:0 2px 8px rgba(15,32,80,.04) !important;overflow:visible !important;display:flex !important;flex-direction:column !important;transition:none !important;}
+body[data-screen="library-screen"] #library-screen .option2-quiz-card:hover{transform:none !important;border-color:#e3e8f4 !important;box-shadow:0 2px 8px rgba(15,32,80,.04) !important;}
+body[data-screen="library-screen"] #library-screen .option2-cover{height:92px !important;background:linear-gradient(135deg,#dbeafe,#f8fbff) !important;display:flex !important;align-items:center !important;justify-content:center !important;color:#60a5fa !important;border-radius:0 !important;overflow:hidden !important;}
+body[data-screen="library-screen"] #library-screen .option2-cover img{width:100% !important;height:100% !important;object-fit:cover !important;}
+body[data-screen="library-screen"] #library-screen .option2-cover .material-symbols-outlined{font-size:34px !important;color:#60a5fa !important;}
+body[data-screen="library-screen"] #library-screen .option2-card-body{padding:13px !important;display:flex !important;flex-direction:column !important;flex:1 !important;}
+body[data-screen="library-screen"] #library-screen .option2-card-title{font-size:1rem !important;line-height:1.25 !important;margin:0 0 7px !important;color:#0b1431 !important;font-weight:900 !important;letter-spacing:0 !important;}
+body[data-screen="library-screen"] #library-screen .option2-meta{font-size:12px !important;color:#55618a !important;font-weight:700 !important;margin-bottom:12px !important;display:flex !important;gap:6px !important;align-items:center !important;}
+body[data-screen="library-screen"] #library-screen .option2-actions{display:grid !important;grid-template-columns:1fr 38px !important;gap:8px !important;margin-top:auto !important;position:relative !important;overflow:visible !important;}
+body[data-screen="library-screen"] #library-screen .option2-host-btn{height:34px !important;border-radius:0 !important;border:0 !important;background:#2447a8 !important;color:#fff !important;font-weight:900 !important;box-shadow:none !important;padding:8px !important;}
+body[data-screen="library-screen"] #library-screen .option2-more-btn{width:38px !important;height:34px !important;border-radius:0 !important;border:0 !important;background:#eef3fb !important;color:#17224a !important;box-shadow:none !important;padding:0 !important;}
+body[data-screen="library-screen"] #library-screen .option2-more-btn:hover{background:#dbe4f0 !important;color:#0b1431 !important;}
+body[data-screen="library-screen"] #library-screen .option2-menu-wrap{position:relative !important;overflow:visible !important;}
+body[data-screen="library-screen"] #library-screen .option2-menu-pop{position:absolute !important;right:0 !important;bottom:40px !important;top:auto !important;min-width:190px !important;background:#fff !important;border:1px solid #cbd5e1 !important;border-radius:0 !important;padding:6px !important;z-index:999999 !important;box-shadow:0 14px 34px rgba(15,32,80,.18) !important;}
+body[data-screen="library-screen"] #library-screen .option2-menu-pop button{border-radius:0 !important;background:#fff !important;color:#17224a !important;font-size:.88rem !important;font-weight:800 !important;}
+body[data-screen="library-screen"] #library-screen .option2-menu-pop button:hover{background:#eef3fb !important;color:#1e3a8a !important;}
+body[data-screen="library-screen"] #library-screen .library-empty{border-radius:0 !important;background:#fff !important;}
+@media(max-width:980px){
+  body[data-screen="library-screen"] #library-screen .app-container.dashboard-v2-shell{display:block !important;border:0 !important;}
+  body[data-screen="library-screen"] #library-screen .dashboard-sidebar{position:fixed !important;top:0 !important;left:0 !important;width:min(84vw,320px) !important;height:100vh !important;z-index:5000 !important;transform:translateX(-105%) !important;box-shadow:0 20px 60px rgba(0,0,0,.28) !important;transition:transform .22s ease !important;}
+  body.folders-open[data-screen="library-screen"] #library-screen .dashboard-sidebar{transform:translateX(0) !important;}
+  body[data-screen="library-screen"] #library-screen .mobile-menu-btn{display:inline-flex !important;}
+  body[data-screen="library-screen"] #library-screen .option2-hero{align-items:flex-start !important;flex-direction:column !important;}
+  body[data-screen="library-screen"] #library-screen .option2-grid{grid-template-columns:1fr !important;}
+}
+
+
+/* ===== FINAL SMALL REQUESTED FIXES ONLY ===== */
+body[data-screen="library-screen"] #library-screen #newFolderBtn{
+  border:0 !important;
+  border-left:0 !important;
+  box-shadow:none !important;
+  white-space:nowrap !important;
+  width:100% !important;
+}
+body[data-screen="library-screen"] #library-screen #newFolderBtn span{
+  white-space:nowrap !important;
+}
+body[data-screen="library-screen"] #library-screen #newFolderBtn .material-symbols-outlined,
+body[data-screen="library-screen"] #library-screen #newFolderBtn .icon,
+body[data-screen="library-screen"] #library-screen #newFolderBtn svg{
+  border:0 !important;
+  box-shadow:none !important;
+  background:transparent !important;
+}
+body[data-screen="library-screen"] #library-screen .quiz-placeholder-svg{
+  width:44px !important;
+  height:44px !important;
+  display:block !important;
+}
+body[data-screen="library-screen"] #library-screen .option2-cover .quiz-placeholder-svg{
+  width:42px !important;
+  height:42px !important;
+}
+body[data-screen="library-screen"] #library-screen .logout-icon-btn{
+  border:0 !important;
+  box-shadow:none !important;
+  background:transparent !important;
+}
+@media(max-width:980px){
+  body[data-screen="library-screen"] #library-screen .dashboard-search{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    flex:1 1 100% !important;
+  }
+}
+
+
+#library-screen .library-sidebar #newFolderBtn .material-symbols-outlined,
+#library-screen .library-sidebar #newFolderBtn .icon,
+#library-screen .library-sidebar #newFolderBtn svg{
+  width:20px !important;
+  height:20px !important;
+  min-width:20px !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:inherit !important;
+}
+
+
+/* ===== OPTION 2 WHITE CARD STRUCTURE ===== */
+body[data-screen="library-screen"] #library-screen .dashboard-content{
+  padding:22px !important;
+  background:#f7f9fe !important;
+  overflow:auto !important;
+}
+
+body[data-screen="library-screen"] #library-screen .option2-hero{
+  background:#fff !important;
+  border:1px solid #e3e8f4 !important;
+  border-radius:0 !important;
+  padding:20px !important;
+  margin-bottom:0 !important;
+  display:block !important;
+  box-shadow:none !important;
+}
+
+body[data-screen="library-screen"] #library-screen .option2-hero-head{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:16px !important;
+  margin-bottom:18px !important;
+}
+
+body[data-screen="library-screen"] #library-screen .option2-hero h1{
+  margin:0 !important;
+  font-size:26px !important;
+  letter-spacing:-.03em !important;
+  color:#0b1431 !important;
+  font-weight:900 !important;
+}
+
+body[data-screen="library-screen"] #library-screen .option2-hero p{
+  margin:6px 0 0 !important;
+  color:#55618a !important;
+  font-weight:600 !important;
+}
+
+body[data-screen="library-screen"] #library-screen .option2-import-btn{
+  height:42px !important;
+  border-radius:0 !important;
+  background:#2447a8 !important;
+  color:#fff !important;
+  box-shadow:none !important;
+  white-space:nowrap !important;
+}
+
+body[data-screen="library-screen"] #library-screen .option2-search-row{
+  display:flex !important;
+  gap:10px !important;
+  margin:0 0 18px !important;
+  align-items:stretch !important;
+}
+
+body[data-screen="library-screen"] #library-screen .dashboard-search{
+  width:380px !important;
+  max-width:50% !important;
+  min-width:280px !important;
+  flex:0 0 380px !important;
+}
+
+body[data-screen="library-screen"] #library-screen .dashboard-search input{
+  width:100% !important;
+  height:46px !important;
+  border:1px solid #cbd5e1 !important;
+  background:#fff !important;
+  border-radius:0 !important;
+  padding:13px 14px 13px 42px !important;
+  font-weight:700 !important;
+  outline:none !important;
+  box-shadow:none !important;
+}
+
+body[data-screen="library-screen"] #library-screen .option2-grid{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr)) !important;
+  gap:14px !important;
+  align-items:stretch !important;
+  overflow:visible !important;
+}
+
+body[data-screen="library-screen"] #library-screen .library-empty{
+  border:0 !important;
+  background:#fff !important;
+  box-shadow:none !important;
+  min-height:220px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex-direction:column !important;
+  padding:32px !important;
+  color:#55618a !important;
+}
+body[data-screen="library-screen"] #library-screen .library-empty p,
+body[data-screen="library-screen"] #library-screen .library-empty .empty-subtitle,
+body[data-screen="library-screen"] #library-screen .library-empty .subtle{
+  display:none !important;
+}
+
+/* Visible SVG logout icon */
+@media(max-width:700px){
+  body[data-screen="library-screen"] #library-screen .option2-hero-head{
+    flex-direction:column !important;
+    align-items:flex-start !important;
+  }
+  body[data-screen="library-screen"] #library-screen .dashboard-search{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    flex:1 1 100% !important;
+  }
+}
+
+
+/* ===== UNIFORM QUIZ GRID CARDS ===== */
+body[data-screen="library-screen"] #library-screen .option2-grid{
+  grid-auto-rows:1fr !important;
+  align-items:stretch !important;
+}
+
+body[data-screen="library-screen"] #library-screen .quiz-card,
+body[data-screen="library-screen"] #library-screen .create-quiz-card,
+body[data-screen="library-screen"] #library-screen .dashboard-create-card,
+body[data-screen="library-screen"] #library-screen [data-create-quiz],
+body[data-screen="library-screen"] #library-screen #createQuizCard{
+  min-height:248px !important;
+  height:100% !important;
+  display:flex !important;
+  flex-direction:column !important;
+  box-sizing:border-box !important;
+}
+
+body[data-screen="library-screen"] #library-screen .create-quiz-card,
+body[data-screen="library-screen"] #library-screen .dashboard-create-card,
+body[data-screen="library-screen"] #library-screen [data-create-quiz],
+body[data-screen="library-screen"] #library-screen #createQuizCard{
+  justify-content:center !important;
+  align-items:center !important;
+}
+
+/* Empty state should occupy the quiz grid area only when truly empty. */
+body[data-screen="library-screen"] #library-screen .library-empty.hidden{
+  display:none !important;
+}
+
+
+
+
+/* ===== STABLE EMPTY INLINE + WHITE LOGOUT ===== */
+#library-screen #emptyState{
+  display:none !important;
+}
+#library-screen .empty-inline-message{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  color:#64748b;
+  font-weight:800;
+  font-size:1rem;
+  padding:0 4px;
+  min-height:0;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+}
+#library-screen #logoutBtn.logout-icon-only,
+.logout-icon-only{
+  width:30px !important;
+  height:30px !important;
+  min-width:30px !important;
+  padding:0 !important;
+  margin-left:8px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:#ffffff !important;
+  cursor:pointer !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  line-height:1 !important;
+  overflow:visible !important;
+}
+#library-screen #logoutBtn.logout-icon-only svg,
+.logout-icon-only svg,
+.logout-svg{
+  display:block !important;
+  width:24px !important;
+  height:24px !important;
+  min-width:24px !important;
+  color:#ffffff !important;
+  stroke:#ffffff !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  overflow:visible !important;
+}
+#library-screen #logoutBtn.logout-icon-only:hover,
+.logout-icon-only:hover{
+  opacity:.82 !important;
+}
+
+
+
+/* ===== COMPACT CONTENT-FIT MOBILE SIDEBAR ===== */
+@media(max-width:980px){
+  /* Drawer should fit the sidebar content, not stretch full height with empty middle space. */
+  #library-screen .left-pane,
+  #library-screen .library-sidebar{
+    width:240px !important;
+    max-width:72vw !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:calc(100vh - 28px) !important;
+    padding:12px 8px !important;
+    overflow-y:auto !important;
+    display:block !important;
+  }
+
+  /* Override older mobile rule that forced full screen height. */
+  body.folders-open #library-screen .left-pane{
+    transform:translateX(0) !important;
+  }
+
+  #library-screen .folder-head{
+    margin:0 0 8px !important;
+    padding:0 !important;
+  }
+
+  #library-screen #newFolderBtn{
+    width:100% !important;
+    min-height:34px !important;
+    padding:7px 9px !important;
+    margin:0 0 8px !important;
+    border-radius:4px !important;
+    white-space:nowrap !important;
+  }
+
+  #library-screen .folder-list{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:4px !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+  }
+
+  #library-screen .folder-item{
+    width:100% !important;
+    min-height:34px !important;
+    padding:7px 9px !important;
+    gap:8px !important;
+    border-radius:4px !important;
+    white-space:nowrap !important;
+  }
+
+  #library-screen .folder-name{
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+  }
+
+  #library-screen .folder-count{
+    margin-left:auto !important;
+  }
+
+  /* Settings should sit naturally after folders, not be pushed far to bottom by flex/100vh. */
+  #library-screen .sidebar-settings,
+  #library-screen [data-sidebar-settings],
+  #library-screen .settings-row,
+  #library-screen #settingsBtn{
+    margin-top:8px !important;
+  }
+}
+
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -5659,74 +6331,95 @@ if (window.pdfjsLib) {
 <div id="library-screen" class="screen">
   <div id="foldersBackdrop" class="folders-backdrop"></div>
   <div class="app-shell">
-    <div class="app-container">
-      <aside class="left-pane library-sidebar">
-        <div class="folder-head">
-          <div class="folder-head-title">Library</div>
-          <div class="folder-head-actions">
-            <button id="newFolderBtn" class="btn icon ghost" type="button" title="New folder">
-              <span class="material-symbols-outlined">create_new_folder</span>
-            </button>
-            <button id="folderManageBtn" class="btn icon ghost" type="button" title="Manage folders" aria-label="Manage folders">
-              <svg viewBox="0 0 24 24" aria-hidden="true" class="folder-manage-svg">
-                <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z"/>
-                <path d="M14 7l3 3"/>
-              </svg>
-            </button>
-            <button id="mobileFoldersCloseBtn" class="btn icon ghost mobile-only" type="button" title="Close folders" aria-label="Close folders">
-              <span class="material-symbols-outlined">close</span>
-            </button>
-          </div>
+    <div class="app-container dashboard-v2-shell">
+      <aside class="left-pane library-sidebar dashboard-sidebar">
+        <div class="sidebar-brand-block">
+          <div class="brand sidebar-brand">Tap<em>Blast</em></div>
+          <div class="subtle sidebar-subtle">Teacher Dashboard</div>
         </div>
-        <div id="folderList" class="folder-list"></div>
+
+        <button id="mobileFoldersCloseBtn" class="btn icon ghost mobile-only sidebar-close" type="button" title="Close folders" aria-label="Close folders">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <nav class="sidebar-nav" aria-label="Quiz folders">
+          <div id="folderList" class="folder-list"></div>
+        </nav>
+
+        <div class="sidebar-folder-tools">
+          <button id="newFolderBtn" class="sidebar-tool-btn" type="button" title="New folder">
+            <span class="material-symbols-outlined">create_new_folder</span>
+            <span>New Folder</span>
+          </button>
+          <button id="folderManageBtn" class="sidebar-tool-btn" type="button" title="Manage folders" aria-label="Manage folders">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="folder-manage-svg">
+              <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z"/>
+              <path d="M14 7l3 3"/>
+            </svg>
+            <span>Manage Folders</span>
+          </button>
+        </div>
+
+        <div class="sidebar-bottom">
+          <button id="settingsBtn" type="button" class="sidebar-settings-btn" title="Settings" aria-label="Settings">
+            <span class="material-symbols-outlined">settings</span>
+            <span>Settings</span>
+          </button>
+        </div>
       </aside>
-      <section class="main-pane">
-        <div class="topbar">
-          <div>
-            <div class="brand">Tap<em>Blast</em></div>
-            <div class="subtle">Teacher Dashboard</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+
+      <section class="main-pane dashboard-main">
+        <div class="dashboard-topbar">
+          <div class="dashboard-title-wrap">
             <button id="mobileFoldersBtn" class="mobile-menu-btn" type="button" aria-label="Open folders">
-  <span></span>
-  <span></span>
-  <span></span>
-</button>
-            <div id="teacherName" style="font-weight:600;font-size:.92rem;opacity:.9"></div>
-            <button id="settingsBtn" type="button" class="btn icon outline" title="Settings" aria-label="Settings">
-              <svg viewBox="0 0 24 24" aria-hidden="true" class="settings-gear-svg">
-                <circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/>
-                <path d="M19.4 15a1.7 1.7 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.82-.33 1.7 1.7 0 0 0-1 1.52V21a2 2 0 1 1-4 0v-.08a1.7 1.7 0 0 0-1-1.52 1.7 1.7 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .33-1.82 1.7 1.7 0 0 0-1.52-1H3a2 2 0 1 1 0-4h.08a1.7 1.7 0 0 0 1.52-1 1.7 1.7 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.82.33h.01a1.7 1.7 0 0 0 1-1.52V3a2 2 0 1 1 4 0v.08a1.7 1.7 0 0 0 1 1.52h.01a1.7 1.7 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.33 1.82v.01a1.7 1.7 0 0 0 1.52 1H21a2 2 0 1 1 0 4h-.08a1.7 1.7 0 0 0-1.52 1z"
-                  fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+              <span></span><span></span><span></span>
             </button>
-            <button id="newQuizBtn" type="button" class="btn accent">
-              <span class="material-symbols-outlined">add</span>New Quiz
-            </button>
-            <button id="logoutBtn" type="button" class="btn outline">Logout</button>
-          </div>
-        </div>
-        <div class="content-wrap">
-          <div id="libraryHeaderTitle" class="library-header-title">All Quizzes</div>
-          <div id="librarySubtle" class="library-header-meta"></div>
-          <div class="search-row">
-
-<button class="btn accent" id="pdf-import-btn" type="button">
-  <span class="material-symbols-outlined">picture_as_pdf</span>
-  Import PDF
-</button>
-<input type="file" id="pdf-upload-input" accept="application/pdf,.pdf" style="display:none">
-
-            <div class="search-wrap">
-              <span class="material-symbols-outlined">search</span>
-              <input id="searchInput" type="text" placeholder="Search quizzes…">
+            <div>
+              <div id="libraryHeaderTitle" class="library-header-title">All Quizzes</div>
+              <div id="librarySubtle" class="library-header-meta"></div>
             </div>
           </div>
-          <div id="quizGrid" class="quiz-grid"></div>
+
+          <div class="dashboard-top-actions">
+            <div id="teacherName" class="teacher-name"></div>
+            
+<button id="logoutBtn" class="logout-icon-only" title="Sign Out" aria-label="Sign Out">
+<svg class="logout-svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+<path d="M10 4H4v16h6" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M13 12h8" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+<path d="M17 8l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</button>
+
+          </div>
+        </div>
+
+        <div class="content-wrap dashboard-content">
+          <div class="option2-hero">
+            <div class="option2-hero-head">
+<div>
+              <h1>Choose a quiz</h1>
+              <p>Create a new quiz, or search your library.</p>
+            </div>
+            <button class="btn primary option2-import-btn" id="pdf-import-btn" type="button">
+              <span class="material-symbols-outlined">picture_as_pdf</span>
+              Import PDF
+            </button>
+            <input type="file" id="pdf-upload-input" accept="application/pdf,.pdf" style="display:none">
+            </div>
+<div class="dashboard-utility-row option2-search-row">
+            <div class="search-wrap dashboard-search">
+              <span class="material-symbols-outlined">search</span>
+              <input id="searchInput" type="text" placeholder="Search a quiz">
+            </div>
+          </div>
+
+          <div id="quizGrid" class="quiz-grid dashboard-quiz-grid option2-grid"></div>
           <div id="emptyState" class="library-empty hidden">
-            <span class="material-symbols-outlined">quiz</span>
+            <svg class="quiz-placeholder-svg" viewBox="0 0 64 64" aria-hidden="true"><rect x="18" y="18" width="28" height="28" fill="none" stroke="#60A5FA" stroke-width="4"/><rect x="26" y="26" width="12" height="12" fill="#60A5FA"/></svg>
             <strong>No quizzes here yet</strong>
-            Create your first quiz to get started.
+            
+          </div>
           </div>
         </div>
       </section>
@@ -6607,7 +7300,7 @@ function renderFolders(){
   ];
   $('folderList').innerHTML=items.map(item=>`
     <div class="folder-item ${selectedFolderId===item.id?'active':''}" data-folder-id="${item.id}">
-      <span class="material-symbols-outlined">${item.icon}</span>
+      <span class="material-symbols-outlined folder-clean-icon">${item.icon}</span>
       <div class="folder-name">${esc(item.name)}</div>
       <span class="folder-count">${quizCountForFolder(item.id)}</span>
       ${item.id!=='all'&&item.id!=='unsorted'?`
@@ -6670,42 +7363,48 @@ function filterQuizzes(){
 function renderLibrary(){
   const headerName = selectedFolderId==='all'?'All Quizzes':folderNameById(selectedFolderId==='unsorted'?'':selectedFolderId);
   $('libraryHeaderTitle').textContent = headerName;
-  const filtered=filterQuizzes();
+  const filtered=filterQuizzes().sort((a,b)=>(b.updatedAt||b.createdAt||0)-(a.updatedAt||a.createdAt||0));
   const countText = filtered.length===1 ? '1 quiz' : `${filtered.length} quizzes`;
   $('librarySubtle').textContent = countText + (searchTerm.trim() ? ` matching "${searchTerm.trim()}"` : '');
-  $('emptyState').classList.toggle('hidden', filtered.length!==0);
-  $('quizGrid').innerHTML=filtered.map(q=>{
+  if($('emptyState')) $('emptyState').classList.add('hidden');
+
+  const createTile = `<button id="newQuizTile" type="button" class="create-quiz-tile option2-create-card">
+      <span class="option2-plus">＋</span>
+      <strong>Create Quiz</strong>
+    </button>`;
+
+  const cards=filtered.map(q=>{
     const qCount = (q.questions||[]).length;
-    return `<div class="quiz-card" draggable="true" data-quiz-id="${q.id}">
-      <div class="quiz-cover" data-edit-cover="${q.id}" title="Edit quiz">${q.cover?`<img src="${q.cover}" alt="">`:`<span class="material-symbols-outlined">quiz</span>`}</div>
-      <div class="quiz-body">
-        <div class="quiz-head">
-          <h3 class="quiz-title">${esc(q.title)}</h3>
-          <div class="menu-wrap">
-            <button class="menu-btn" type="button" data-menu-btn="${q.id}"><span class="material-symbols-outlined">more_vert</span></button>
-            <div class="menu-pop hidden" id="menu-${q.id}">
+    return `<div class="quiz-card option2-quiz-card" draggable="true" data-quiz-id="${q.id}">
+      <div class="quiz-cover option2-cover" data-edit-cover="${q.id}" title="Edit quiz">${q.cover?`<img src="${q.cover}" alt="">`:`<svg class="quiz-placeholder-svg" viewBox="0 0 64 64" aria-hidden="true"><rect x="18" y="18" width="28" height="28" fill="none" stroke="#60A5FA" stroke-width="4"/><rect x="26" y="26" width="12" height="12" fill="#60A5FA"/></svg>`}</div>
+      <div class="quiz-body option2-card-body">
+        <h3 class="quiz-title option2-card-title">${esc(q.title)}</h3>
+        <div class="quiz-meta option2-meta">
+          <span>${esc(folderNameById(q.folderId))}</span>
+          <span class="dot-sep"></span>
+          <span>${qCount} question${qCount===1?'':'s'}</span>
+        </div>
+        <div class="quiz-actions option2-actions">
+          <button class="btn host-card-btn option2-host-btn" type="button" data-host="${q.id}"><span class="material-symbols-outlined">cast_connected</span>Host</button>
+          <div class="menu-wrap option2-menu-wrap">
+            <button class="btn icon card-more-btn option2-more-btn" type="button" data-menu-btn="${q.id}" title="More options" aria-label="More options"><span class="material-symbols-outlined">more_vert</span></button>
+            <div class="menu-pop hidden option2-menu-pop" id="menu-${q.id}">
+              <button type="button" data-edit="${q.id}"><span class="material-symbols-outlined">edit</span>Edit</button>
               <button type="button" data-duplicate="${q.id}"><span class="material-symbols-outlined">content_copy</span>Duplicate</button>
-              <button type="button" data-share="${q.id}"><span class="material-symbols-outlined">share</span>Share quiz</button>
               <button type="button" data-move="${q.id}"><span class="material-symbols-outlined">drive_file_move</span>Move to folder</button>
-              <button type="button" data-rename="${q.id}"><span class="material-symbols-outlined">edit</span>Rename</button>
               <button type="button" data-delete="${q.id}"><span class="material-symbols-outlined">delete</span>Delete</button>
             </div>
           </div>
         </div>
-        <div class="quiz-meta">
-          <span>${qCount} question${qCount===1?'':'s'}</span>
-          <span class="dot-sep"></span>
-          <span>${esc(folderNameById(q.folderId))}</span>
-        </div>
-        <div class="quiz-actions">
-          <button class="btn outline" type="button" data-edit="${q.id}"><span class="material-symbols-outlined">edit</span>Edit</button>
-          <button class="btn accent" type="button" data-host="${q.id}"><span class="material-symbols-outlined">play_arrow</span>Host</button>
-        </div>
       </div>
     </div>`;
   }).join('');
+  $('quizGrid').innerHTML=createTile + (filtered.length===0 ? '<div class="empty-inline-message">No quizzes here yet</div>' : cards);
+  const tile=$('newQuizTile');
+  if(tile) tile.onclick=createNewQuiz;
   bindLibraryEvents();
 }
+
 function closeAllMenus(){ document.querySelectorAll('.menu-pop').forEach(el=>el.classList.add('hidden')); }
 function bindLibraryEvents(){
   document.querySelectorAll('[data-edit-cover]').forEach(el=>el.onclick=()=>openEditor(el.dataset.editCover));
@@ -8442,9 +9141,9 @@ async function restoreQuizzesFromDrive(){
 
 function bindEvents(){
   $('googleLoginBtn').onclick=signInTeacher;
-  $('logoutBtn').onclick=logoutTeacher;
+  if($('logoutBtn')) $('logoutBtn').onclick=logoutTeacher;
   $('mobileFoldersBtn').onclick=()=>document.body.classList.toggle('folders-open');
-  $('folderManageBtn').onclick=()=>{ folderManageMode=!folderManageMode; renderFolders(); };
+  if($('folderManageBtn')) $('folderManageBtn').onclick=()=>{ folderManageMode=!folderManageMode; renderFolders(); };
   $('foldersBackdrop').onclick=()=>document.body.classList.remove('folders-open');
   $('mobileFoldersCloseBtn').onclick=()=>document.body.classList.remove('folders-open');
   $('newFolderBtn').onclick=()=>openFolderModal('new');
@@ -8452,7 +9151,7 @@ function bindEvents(){
   $('folderModalSave').onclick=commitFolderModal;
   $('folderNameInput').onkeydown=e=>{ if(e.key==='Enter') commitFolderModal(); };
   $('moveQuizCancel').onclick=closeMoveQuizModal;
-  $('settingsBtn').onclick=()=>openSettings('defaults');
+  if($('settingsBtn')) $('settingsBtn').onclick=()=>openSettings('defaults');
   $('settingsCloseBtn').onclick=closeSettings;
   document.querySelectorAll('[data-settings-tab]').forEach(btn=>btn.onclick=()=>setSettingsTab(btn.dataset.settingsTab));
   $('driveBackupBtn').onclick=backupQuizzesToDrive;
@@ -8471,7 +9170,7 @@ function bindEvents(){
   $('settingsModal').addEventListener('click',e=>{ if(e.target===$('settingsModal')) closeSettings(); });
   $('shareQuizModal').addEventListener('click',e=>{ if(e.target===$('shareQuizModal')) closeShareQuizModal(); });
   $('sharedPreviewModal').addEventListener('click',e=>{ if(e.target===$('sharedPreviewModal')) closeSharedPreview(); });
-  $('newQuizBtn').onclick=createNewQuiz;
+  if($('newQuizBtn')) $('newQuizBtn').onclick=createNewQuiz;
   $('editorBackBtn').onclick=async()=>{ await loadQuizzes(); showScreen('library-screen'); };
   $('previewQuizBtn').onclick=startPreviewHost;
   $('saveQuizBtn').onclick=saveQuiz;
@@ -8759,6 +9458,8 @@ document.addEventListener('keydown', e=>{
   });
 })();
 </script>
+
+
 
 </body>
 </html>
