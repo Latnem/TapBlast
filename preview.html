@@ -146,24 +146,6 @@ button,input,textarea,select{font:inherit;color:inherit}
 .screen{display:none;min-height:100vh}
 .screen.active{display:flex;width:100%}
 
-/* ===== BOOT SCREEN ===== */
-.boot-screen{
-  display:flex;align-items:center;justify-content:center;min-height:100vh;
-  background:radial-gradient(120% 80% at 50% 0%, var(--royal-700), var(--royal-950));
-}
-.boot-mark{
-  font-family:'Fraunces', serif;
-  font-size:2.8rem;font-weight:900;color:#fff;
-  letter-spacing:-.02em;
-  animation:bootPulse 1.2s ease-out;
-}
-.boot-mark em{font-style:italic;color:var(--sun-400)}
-@keyframes bootPulse{
-  0%{opacity:0;transform:scale(.92)}
-  60%{opacity:1;transform:scale(1.02)}
-  100%{opacity:1;transform:scale(1)}
-}
-
 /* ===== BRAND MARK ===== */
 .brand{
   font-family:'Fraunces', serif;
@@ -6615,6 +6597,55 @@ body[data-screen="editor-screen"]{
   }
 }
 
+
+/* ===== FINAL BOOT REMOVAL + EDITOR TIGHT GAP PATCH ===== */
+
+/* Bootup logo/loading screen is intentionally disabled. */
+#boot-screen,
+.boot-screen,
+.boot-mark{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+
+/* Editor top banner and section should touch with no gap. */
+body[data-screen="editor-screen"] #editor-screen,
+body[data-screen="editor-screen"] #editor-screen.screen,
+body[data-screen="editor-screen"] #editor-screen.screen.active{
+  margin:0 !important;
+  padding:0 !important;
+}
+
+#editor-screen .app-shell,
+#editor-screen .app-container,
+#editor-screen .main-pane{
+  margin:0 auto !important;
+  padding:0 !important;
+}
+
+#editor-screen .topbar{
+  margin:0 !important;
+  border-bottom:0 !important;
+}
+
+#editor-screen .editor-shell{
+  margin:0 !important;
+  padding:0 !important;
+  gap:0 !important;
+  border-top:0 !important;
+}
+
+#editor-screen .editor-left,
+#editor-screen .content-wrap{
+  margin-top:0 !important;
+}
+
+#editor-screen .content-wrap{
+  padding-top:14px !important;
+}
+
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -6627,8 +6658,6 @@ if (window.pdfjsLib) {
 </head>
 <body>
 <!-- ============ BOOT ============ -->
-<div id="boot-screen" class="boot-screen">
-  <div class="boot-mark">Tap<em>Blast</em></div>
 </div>
 
 <!-- ============ LOGIN ============ -->
