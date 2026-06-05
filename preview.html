@@ -6596,6 +6596,18 @@ body[data-screen="editor-screen"]{
   }
 }
 
+
+/* White Questions heading in editor sidebar */
+#editor-screen .editor-left h1,
+#editor-screen .editor-left h2,
+#editor-screen .editor-left h3,
+#editor-screen .editor-left h4,
+#editor-screen .editor-left .section-title,
+#editor-screen .editor-left .sidebar-title,
+#editor-screen .editor-left .questions-title{
+  color:#ffffff !important;
+}
+
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -6741,7 +6753,7 @@ if (window.pdfjsLib) {
     <div class="topbar">
       <div>
         <div class="brand">Tap<em>Blast</em></div>
-        <div class="subtle">Quiz Editor</div>
+        <div class="subtle"></div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button id="editorBackBtn" type="button" class="btn outline">
@@ -6766,13 +6778,13 @@ if (window.pdfjsLib) {
         <main class="content-wrap editor-question-panel">
           <div class="panel question-editor-card">
             <div class="question-editor-head">
-              <div class="editor-card-title">Question</div>
+              <div class="editor-card-title">Quiz Editor</div>
               <button id="deleteQuestionBtn" type="button" class="question-delete-icon" title="Delete question" aria-label="Delete question">
                 <span class="material-symbols-outlined">delete</span>
               </button>
             </div>
             <div class="field">
-              <label for="questionText">Question</label>
+              <label for="questionText">Quiz Editor</label>
               <textarea id="questionText" placeholder="Type your question…"></textarea>
             </div>
             <div class="field question-media-field">
@@ -6790,7 +6802,7 @@ if (window.pdfjsLib) {
               </div>
             </div>
             <div class="field">
-              <label>Answers (tick the correct one)</label>
+              <label>Answers</label>
               <div id="answersGrid" class="answers-grid"></div>
             </div>
 
