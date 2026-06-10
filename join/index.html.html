@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>TapBlast Join</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,800;0,9..144,900;1,9..144,800&family=Material+Symbols+Outlined&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js">
+/* ===== STUDENT MOBILE PHASE FORCE PATCH ===== */
+(function(){
+  window.tapblastForceStudentVisible = function(){
+    try{
+      var join = document.getElementById('student-join-screen');
+      var screen = document.getElementById('student-screen');
+      if(join) join.classList.remove('active');
+      if(screen){
+        screen.classList.remove('hidden');
+        screen.classList.add('active');
+        screen.style.display='flex';
+        screen.style.visibility='visible';
+        screen.style.opacity='1';
+      }
+      document.body.setAttribute('data-screen','student-screen');
+      ['studentPhase','studentQuestion','studentQuestionProgress','studentAnswerGrid','studentResult'].forEach(function(id){
+        var el=document.getElementById(id);
+        if(el){
+          el.classList.remove('hidden');
+          el.style.display='';
+          el.style.visibility='visible';
+          el.style.opacity='1';
+        }
+      });
+    }catch(e){}
+  };
+
+  window.tapblastStudentLoadingFallback = function(message){
+    try{
+      tapblastForceStudentVisible();
+      var phase=document.getElementById('studentPhase');
+      var q=document.getElementById('studentQuestion');
+      var grid=document.getElementById('studentAnswerGrid');
+      if(phase) phase.textContent='Connected';
+      if(q) q.textContent=message || 'Waiting for the question to appear…';
+      if(grid) grid.innerHTML='';
+    }catch(e){}
+  };
+})();
+
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<style>
+*{box-sizing:border-box}
+:root{
+  --royal-950:#0b1733;
+  --royal-900:#0f2050;
+  --royal-800:#15306e;
+  --royal-700:#1e3a8a;
+  --royal-600:#2447a8;
+  --sky-500:#3b82f6;
+  --sky-400:#60a5fa;
+  --sky-300:#93c5fd;
+  --sky-100:#dbeafe;
+  --sky-50:#eff6ff;
+  --sun-500:#f59e0b;
+  --sun-400:#facc15;
+  --sun-300:#fde047;
+  --ink-900:#0b1431;
+  --ink-700:#253261;
+  --ink-500:#55618a;
+  --ink-400:#7f8bb3;
+  --ink-300:#b4bcd8;
+  --line:#e3e8f4;
+  --panel:#ffffff;
+  --panel-soft:#f6f8fd;
+  --bg:#eef3fb;
+  --danger:#dc2626;
+  --ans-blue:#2563eb;
+  --ans-green:#16a34a;
+  --ans-orange:#ea580c;
+  --ans-yellow:#eab308;
+}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--ink-900);
+  -webkit-font-smoothing:antialiased;
+}
+button,input{font:inherit}
+.hidden{display:none!important}
+.screen{display:none;min-height:100vh;width:100%}
+.screen.active{display:flex}
+.brand,
+.join-brand{
+  font-family:'Fraunces',serif;
+  font-weight:900;
+  letter-spacing:-.02em;
+}
+.brand em,
+.join-brand em{font-style:italic;color:var(--sun-400)}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-height:42px;
+  border:0;
+  border-radius:4px;
+  padding:8px 14px;
+  font-weight:800;
+  cursor:pointer;
+}
+.btn.accent{
+  background:linear-gradient(180deg,var(--sun-400),var(--sun-500));
+  color:var(--royal-950);
+}
+.btn:disabled{opacity:.65;cursor:default}
+.field{margin-bottom:16px}
+label{
+  display:block;
+  margin-bottom:7px;
+  color:var(--ink-500);
+  font-size:.72rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.55px;
+}
+input{
+  width:100%;
+  padding:12px 14px;
+  border:1px solid var(--line);
+  border-radius:4px;
+  background:#fff;
+  color:var(--ink-900);
+  outline:none;
+}
+input:focus{
+  border-color:var(--sky-500);
+  box-shadow:0 0 0 4px var(--sky-100);
+}
+.error-line{
+  margin-top:12px;
+  min-height:22px;
+  color:var(--danger);
+  font-size:.9rem;
+  font-weight:700;
+  text-align:center;
+}
+.join-wrap{
+  width:100%;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:
+    radial-gradient(900px 500px at 15% 15%, rgba(59,130,246,.2), transparent 60%),
+    radial-gradient(700px 400px at 85% 85%, rgba(250,204,21,.15), transparent 60%),
+    linear-gradient(160deg,#0b1733 0%,#15306e 55%,#1e3a8a 100%);
+}
+.join-shell{
+  width:100%;
+  max-width:1040px;
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  gap:26px;
+}
+.join-hero{
+  padding:44px;
+  background:#2f3a4d;
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:4px;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  box-shadow:0 8px 20px rgba(0,0,0,.20);
+}
+.join-brand{
+  font-size:3rem;
+  margin-bottom:14px;
+}
+.join-hero-copy{
+  max-width:390px;
+  color:#dbe4f0;
+  line-height:1.55;
+  font-size:1.05rem;
+}
+.join-card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:34px;
+  box-shadow:0 4px 12px rgba(0,0,0,.12);
+}
+.join-card-title{
+  font-family:'Fraunces',serif;
+  font-size:1.6rem;
+  font-weight:900;
+  margin-bottom:6px;
+}
+.join-card-sub{
+  color:var(--ink-500);
+  margin-bottom:22px;
+  font-size:.95rem;
+}
+#studentCode{
+  text-align:center;
+  font-family:'Fraunces',serif;
+  font-size:2rem;
+  font-weight:900;
+  letter-spacing:8px;
+}
+.avatar-animal-grid,
+.avatar-color-grid{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:8px;
+}
+.avatar-color-grid{margin-top:8px}
+.avatar-animal,
+.avatar-color{
+  height:38px;
+  border:1px solid var(--line);
+  border-radius:4px;
+  background:#fff;
+  cursor:pointer;
+  font-size:1.15rem;
+}
+.avatar-color{font-size:0}
+.avatar-animal.active,
+.avatar-color.active{
+  outline:3px solid var(--sun-400);
+  border-color:var(--royal-700);
+}
+.student-shell{
+  width:100%;
+  min-height:100vh;
+  background:radial-gradient(120% 100% at 50% 0%, var(--royal-800) 0%, var(--royal-950) 70%);
+  color:#fff;
+  flex-direction:column;
+}
+.student-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 18px;
+  background:rgba(0,0,0,.25);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  font-weight:800;
+}
+.student-top-score{
+  background:var(--sun-400);
+  color:var(--royal-950);
+  padding:4px 14px;
+  border-radius:4px;
+  font-weight:900;
+}
+.student-main{
+  max-width:720px;
+  width:100%;
+  margin:0 auto;
+  padding:20px;
+}
+.student-card{
+  background:#fff;
+  color:var(--ink-900);
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:22px;
+  box-shadow:0 20px 50px rgba(0,0,0,.25);
+}
+.student-phase{
+  text-align:center;
+  font-size:.82rem;
+  font-weight:900;
+  color:var(--royal-700);
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.student-question-progress{
+  text-align:center;
+  color:var(--ink-500);
+  font-size:.85rem;
+  font-weight:800;
+  margin-bottom:12px;
+}
+.student-media{
+  display:flex;
+  justify-content:center;
+  margin-bottom:14px;
+}
+.student-media img,
+.student-media video{
+  max-width:100%;
+  max-height:min(50vh,520px);
+  border-radius:4px;
+  display:block;
+}
+.student-question{
+  text-align:center;
+  font-family:'Fraunces',serif;
+  font-size:1.35rem;
+  font-weight:900;
+  line-height:1.35;
+}
+.student-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:18px;
+}
+.student-answer{
+  min-height:104px;
+  border:0;
+  border-radius:4px;
+  padding:14px 14px 14px 48px;
+  color:#fff;
+  font-weight:900;
+  font-size:1rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  cursor:pointer;
+  position:relative;
+  line-height:1.25;
+}
+.student-answer-shape{
+  position:absolute;
+  top:50%;
+  left:12px;
+  transform:translateY(-50%);
+  width:28px;
+  height:28px;
+  border-radius:4px;
+  background:rgba(0,0,0,.22);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+}
+.student-answer.blue{background:linear-gradient(160deg,#3b82f6,#1e40af)}
+.student-answer.green{background:linear-gradient(160deg,#22c55e,#15803d)}
+.student-answer.orange{background:linear-gradient(160deg,#f97316,#c2410c)}
+.student-answer.yellow{background:linear-gradient(160deg,#fde047,#ca8a04);color:#3b2d00}
+.student-answer.yellow .student-answer-shape{color:#3b2d00}
+.student-answer.selected{
+  outline:4px solid var(--royal-700);
+  box-shadow:0 0 0 7px var(--sky-100);
+}
+.student-answer.locked{opacity:.58;cursor:default}
+.student-answer.correct-answer-reveal{
+  outline:4px solid var(--sun-400);
+}
+.student-answer.wrong-selected{
+  outline:4px solid var(--danger);
+}
+.student-answer .thumb img,
+.student-answer .thumb video{
+  max-height:78px;
+  max-width:100%;
+  border-radius:4px;
+}
+.student-result{
+  text-align:center;
+  min-height:28px;
+  margin-top:16px;
+  color:var(--royal-700);
+  font-size:1.1rem;
+  font-weight:900;
+}
+.student-waiting-profile{
+  margin-top:18px;
+  padding:16px;
+  background:var(--panel-soft);
+  border:1px solid var(--line);
+  border-radius:4px;
+}
+.student-wait-title{
+  font-weight:900;
+  margin-bottom:4px;
+}
+.student-wait-note{
+  color:var(--ink-500);
+  font-size:.9rem;
+  margin-bottom:12px;
+}
+.student-profile-preview{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+}
+.student-profile-emoji-preview{
+  width:48px;
+  height:48px;
+  border-radius:4px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.45rem;
+}
+.student-profile-saved{
+  min-height:18px;
+  color:var(--royal-700);
+  font-weight:800;
+  margin-top:8px;
+  text-align:center;
+}
+.student-type-wrap{
+  grid-column:1/-1;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+}
+.student-type-result,
+.student-final-row{
+  grid-column:1/-1;
+  background:var(--panel-soft);
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:12px 14px;
+}
+.student-final-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:8px;
+}
+.student-final-row.me{
+  border-color:var(--sun-400);
+  background:#fff9db;
+}
+@media(max-width:780px){
+  .join-shell{grid-template-columns:1fr}
+  .join-hero{padding:28px}
+  .join-brand{font-size:2.2rem}
+}
+@media(max-width:640px){
+  .join-wrap{padding:16px}
+  .join-card{padding:24px}
+  .student-grid{grid-template-columns:1fr}
+  .avatar-animal-grid,.avatar-color-grid{grid-template-columns:repeat(4,1fr)}
+}
+
+/* ===== MOBILE STUDENT GAMEPLAY STABILITY PATCH ===== */
+@media(max-width:760px){
+  #student-screen.screen.active,
+  #student-screen.student-shell{
+    display:flex !important;
+    flex-direction:column !important;
+    min-height:100dvh !important;
+    height:auto !important;
+    overflow:auto !important;
+  }
+
+  #student-screen .student-top{
+    flex:0 0 auto !important;
+    position:sticky !important;
+    top:0 !important;
+    z-index:20 !important;
+  }
+
+  #student-screen .student-main{
+    width:100% !important;
+    max-width:none !important;
+    padding:12px !important;
+    margin:0 !important;
+    flex:1 1 auto !important;
+  }
+
+  #student-screen .student-card{
+    width:100% !important;
+    min-height:auto !important;
+    padding:16px !important;
+    margin:0 !important;
+  }
+
+  #student-screen .student-question{
+    display:block !important;
+    visibility:visible !important;
+    font-size:1.15rem !important;
+    line-height:1.35 !important;
+    margin:8px 0 0 !important;
+    min-height:1.5em !important;
+  }
+
+  #student-screen .student-media img,
+  #student-screen .student-media video{
+    max-height:34vh !important;
+    width:auto !important;
+    max-width:100% !important;
+    object-fit:contain !important;
+  }
+
+  #student-screen .student-grid{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:10px !important;
+    margin-top:14px !important;
+  }
+
+  #student-screen .student-answer{
+    min-height:76px !important;
+    padding-top:12px !important;
+    padding-bottom:12px !important;
+  }
+}
+
+
+/* ===== STUDENT MOBILE QUESTION VISIBILITY HARD FIX ===== */
+@media(max-width:900px){
+  body[data-screen="student-screen"] #student-screen{
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    min-height:100dvh !important;
+    height:auto !important;
+    overflow-y:auto !important;
+  }
+
+  body[data-screen="student-screen"] #student-join-screen{
+    display:none !important;
+  }
+
+  #student-screen .student-main,
+  #student-screen .student-card,
+  #studentQuestion,
+  #studentAnswerGrid{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+  }
+
+  #studentAnswerGrid.student-grid,
+  #student-screen .student-grid{
+    display:grid !important;
+  }
+
+  #studentQuestion{
+    min-height:38px !important;
+    color:var(--ink-900) !important;
+    word-break:break-word !important;
+  }
+
+  #studentQuestion:empty::after{
+    content:"Waiting for question...";
+    color:var(--ink-500);
+    font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+    font-size:1rem;
+    font-weight:800;
+  }
+}
+
+
+/* ===== JOINING STUCK SAFETY PATCH ===== */
+#studentJoinBtn:disabled{
+  opacity:.75 !important;
+}
+body[data-screen="student-screen"] #student-screen{
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+body[data-screen="student-screen"] #student-join-screen{
+  display:none !important;
+}
+
+
+/* ===== STUDENT BLANK SCREEN HARD CSS FIX ===== */
+body[data-screen="student-screen"] #student-screen{
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+body[data-screen="student-screen"] #student-join-screen{
+  display:none !important;
+}
+#student-screen #studentQuestion,
+#student-screen #studentAnswerGrid,
+#student-screen .student-card,
+#student-screen .student-main{
+  visibility:visible !important;
+  opacity:1 !important;
+}
+#student-screen #studentQuestion:empty::after{
+  content:"Loading question...";
+  color:var(--ink-500);
+}
+@media(max-width:900px){
+  #student-screen{
+    min-height:100dvh !important;
+    height:auto !important;
+    overflow-y:auto !important;
+  }
+  #student-screen .student-grid{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+  }
+}
+
+</style>
+</head>
+<body data-screen="student-join-screen">
+
+<div id="student-join-screen" class="screen active">
+  <div class="join-wrap">
+    <div class="join-shell">
+      <section class="join-hero">
+        <div class="join-brand">Tap<em>Blast</em></div>
+        <div class="join-hero-copy">Enter the room code your teacher shared, pick a nickname, and get ready to play.</div>
+      </section>
+      <section class="join-card">
+        <div class="join-card-title">Join Game</div>
+        <div class="join-card-sub">Fast, fun, and no sign-up needed.</div>
+        <div class="field">
+          <label for="studentCode">Room Code</label>
+          <input id="studentCode" type="text" maxlength="6" inputmode="numeric" placeholder="123456">
+        </div>
+        <div class="field">
+          <label for="studentName">Nickname</label>
+          <input id="studentName" type="text" maxlength="20" placeholder="e.g., AceOfSpades">
+        </div>
+        <div class="field">
+          <label>Avatar</label>
+          <div id="avatarAnimalGrid" class="avatar-animal-grid"></div>
+          <div id="avatarColorGrid" class="avatar-color-grid"></div>
+        </div>
+        <button id="studentJoinBtn" type="button" class="btn accent" style="width:100%">
+          <span class="material-symbols-outlined">login</span>Join Game
+        </button>
+        <div id="studentJoinError" class="error-line"></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div id="student-screen" class="screen student-shell">
+  <div class="student-top">
+    <div id="studentTopName"></div>
+    <div id="studentTopScore" class="student-top-score">0</div>
+  </div>
+  <div class="student-main">
+    <div class="student-card">
+      <div id="studentPhase" class="student-phase"></div>
+      <div id="studentQuestionProgress" class="student-question-progress"></div>
+      <div id="studentMedia" class="student-media"></div>
+      <div id="studentQuestion" class="student-question"></div>
+      <div id="studentAnswerGrid" class="student-grid"></div>
+      <div id="studentResult" class="student-result"></div>
+      <div id="studentWaitingProfile" class="student-waiting-profile hidden">
+        <div class="student-wait-title">Waiting for host to start</div>
+        <div class="student-wait-note">You can still edit your name, emoji, and color.</div>
+        <div class="student-profile-preview">
+          <div id="studentProfileEmojiPreview" class="student-profile-emoji-preview">🐶</div>
+          <input id="studentProfileNameInput" type="text" maxlength="20" placeholder="Nickname">
+        </div>
+        <div id="studentWaitingAnimalGrid" class="avatar-animal-grid"></div>
+        <div id="studentWaitingColorGrid" class="avatar-color-grid"></div>
+        <button id="studentSaveProfileBtn" type="button" class="btn accent" style="width:100%">Update Profile</button>
+        <div id="studentProfileSavedLine" class="student-profile-saved"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCjh16vsvzWmt9dUkH6O4brRf8hfTOhzYA",
+  authDomain: "tapblast-8e13a.firebaseapp.com",
+  projectId: "tapblast-8e13a",
+  databaseURL: "https://tapblast-8e13a-default-rtdb.firebaseio.com",
+  storageBucket: "tapblast-8e13a.firebasestorage.app",
+  messagingSenderId: "1069456061706",
+  appId: "1:1069456061706:web:0fc650dfac4de09de536f3",
+  measurementId: "G-QLTZFNLH2X"
+};
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const ROOT='tapblast_clean_v1';
+const $ = id => document.getElementById(id);
+const roomRef=code=>db.ref(`${ROOT}/rooms/${code}`);
+const answerColors=['blue','green','orange','yellow'];
+const answerShapes=['A','B','C','D'];
+const avatarAnimals=['🐶','🐱','🦊','🐼','🐯','🦁','🐸','🐵','🐧','🦉','🐢','🦄'];
+const avatarColors=['#2563eb','#16a34a','#f97316','#dc2626','#7c3aed','#0891b2','#ca8a04','#db2777'];
+let selectedStudentAvatar=avatarAnimals[0];
+let selectedStudentColor=avatarColors[0];
+let studentPlayerId=null;
+let currentStudentRoomCode=null;
+let studentLastRoomSnapshot=null;
+let studentRoomUnsub=null;
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $(id).classList.add('active');
+  document.body.setAttribute('data-screen',id);
+}
+function esc(value){
+  return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function cleanupStudent(){
+  if(studentRoomUnsub){
+    studentRoomUnsub();
+    studentRoomUnsub=null;
+  }
+}
+function sortedPlayers(room){
+  return Object.entries(room.players||{})
+    .map(([id,p])=>({id,...p}))
+    .sort((a,b)=>(Number(b.score||0)-Number(a.score||0)) || String(a.name||'').localeCompare(String(b.name||'')));
+}
+function playerAnsweredCurrent(player,room){
+  return player && player.answerQ===room.currentQ && (typeof player.currentAnswerIndex==='number' || typeof player.currentTypedAnswer==='string');
+}
+function displayAnswersFor(room,q){
+  const answers=(q.answers||[]).map((a,i)=>({index:i,...a}));
+  const order=Array.isArray(room.answerOrder) ? room.answerOrder : null;
+  if(order && order.length) return order.map(i=>answers[i]).filter(Boolean);
+  return answers;
+}
+function renderAvatarPicker(){
+  $('avatarAnimalGrid').innerHTML=avatarAnimals.map(a=>`<button type="button" class="avatar-animal ${a===selectedStudentAvatar?'active':''}" data-avatar-animal="${a}">${a}</button>`).join('');
+  $('avatarColorGrid').innerHTML=avatarColors.map(c=>`<button type="button" class="avatar-color ${c===selectedStudentColor?'active':''}" style="background:${c}" data-avatar-color="${c}" aria-label="Avatar color"></button>`).join('');
+  document.querySelectorAll('[data-avatar-animal]').forEach(btn=>btn.onclick=()=>{
+    selectedStudentAvatar=btn.dataset.avatarAnimal;
+    renderAvatarPicker();
+  });
+  document.querySelectorAll('[data-avatar-color]').forEach(btn=>btn.onclick=()=>{
+    selectedStudentColor=btn.dataset.avatarColor;
+    renderAvatarPicker();
+  });
+}
+async function studentJoin(){
+  const code=($('studentCode').value||'').replace(/\D/g,'').slice(0,6);
+  currentStudentRoomCode=code;
+  const name=($('studentName').value||'').trim().slice(0,20);
+  const btn=$('studentJoinBtn');
+  $('studentJoinError').textContent='';
+
+  if(!code){ $('studentJoinError').textContent='Enter the 6-digit room code'; return; }
+  if(!name){ $('studentJoinError').textContent='Pick a nickname'; return; }
+
+  btn.disabled=true;
+  const oldBtnText=btn.innerHTML;
+  btn.innerHTML='<span class="material-symbols-outlined">hourglass_top</span>Joining…';
+
+  try{
+    const ref=roomRef(code);
+
+    const roomSnap=await ref.once('value');
+    if(!roomSnap.exists()){
+      $('studentJoinError').textContent='Room not found. Check the code and try again.';
+      return;
+    }
+
+    const room=roomSnap.val()||{};
+    if(room.phase==='ended'){
+      $('studentJoinError').textContent='This game has ended.';
+      return;
+    }
+
+    studentPlayerId=sessionStorage.getItem('tapblast_player_'+code)||db.ref().push().key;
+    sessionStorage.setItem('tapblast_player_'+code, studentPlayerId);
+
+    const existingPlayer=(room.players||{})[studentPlayerId]||{};
+    const newPlayerData={
+      name:name,
+      joinedAt: existingPlayer.joinedAt || Date.now(),
+      lastSeenAt: firebase.database.ServerValue.TIMESTAMP,
+      currentAnswerIndex: (typeof existingPlayer.currentAnswerIndex==='number') ? existingPlayer.currentAnswerIndex : null,
+      currentTypedAnswer: (typeof existingPlayer.currentTypedAnswer==='string') ? existingPlayer.currentTypedAnswer : null,
+      answerAt: existingPlayer.answerAt || 0,
+      answerQ: (typeof existingPlayer.answerQ==='number') ? existingPlayer.answerQ : -1,
+      lastDelta: existingPlayer.lastDelta || 0,
+      streak: existingPlayer.streak || 0,
+      streakMsg: existingPlayer.streakMsg || '',
+      score: (typeof existingPlayer.score==='number') ? existingPlayer.score : 0,
+      avatarEmoji:selectedStudentAvatar,
+      avatarColor:selectedStudentColor
+    };
+
+    await ref.child('players').child(studentPlayerId).update(newPlayerData);
+
+    const playerSnap=await ref.child('players').child(studentPlayerId).once('value');
+    if(!playerSnap.exists()){
+      $('studentJoinError').textContent='Join failed. Try again.';
+      return;
+    }
+
+    showScreen('student-screen');
+    $('studentPhase').textContent='Connected';
+    $('studentQuestion').textContent='Loading game…';
+    $('studentAnswerGrid').innerHTML='';
+    $('studentTopName').textContent=name;
+    $('studentTopScore').textContent=String(newPlayerData.score||0);
+
+    const freshSnap=await ref.once('value');
+    const freshRoom=freshSnap.val()||room;
+    const freshPlayer=((freshRoom.players||{})[studentPlayerId])||newPlayerData;
+    try{ renderStudent(freshRoom,freshPlayer); }catch(renderErr){ console.error('Immediate render failed:', renderErr); }
+
+    startStudentListener(code);
+
+    setTimeout(async()=>{
+      try{
+        const currentText=($('studentQuestion').textContent||'').toLowerCase();
+        const phaseText=($('studentPhase').textContent||'').toLowerCase();
+        if(currentText.includes('loading') || phaseText.includes('joining') || phaseText.includes('connected')){
+          const retrySnap=await ref.once('value');
+          if(retrySnap.exists()){
+            const retryRoom=retrySnap.val()||{};
+            const retryPlayer=((retryRoom.players||{})[studentPlayerId]);
+            if(retryPlayer) renderStudent(retryRoom,retryPlayer);
+          }
+        }
+      }catch(e){ console.error('Mobile retry render failed:', e); }
+    }, 2000);
+
+  }catch(err){
+    console.error('Join failed:', err);
+    $('studentJoinError').textContent='Could not join. Check internet connection and try again.';
+    showScreen('student-join-screen');
+  }finally{
+    btn.disabled=false;
+    btn.innerHTML=oldBtnText;
+  }
+}
+function startStudentListener(code){
+  cleanupStudent();
+  currentStudentRoomCode=code;
+  const ref=roomRef(code);
+  try{ ref.keepSynced(true); }catch(e){}
+
+  const cb=snap=>{
+    try{
+      if(!snap.exists()) return renderStudentEnded('Game ended');
+      const room=snap.val()||{};
+      studentLastRoomSnapshot=room;
+      const player=(room.players||{})[studentPlayerId];
+      if(!player){
+        $('studentPhase').textContent='Connected';
+        $('studentQuestion').textContent='Player profile is loading…';
+        $('studentAnswerGrid').innerHTML='';
+        return;
+      }
+      showScreen('student-screen');
+      renderStudent(room,player);
+    }catch(err){
+      console.error('Student listener render failed:', err);
+      showScreen('student-screen');
+      $('studentPhase').textContent='Connected';
+      $('studentQuestion').textContent='Game data is loading. Refresh if it stays here.';
+      $('studentAnswerGrid').innerHTML='';
+    }
+  };
+
+  ref.on('value',cb,err=>{
+    console.error('Student listener connection failed:', err);
+    $('studentPhase').textContent='Connection issue';
+    $('studentQuestion').textContent='Could not connect to the live game. Refresh and rejoin.';
+  });
+  studentRoomUnsub=()=>ref.off('value',cb);
+}
+function renderStudentEnded(msg){
+  showScreen('student-screen');
+  $('studentPhase').textContent=msg;
+  $('studentQuestionProgress').textContent='';
+  $('studentMedia').innerHTML='';
+  $('studentQuestion').textContent='';
+  $('studentAnswerGrid').innerHTML='';
+  $('studentResult').textContent='';
+}
+function renderWaitingProfilePicker(player){
+  const currentName=(player&&player.name)||$('studentName').value||'';
+  selectedStudentAvatar=(player&&player.avatarEmoji)||selectedStudentAvatar||avatarAnimals[0];
+  selectedStudentColor=(player&&player.avatarColor)||selectedStudentColor||avatarColors[0];
+
+  $('studentProfileEmojiPreview').textContent=selectedStudentAvatar;
+  $('studentProfileEmojiPreview').style.background=selectedStudentColor;
+  $('studentProfileNameInput').value=currentName;
+
+  $('studentWaitingAnimalGrid').innerHTML=avatarAnimals.map(a=>`<button type="button" class="avatar-animal ${a===selectedStudentAvatar?'active':''}" data-wait-avatar-animal="${a}">${a}</button>`).join('');
+  $('studentWaitingColorGrid').innerHTML=avatarColors.map(c=>`<button type="button" class="avatar-color ${c===selectedStudentColor?'active':''}" style="background:${c}" data-wait-avatar-color="${c}" aria-label="Avatar color"></button>`).join('');
+
+  document.querySelectorAll('[data-wait-avatar-animal]').forEach(btn=>btn.onclick=()=>{
+    selectedStudentAvatar=btn.dataset.waitAvatarAnimal;
+    renderWaitingProfilePicker({name:$('studentProfileNameInput').value,avatarEmoji:selectedStudentAvatar,avatarColor:selectedStudentColor});
+  });
+  document.querySelectorAll('[data-wait-avatar-color]').forEach(btn=>btn.onclick=()=>{
+    selectedStudentColor=btn.dataset.waitAvatarColor;
+    renderWaitingProfilePicker({name:$('studentProfileNameInput').value,avatarEmoji:selectedStudentAvatar,avatarColor:selectedStudentColor});
+  });
+
+  $('studentSaveProfileBtn').onclick=saveWaitingStudentProfile;
+  $('studentProfileNameInput').onkeydown=e=>{ if(e.key==='Enter') saveWaitingStudentProfile(); };
+}
+async function saveWaitingStudentProfile(){
+  if(!studentPlayerId) return;
+  const code=($('studentCode').value||new URLSearchParams(location.search).get('code')||'').replace(/\D/g,'').slice(0,6);
+  const name=($('studentProfileNameInput').value||'').trim().slice(0,20);
+  if(!code || !name) return;
+  try{
+    await roomRef(code).child('players').child(studentPlayerId).update({
+      name,
+      avatarEmoji:selectedStudentAvatar,
+      avatarColor:selectedStudentColor,
+      profileUpdatedAt:firebase.database.ServerValue.TIMESTAMP
+    });
+    $('studentTopName').textContent=name;
+    $('studentProfileSavedLine').textContent='Updated';
+    setTimeout(()=>{ $('studentProfileSavedLine').textContent=''; },1200);
+  }catch(err){
+    console.error(err);
+    $('studentProfileSavedLine').textContent='Could not update profile.';
+  }
+}
+function renderStudent(room,player){
+  if(window.tapblastForceStudentVisible) tapblastForceStudentVisible();
+  $('studentTopName').textContent=player.name||'Player';
+  $('studentTopScore').textContent=String(player.score||0);
+  $('studentQuestionProgress').textContent='';
+  $('studentWaitingProfile').classList.add('hidden');
+  $('studentWaitingProfile').style.display='none';
+
+  if(room.phase==='lobby'){
+    $('studentPhase').textContent='Waiting Room';
+    $('studentMedia').innerHTML='';
+    $('studentQuestion').textContent='You are in! The game will start soon.';
+    $('studentAnswerGrid').innerHTML='';
+    $('studentResult').textContent='';
+    $('studentWaitingProfile').classList.remove('hidden');
+    $('studentWaitingProfile').style.display='block';
+    renderWaitingProfilePicker(player);
+    return;
+  }
+  if(room.phase==='ended') return renderStudentEnded('Game ended');
+  if(room.phase==='leaderboard'){
+    $('studentPhase').textContent='Scoreboard';
+    $('studentMedia').innerHTML='';
+    $('studentQuestion').textContent='Get ready for the next question…';
+    $('studentAnswerGrid').innerHTML='';
+    $('studentResult').textContent=player.lastDelta?'+'+player.lastDelta+' pts':'';
+    return;
+  }
+  if(room.phase==='final'){
+    $('studentPhase').textContent='Final Scores';
+    $('studentMedia').innerHTML='';
+    $('studentQuestion').textContent=`Your final score: ${player.score||0}`;
+    const finalPlayers=sortedPlayers(room);
+    $('studentAnswerGrid').innerHTML=finalPlayers.map((p,i)=>`
+      <div class="student-final-row ${p.id===studentPlayerId?'me':''}">
+        <span>${i+1}. ${esc(p.name||'Player')}</span>
+        <strong>${Number(p.score||0)} pts</strong>
+      </div>`).join('');
+    $('studentResult').textContent='';
+    return;
+  }
+  if(room.phase==='countdown'){
+    $('studentPhase').textContent='Get Ready!';
+    $('studentMedia').innerHTML='';
+    $('studentQuestion').textContent='Next question starting…';
+    $('studentAnswerGrid').innerHTML='';
+    $('studentResult').textContent='';
+    return;
+  }
+
+  const activeQuestionPhases=['question','answers','question_media','question_answers','paused','locked','answer_results','results'];
+  if(!activeQuestionPhases.includes(room.phase)){
+    $('studentPhase').textContent='Waiting';
+    $('studentMedia').innerHTML='';
+    $('studentQuestion').textContent='Please wait for the host.';
+    $('studentAnswerGrid').innerHTML='';
+    $('studentResult').textContent='';
+    return;
+  }
+
+  const questions=(room.quiz&&Array.isArray(room.quiz.questions))?room.quiz.questions:[];
+  const q=questions[room.currentQ];
+  if(!q){
+    $('studentPhase').textContent='Connected';
+    $('studentMedia').innerHTML='';
+    $('studentQuestion').textContent='You are in. Waiting for the next question to load…';
+    $('studentAnswerGrid').innerHTML='';
+    $('studentResult').textContent='';
+    return;
+  }
+  const totalQuestions=questions.length;
+  $('studentQuestionProgress').textContent='Question '+((room.currentQ||0)+1)+'/'+totalQuestions;
+  const isTypeQuestion=(q.type==='type');
+  $('studentQuestion').textContent=q.text||'';
+  $('studentMedia').innerHTML='';
+  if(q.media){
+    if(q.media.type==='video') $('studentMedia').innerHTML=`<video src="${q.media.dataUrl}" ${room.phase==='question_media'?'autoplay controls':''}></video>`;
+    else $('studentMedia').innerHTML=`<img src="${q.media.dataUrl}" alt="">`;
+  }
+  if(room.phase==='question_media'){
+    $('studentPhase').textContent='Watch';
+    $('studentAnswerGrid').innerHTML='';
+    $('studentResult').textContent='';
+    return;
+  }
+
+  $('studentPhase').textContent=
+    room.phase==='paused'?'Paused':
+    room.phase==='locked'?"Time's up — results coming":
+    (room.phase==='answer_results'||room.phase==='results')?(player.lastCorrect?'Correct!':'Answer revealed'):
+    isTypeQuestion?'Type your answer':'Tap your answer';
+
+  const hasAnswered = playerAnsweredCurrent(player,room);
+
+  if(isTypeQuestion){
+    if((room.phase==='question_answers'||room.phase==='answers'||room.phase==='question') && !hasAnswered){
+      $('studentAnswerGrid').innerHTML=`
+        <div class="student-type-wrap">
+          <input id="studentTypedAnswer" type="text" placeholder="Type answer" autocomplete="off">
+          <button id="studentTypeSubmit" type="button" class="btn accent">Submit</button>
+        </div>`;
+      $('studentTypeSubmit').onclick=async()=>{
+        const value=($('studentTypedAnswer')?.value||'').trim();
+        if(!value) return;
+        await roomRef(room.code||currentStudentRoomCode).child('players').child(studentPlayerId).update({
+          currentTypedAnswer:value,
+          answerAt:firebase.database.ServerValue.TIMESTAMP,
+          answerQ:room.currentQ,
+          currentAnswerIndex:null
+        });
+      };
+      $('studentTypedAnswer').addEventListener('keydown',e=>{
+        if(e.key==='Enter') $('studentTypeSubmit').click();
+      });
+    }else{
+      $('studentAnswerGrid').innerHTML=`
+        <div class="student-type-result">
+          ${(room.phase==='answer_results'||room.phase==='results')?`Correct answer: <strong>${esc(q.typeAnswer||'')}</strong>`:(hasAnswered?'Answer locked':'')}
+        </div>`;
+    }
+  }else{
+    const answers=displayAnswersFor(room,q);
+    $('studentAnswerGrid').innerHTML=answers.map((a,idx)=>{
+      const isSelected = hasAnswered && player.currentAnswerIndex===a.index;
+      const isLocked = room.phase!=='question_answers' || hasAnswered;
+      const isReveal=(room.phase==='answer_results'||room.phase==='results');
+      const isSelectedCorrect=isReveal && isSelected && a.index===q.correctIndex;
+      const isWrongSelected=isReveal && isSelected && a.index!==q.correctIndex;
+      const isCorrectAnswer=isReveal && a.index===q.correctIndex;
+      return `<button type="button" class="student-answer ${answerColors[idx%4]} ${isSelected?'selected':''} ${isLocked?'locked':''} ${isSelectedCorrect?'correct-reveal':''} ${isWrongSelected?'wrong-selected':''} ${isCorrectAnswer?'correct-answer-reveal':''}" data-answer-index="${a.index}">
+        <span class="student-answer-shape">${answerShapes[idx]}</span>
+        ${a.media?`<span class="thumb">${a.media.type==='video'?`<video src="${a.media.dataUrl}" muted playsinline></video>`:`<img src="${a.media.dataUrl}">`}</span>`:''}
+        ${a.text?`<span class="label-text">${esc(a.text)}</span>`:''}
+      </button>`;
+    }).join('');
+    $('studentAnswerGrid').querySelectorAll('[data-answer-index]').forEach(btn=>btn.onclick=async()=>{
+      if(room.phase!=='question_answers') return;
+      if(hasAnswered) return;
+      const idx=parseInt(btn.dataset.answerIndex,10);
+      await roomRef(room.code||currentStudentRoomCode).child('players').child(studentPlayerId).update({
+        currentAnswerIndex:idx,
+        currentTypedAnswer:null,
+        answerAt:firebase.database.ServerValue.TIMESTAMP,
+        answerQ:room.currentQ
+      });
+    });
+  }
+
+  if((room.phase==='answer_results'||room.phase==='results')){
+    const deltaText='+'+Number(player.lastDelta||0)+' pts';
+    $('studentResult').textContent=deltaText+(player.streakMsg?' '+player.streakMsg:'');
+  }else{
+    $('studentResult').textContent=hasAnswered && (room.phase==='question_answers'||room.phase==='answers'||room.phase==='question') ? 'Locked in — waiting for others' : '';
+  }
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const params=new URLSearchParams(location.search);
+  $('studentCode').value=(params.get('code')||'').replace(/\D/g,'').slice(0,6);
+  $('studentName').value=(params.get('name')||'').slice(0,20);
+  renderAvatarPicker();
+  $('studentJoinBtn').onclick=studentJoin;
+  $('studentCode').onkeydown=e=>{ if(e.key==='Enter') studentJoin(); };
+  $('studentName').onkeydown=e=>{ if(e.key==='Enter') studentJoin(); };
+});
+</script>
+<script>
+
+/* ===== HARD STUDENT FALLBACK RENDERER - FIX BLANK GAME SCREEN ===== */
+(function(){
+  const firebaseConfig = {
+  apiKey: "AIzaSyCjh16vsvzWmt9dUkH6O4brRf8hfTOhzYA",
+  authDomain: "tapblast-8e13a.firebaseapp.com",
+  projectId: "tapblast-8e13a",
+  databaseURL: "https://tapblast-8e13a-default-rtdb.firebaseio.com",
+  storageBucket: "tapblast-8e13a.firebasestorage.app",
+  messagingSenderId: "1069456061706",
+  appId: "1:1069456061706:web:0fc650dfac4de09de536f3",
+  measurementId: "G-QLTZFNLH2X"
+};
+  if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  var tbDb = firebase.database();
+  var TB_ROOT = "tapblast_clean_v1";
+  var $tb = function(id){ return document.getElementById(id); };
+  var colors = ['blue','green','orange','yellow'];
+  var shapes = ['A','B','C','D'];
+  var fallbackRoomCode = null;
+  var fallbackPlayerId = null;
+  var fallbackUnsub = null;
+
+  function esc(v){
+    return String(v == null ? '' : v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
+  }
+  function ref(code){ return tbDb.ref(TB_ROOT + '/rooms/' + code); }
+  function forceStudentScreen(){
+    var join=$tb('student-join-screen');
+    var screen=$tb('student-screen');
+    if(join){ join.classList.remove('active'); join.style.display='none'; }
+    if(screen){
+      screen.classList.add('active');
+      screen.classList.remove('hidden');
+      screen.style.display='flex';
+      screen.style.visibility='visible';
+      screen.style.opacity='1';
+    }
+    document.body.setAttribute('data-screen','student-screen');
+  }
+  function getQuestions(room){
+    if(room && room.quiz && Array.isArray(room.quiz.questions)) return room.quiz.questions;
+    if(room && room.quiz && room.quiz.questions && typeof room.quiz.questions==='object') return Object.values(room.quiz.questions);
+    if(room && Array.isArray(room.questions)) return room.questions;
+    return [];
+  }
+  function getQuestion(room){
+    var qs=getQuestions(room);
+    var idx=Number(room.currentQ || room.currentQuestion || room.questionIndex || 0);
+    return { q: qs[idx], idx: idx, total: qs.length };
+  }
+  function getAnswers(room,q){
+    var raw = Array.isArray(q.answers) ? q.answers.map(function(a,i){return Object.assign({index:i}, a);}) : [];
+    var order = Array.isArray(room.answerOrder) ? room.answerOrder : null;
+    if(order && order.length){
+      return order.map(function(i){ return raw[i]; }).filter(Boolean);
+    }
+    return raw;
+  }
+  function answered(player, room){
+    var idx=Number(room.currentQ || room.currentQuestion || room.questionIndex || 0);
+    return player && player.answerQ===idx && (typeof player.currentAnswerIndex==='number' || typeof player.currentTypedAnswer==='string');
+  }
+  async function submitAnswer(room, answerIndex){
+    if(!fallbackRoomCode || !fallbackPlayerId) return;
+    var idx=Number(room.currentQ || room.currentQuestion || room.questionIndex || 0);
+    await ref(fallbackRoomCode).child('players').child(fallbackPlayerId).update({
+      currentAnswerIndex: answerIndex,
+      currentTypedAnswer: null,
+      answerAt: firebase.database.ServerValue.TIMESTAMP,
+      answerQ: idx,
+      lastSeenAt: firebase.database.ServerValue.TIMESTAMP
+    });
+  }
+  function render(room, player){
+    forceStudentScreen();
+    if($tb('studentTopName')) $tb('studentTopName').textContent = (player && player.name) || 'Player';
+    if($tb('studentTopScore')) $tb('studentTopScore').textContent = String((player && player.score) || 0);
+
+    var phase = room.phase || 'lobby';
+    var active = ['question','answers','question_answers','question_media','paused','locked','answer_results','results'].indexOf(phase) >= 0;
+    if(phase==='lobby'){
+      if($tb('studentPhase')) $tb('studentPhase').textContent='Waiting Room';
+      if($tb('studentQuestionProgress')) $tb('studentQuestionProgress').textContent='';
+      if($tb('studentMedia')) $tb('studentMedia').innerHTML='';
+      if($tb('studentQuestion')) $tb('studentQuestion').textContent='You are in! Waiting for the host to start.';
+      if($tb('studentAnswerGrid')) $tb('studentAnswerGrid').innerHTML='';
+      if($tb('studentResult')) $tb('studentResult').textContent='';
+      return;
+    }
+    if(phase==='leaderboard'){
+      if($tb('studentPhase')) $tb('studentPhase').textContent='Scoreboard';
+      if($tb('studentQuestionProgress')) $tb('studentQuestionProgress').textContent='';
+      if($tb('studentMedia')) $tb('studentMedia').innerHTML='';
+      if($tb('studentQuestion')) $tb('studentQuestion').textContent='Get ready for the next question…';
+      if($tb('studentAnswerGrid')) $tb('studentAnswerGrid').innerHTML='';
+      if($tb('studentResult')) $tb('studentResult').textContent=(player && player.lastDelta)?('+'+player.lastDelta+' pts'):'';
+      return;
+    }
+    if(phase==='final' || phase==='ended'){
+      if($tb('studentPhase')) $tb('studentPhase').textContent='Game ended';
+      if($tb('studentQuestion')) $tb('studentQuestion').textContent='Final score: '+String((player&&player.score)||0);
+      if($tb('studentAnswerGrid')) $tb('studentAnswerGrid').innerHTML='';
+      return;
+    }
+    if(!active){
+      if($tb('studentPhase')) $tb('studentPhase').textContent='Connected';
+      if($tb('studentQuestion')) $tb('studentQuestion').textContent='Waiting for question…';
+      if($tb('studentAnswerGrid')) $tb('studentAnswerGrid').innerHTML='';
+      return;
+    }
+
+    var data=getQuestion(room);
+    var q=data.q;
+    if(!q){
+      if($tb('studentPhase')) $tb('studentPhase').textContent='Connected';
+      if($tb('studentQuestionProgress')) $tb('studentQuestionProgress').textContent='';
+      if($tb('studentMedia')) $tb('studentMedia').innerHTML='';
+      if($tb('studentQuestion')) $tb('studentQuestion').textContent='Question is loading…';
+      if($tb('studentAnswerGrid')) $tb('studentAnswerGrid').innerHTML='';
+      return;
+    }
+
+    if($tb('studentPhase')) $tb('studentPhase').textContent = (phase==='answer_results'||phase==='results') ? 'Answer revealed' : (phase==='locked' ? "Time's up" : 'Choose your answer');
+    if($tb('studentQuestionProgress')) $tb('studentQuestionProgress').textContent = 'Question ' + (data.idx+1) + '/' + Math.max(data.total, data.idx+1);
+    if($tb('studentQuestion')) $tb('studentQuestion').textContent = q.text || q.question || '';
+    if($tb('studentMedia')){
+      if(q.media && q.media.dataUrl){
+        $tb('studentMedia').innerHTML = q.media.type==='video' ? '<video src="'+q.media.dataUrl+'" controls playsinline></video>' : '<img src="'+q.media.dataUrl+'" alt="">';
+      }else{
+        $tb('studentMedia').innerHTML='';
+      }
+    }
+
+    var hasAnswered = answered(player, room);
+    var reveal = phase==='answer_results' || phase==='results';
+    var canAnswer = (phase==='question_answers' || phase==='answers' || phase==='question') && !hasAnswered;
+    var answers=getAnswers(room,q);
+    var grid=$tb('studentAnswerGrid');
+    if(!grid) return;
+
+    if(q.type==='type'){
+      if(canAnswer){
+        grid.innerHTML='<div class="student-type-wrap"><input id="tbFallbackTypedAnswer" type="text" placeholder="Type answer" autocomplete="off"><button id="tbFallbackTypeSubmit" type="button" class="btn accent">Submit</button></div>';
+        var btn=$tb('tbFallbackTypeSubmit');
+        if(btn) btn.onclick=async function(){
+          var val=($tb('tbFallbackTypedAnswer')&&$tb('tbFallbackTypedAnswer').value||'').trim();
+          if(!val) return;
+          await ref(fallbackRoomCode).child('players').child(fallbackPlayerId).update({
+            currentTypedAnswer: val,
+            currentAnswerIndex: null,
+            answerAt: firebase.database.ServerValue.TIMESTAMP,
+            answerQ: data.idx,
+            lastSeenAt: firebase.database.ServerValue.TIMESTAMP
+          });
+        };
+      }else{
+        grid.innerHTML='<div class="student-type-result">'+(reveal?'Correct answer: <strong>'+esc(q.typeAnswer||'')+'</strong>':(hasAnswered?'Answer locked':'Waiting...'))+'</div>';
+      }
+      return;
+    }
+
+    if(!answers.length){
+      grid.innerHTML='<div class="student-type-result">Answers are loading…</div>';
+      return;
+    }
+
+    grid.innerHTML = answers.map(function(a,pos){
+      var selected = hasAnswered && player.currentAnswerIndex===a.index;
+      var correct = reveal && a.index===q.correctIndex;
+      var wrong = reveal && selected && a.index!==q.correctIndex;
+      var media = '';
+      if(a.media && a.media.dataUrl){
+        media = '<span class="thumb">'+(a.media.type==='video'?'<video src="'+a.media.dataUrl+'" muted playsinline></video>':'<img src="'+a.media.dataUrl+'">')+'</span>';
+      }
+      return '<button type="button" class="student-answer '+colors[pos%4]+' '+(selected?'selected ':'')+(canAnswer?'':'locked ') +(correct?'correct-answer-reveal ':'')+(wrong?'wrong-selected ':'')+'" data-fallback-answer="'+a.index+'"><span class="student-answer-shape">'+shapes[pos]+'</span>'+media+(a.text?'<span class="label-text">'+esc(a.text)+'</span>':'')+'</button>';
+    }).join('');
+
+    grid.querySelectorAll('[data-fallback-answer]').forEach(function(btn){
+      btn.onclick=function(){
+        if(!canAnswer) return;
+        submitAnswer(room, parseInt(btn.getAttribute('data-fallback-answer'),10));
+      };
+    });
+
+    if($tb('studentResult')) $tb('studentResult').textContent = hasAnswered && !reveal ? 'Locked in — waiting for others' : (reveal && player && player.lastDelta ? '+'+player.lastDelta+' pts' : '');
+  }
+  async function joinNow(){
+    var codeEl=$tb('studentCode'), nameEl=$tb('studentName'), err=$tb('studentJoinError'), btn=$tb('studentJoinBtn');
+    var code=(codeEl&&codeEl.value||'').replace(/\D/g,'').slice(0,6);
+    var name=(nameEl&&nameEl.value||'').trim().slice(0,20);
+    fallbackRoomCode=code;
+    if(err) err.textContent='';
+    if(!code){ if(err) err.textContent='Enter the 6-digit room code'; return; }
+    if(!name){ if(err) err.textContent='Pick a nickname'; return; }
+    if(btn) btn.disabled=true;
+    try{
+      var r=ref(code);
+      var snap=await r.once('value');
+      if(!snap.exists()){ if(err) err.textContent='Room not found. Check the code and try again.'; return; }
+      var room=snap.val()||{};
+      fallbackPlayerId=sessionStorage.getItem('tapblast_player_'+code) || tbDb.ref().push().key;
+      sessionStorage.setItem('tapblast_player_'+code, fallbackPlayerId);
+      var existing=(room.players||{})[fallbackPlayerId]||{};
+      var playerData={
+        name:name,
+        score: typeof existing.score==='number'?existing.score:0,
+        joinedAt: existing.joinedAt || Date.now(),
+        lastSeenAt: firebase.database.ServerValue.TIMESTAMP,
+        currentAnswerIndex: typeof existing.currentAnswerIndex==='number'?existing.currentAnswerIndex:null,
+        currentTypedAnswer: typeof existing.currentTypedAnswer==='string'?existing.currentTypedAnswer:null,
+        answerAt: existing.answerAt || 0,
+        answerQ: typeof existing.answerQ==='number'?existing.answerQ:-1,
+        lastDelta: existing.lastDelta || 0,
+        streak: existing.streak || 0,
+        streakMsg: existing.streakMsg || '',
+        avatarEmoji: window.selectedStudentAvatar || '🐶',
+        avatarColor: window.selectedStudentColor || '#2563eb'
+      };
+      await r.child('players').child(fallbackPlayerId).update(playerData);
+      forceStudentScreen();
+      if($tb('studentPhase')) $tb('studentPhase').textContent='Connected';
+      if($tb('studentQuestion')) $tb('studentQuestion').textContent='Loading game…';
+
+      var fresh=await r.once('value');
+      var freshRoom=fresh.val()||room;
+      var freshPlayer=((freshRoom.players||{})[fallbackPlayerId])||playerData;
+      render(freshRoom,freshPlayer);
+
+      if(fallbackUnsub) fallbackUnsub();
+      var cb=function(s){
+        if(!s.exists()) return;
+        var rm=s.val()||{};
+        var pl=((rm.players||{})[fallbackPlayerId]);
+        if(pl) render(rm,pl);
+      };
+      r.on('value',cb);
+      fallbackUnsub=function(){r.off('value',cb);};
+    }catch(e){
+      console.error('Fallback join failed', e);
+      if(err) err.textContent='Could not join. Refresh and try again.';
+      var join=$tb('student-join-screen'); if(join){join.classList.add('active'); join.style.display='flex';}
+      var screen=$tb('student-screen'); if(screen){screen.classList.remove('active'); screen.style.display='none';}
+      document.body.setAttribute('data-screen','student-join-screen');
+    }finally{
+      if(btn) btn.disabled=false;
+    }
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    var btn=$tb('studentJoinBtn');
+    if(btn){
+      btn.onclick=function(e){ e.preventDefault(); joinNow(); };
+    }
+    var code=$tb('studentCode'), name=$tb('studentName');
+    if(code) code.addEventListener('keydown',function(e){ if(e.key==='Enter') joinNow(); });
+    if(name) name.addEventListener('keydown',function(e){ if(e.key==='Enter') joinNow(); });
+  });
+})();
+
+</script>
+</body>
+</html>
