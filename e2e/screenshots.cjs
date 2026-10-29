@@ -11,6 +11,7 @@ const DIST = path.join(__dirname, '..', 'dist-e2e');
 const OUT = process.env.OUT || path.join(__dirname, 'screenshots');
 const ALL_SIZES = {
   phone: { width: 375, height: 740, isMobile: true, hasTouch: true },
+  android: { width: 412, height: 780, isMobile: true, hasTouch: true },
   phoneL: { width: 430, height: 932, isMobile: true, hasTouch: true },
   tablet: { width: 820, height: 1180, isMobile: true, hasTouch: true },
   desktop: { width: 1280, height: 800 },
@@ -72,7 +73,7 @@ function seedDb(room) {
     const vp = ALL_SIZES[size];
     const dir = path.join(OUT, size);
     fs.mkdirSync(dir, { recursive: true });
-    const ctx = await browser.newContext({ viewport: { width: vp.width, height: vp.height }, isMobile: !!vp.isMobile, hasTouch: !!vp.hasTouch, deviceScaleFactor: 1 });
+    const ctx = await browser.newContext({ viewport: { width: vp.width, height: vp.height }, isMobile: !!vp.isMobile, hasTouch: !!vp.hasTouch, deviceScaleFactor: 1, reducedMotion: 'reduce' });
     await ctx.route('**/*', (route) => {
       const url = new URL(route.request().url());
       if (url.host !== 'tapblast.test') return route.fulfill({ status: 204, body: '' });
@@ -120,7 +121,9 @@ function seedDb(room) {
     await shot(t, '02-library');
     if (await t.isVisible('#mobileFoldersBtn')) {
       await t.click('#mobileFoldersBtn');
-      await shot(t, '03-library-folders-drawer');
+      await sleep(450);
+      // What's actually on screen (a full-page capture would hide a cut-off bottom).
+      await t.screenshot({ path: path.join(dir, '03-library-folders-drawer.png') });
       await t.click('#foldersBackdrop', { force: true }).catch(() => {});
       await t.evaluate(() => document.body.classList.remove('folders-open'));
     }

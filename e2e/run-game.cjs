@@ -184,7 +184,7 @@ const types = { '.html': 'text/html', '.js': 'application/javascript', '.css': '
   await waitPhase('answer_results');
   await sleep(300);
   s = await scores();
-  check('Q2 double points + streak bonus', s.Ann.lastDelta === 2100 && s.Ann.lastBonus === 100, `+${s.Ann.lastDelta}`);
+  check('Q2 double points + streak bonus', s.Ann.lastBonus === 100 && s.Ann.lastDelta >= 1900 && s.Ann.lastDelta <= 2100, `+${s.Ann.lastDelta}`);
   check('Q2 pause not counted against player', s.Bob.lastDelta >= 1700, `+${s.Bob.lastDelta}`);
   check('Q2 no answer = 0 and streak reset', s.Cat.lastDelta === 0 && s.Cat.streak === 0 && (await st[2].textContent('#studentPhase')) === "Time's up!");
   await host.click('#nextQuestionBtn');

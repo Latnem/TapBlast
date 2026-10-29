@@ -7336,3 +7336,145 @@ body[data-screen="student-screen"] #student-join-screen{
     white-space:nowrap !important;
   }
 }
+
+/* ===== Sound toggle (host: floating corner button; player: in the top bar) ===== */
+.sound-toggle{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.12);color:#fff;cursor:pointer;
+  padding:0;flex:0 0 auto;
+}
+.sound-toggle.is-muted{opacity:.6}
+#root .host-top .sound-toggle{margin-left:10px}
+.student-top-right{display:flex;align-items:center;gap:10px}
+
+/* ===== Folder drawer on phones/tablets: fit the *visible* screen =====
+   Mobile browsers make 100vh taller than what you can see (it ignores the
+   address bar), which hid Manage Folders / Settings. dvh = visible height. */
+@media(max-width:980px){
+  #root #library-screen .left-pane.library-sidebar{
+    height:100vh !important;
+    height:100dvh !important;
+    max-height:100dvh !important;
+    top:0 !important;
+    bottom:auto !important;
+    display:flex !important;
+    flex-direction:column !important;
+    overflow:hidden !important;
+    padding-bottom:calc(12px + env(safe-area-inset-bottom)) !important;
+  }
+  #root #library-screen .library-sidebar .sidebar-nav{
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    overflow-y:auto !important;
+  }
+  #root #library-screen .library-sidebar .sidebar-folder-tools,
+  #root #library-screen .library-sidebar .sidebar-bottom{
+    flex:0 0 auto !important;
+  }
+}
+
+/* =====================================================================
+   COZY COMPACT (phones). Same colors; tighter spacing, smaller blocks.
+   ===================================================================== */
+@media(max-width:640px){
+  /* --- Library --- */
+  #root #library-screen .dashboard-content{padding:10px !important}
+  #root #library-screen .option2-hero{padding:14px !important}
+  #root #library-screen .option2-hero-head{
+    display:flex !important;flex-direction:row !important;
+    align-items:flex-start !important;justify-content:space-between !important;gap:10px !important;
+    margin:0 !important;
+  }
+  #root #library-screen .option2-hero-head h1{font-size:1.3rem !important;line-height:1.2 !important;margin:0 !important}
+  #root #library-screen .option2-hero-head p{font-size:.84rem !important;margin:2px 0 0 !important}
+  #root #library-screen .option2-import-btn{
+    flex:0 0 auto !important;white-space:nowrap !important;
+    min-height:34px !important;padding:7px 12px !important;font-size:.8rem !important;margin:0 !important;
+  }
+  #root #library-screen .option2-search-row{margin:12px 0 !important}
+  #root #library-screen .option2-search-row .search-wrap.dashboard-search{flex:1 1 auto !important;max-width:none !important}
+  #root #library-screen .option2-grid{grid-template-columns:minmax(0, 1fr) !important;grid-auto-rows:auto !important;gap:10px !important}
+  #root #library-screen .option2-grid > .quiz-card,
+  #root #library-screen .option2-grid > .option2-create-card{min-height:0 !important;height:auto !important}
+  /* Create Quiz: a slim button instead of a big empty tile */
+  #root #library-screen .option2-create-card{
+    min-height:0 !important;height:auto !important;
+    flex-direction:row !important;gap:8px !important;
+    padding:12px !important;
+  }
+  #root #library-screen .option2-plus{font-size:1.3rem !important;line-height:1 !important;margin:0 !important}
+  /* Quiz cards: thumbnail on the left, details on the right */
+  #root #library-screen .option2-quiz-card{
+    display:grid !important;grid-template-columns:104px minmax(0, 1fr) !important;
+    align-items:stretch !important;
+  }
+  #root #library-screen .option2-cover{height:100% !important;min-height:96px !important}
+  #root #library-screen .option2-cover .quiz-placeholder-svg{width:34px !important;height:34px !important}
+  #root #library-screen .option2-card-body{
+    padding:10px 12px !important;display:flex !important;flex-direction:column !important;gap:3px !important;min-width:0 !important;
+  }
+  #root #library-screen .option2-card-title{
+    font-size:.98rem !important;line-height:1.25 !important;margin:0 !important;
+    display:-webkit-box !important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden !important;
+  }
+  #root #library-screen .option2-meta{font-size:.78rem !important;margin:0 !important}
+  #root #library-screen .option2-actions{margin-top:auto !important;padding-top:8px !important;gap:8px !important}
+  #root #library-screen .option2-host-btn{min-height:34px !important;height:34px !important;padding:0 14px !important;font-size:.88rem !important}
+  #root #library-screen .option2-more-btn{width:34px !important;min-width:34px !important;height:34px !important;min-height:34px !important}
+
+  /* --- Editor --- */
+  #root #editor-screen .topbar{
+    display:flex !important;flex-direction:row !important;flex-wrap:nowrap !important;
+    align-items:center !important;justify-content:space-between !important;gap:8px !important;
+    padding:10px 12px !important;
+  }
+  #root #editor-screen .topbar .brand{font-size:1.25rem !important}
+  #root #editor-screen .topbar > div:last-child{flex-wrap:nowrap !important;gap:6px !important}
+  #root #editor-screen .topbar .btn{min-height:34px !important;padding:6px 10px !important;font-size:.8rem !important;white-space:nowrap !important}
+  #root #editor-screen .topbar .btn .icon{display:none !important}
+  #root #editor-screen .editor-question-panel .panel,
+  #root #editor-screen .quiz-settings-card{padding:14px !important}
+  #root #editor-screen .question-media-row{display:block !important}
+  #root #editor-screen .question-media-drop-compact{min-height:0 !important;height:auto !important;padding:12px !important}
+  #root #editor-screen .question-media-preview-box:has(#questionMediaPreview:empty){display:none !important}
+  #root #editor-screen #questionText{min-height:72px !important}
+  #root #editor-screen .answers-grid{grid-template-columns:minmax(0, 1fr) !important;gap:8px !important}
+  /* Each answer on one compact row: letter, correct-radio, text, media button */
+  #root #editor-screen .answer-edit{
+    display:grid !important;grid-template-columns:minmax(0, 1fr) auto !important;align-items:center !important;
+    gap:6px 8px !important;padding:8px 10px 8px 12px !important;min-height:0 !important;
+  }
+  #root #editor-screen .answer-edit .top{grid-column:1 !important;margin:0 !important}
+  #root #editor-screen .answer-edit > div:last-child:not(.top):not(.answer-media-preview){grid-column:2 !important;grid-row:1 !important;margin:0 !important}
+  #root #editor-screen .answer-edit .answer-media-preview{grid-column:1 / -1 !important}
+  #root #editor-screen .answer-edit .answer-media-preview:empty{display:none !important}
+  #root #editor-screen .answer-edit .btn{padding:5px 9px !important;min-height:30px !important}
+
+  #root #editor-screen .answer-edit .btn{font-size:0 !important;gap:0 !important}
+  #root #editor-screen .answer-edit .btn .icon{font-size:16px !important}
+  #root #editor-screen .answer-edit .btn.ghost:not(.hidden){font-size:.75rem !important}
+
+  /* --- Scoreboard / podium top bars: one row of small buttons --- */
+  #root #leaderboard-screen .topbar,
+  #root #final-screen .topbar{
+    flex-wrap:nowrap !important;align-items:center !important;gap:8px !important;padding:12px !important;
+  }
+  #root #leaderboard-screen .topbar .btn,
+  #root #final-screen .topbar .btn{
+    min-height:34px !important;padding:7px 10px !important;font-size:.8rem !important;white-space:nowrap !important;
+  }
+  #root #leaderboard-screen .topbar .btn .icon,
+  #root #final-screen .topbar .btn .icon{display:none !important}
+
+  /* --- Player join --- */
+  #root #student-join-screen .join-hero{padding:16px 18px !important}
+  #root #student-join-screen .join-card{padding:18px !important}
+}
+@media(max-width:1180px){
+  /* Editor: no empty "No media selected" box until media is added */
+  #root #editor-screen .question-media-row:has(#questionMediaPreview:empty){display:block !important}
+  #root #editor-screen .question-media-preview-box:has(#questionMediaPreview:empty){display:none !important}
+  #root #editor-screen .question-media-drop-compact{min-height:0 !important;height:auto !important;padding:14px !important}
+}
