@@ -1,7 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { get, onValue, push, ref, serverTimestamp, update } from 'firebase/database';
 import { MediaView, Screen } from '../components/Screen';
 import { Icon } from '../components/Icon';
+import { SoundToggle } from '../components/SoundToggle';
+import { sound } from '../lib/sound';
+import { countUp, gsap, useGsap } from '../lib/anim';
 import { db, paths } from '../lib/firebase';
 import { ordinal } from '../lib/util';
 import {
@@ -156,16 +159,55 @@ function StudentPlay({ session }: { session: Session }) {
 
   const player = room?.players?.[session.playerId];
 
+  // Sounds + animations (hooks must run before any early return below).
+  const card = useRef<HTMLDivElement>(null);
+  const scoreEl = useRef<HTMLDivElement>(null);
+  const phase = room?.phase;
+  const qIndex = room?.currentQ;
+  const revealing = phase === 'answer_results';
+  const answering = phase === 'question_answers' || phase === 'paused';
+  useEffect(() => sound.preload(['correct', 'wrong']), []);
+  useEffect(() => {
+    if (revealing && player) sound.play(player.lastCorrect ? 'correct' : 'wrong');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [revealing, qIndex]);
+  useGsap(
+    card,
+    (q) => {
+      if (phase === 'question_answers') // Kept short: the answer clock is already running while this plays.
+        gsap.from(q('.student-answer'), { scale: 0.94, opacity: 0, y: 8, duration: 0.18, stagger: 0.035, ease: 'power2.out' });
+    },
+    [qIndex, answering],
+  );
+  useGsap(
+    card,
+    (q) => {
+      if (!revealing) return;
+      gsap.from(q('#studentPhase'), { scale: 1.5, duration: 0.5, ease: 'back.out(2.2)' });
+      gsap.from(q('#studentResult'), { y: 16, scale: 0.7, opacity: 0, duration: 0.5, delay: 0.1, ease: 'back.out(2)' });
+    },
+    [qIndex, revealing],
+  );
+  const shownScore = useRef(player?.score || 0);
+  useLayoutEffect(() => {
+    const next = player?.score || 0;
+    countUp(scoreEl.current, shownScore.current, next);
+    shownScore.current = next;
+  }, [player?.score]);
+
   const shell = (phaseText: string, body: React.ReactNode, opts: { question?: string; progress?: string; result?: React.ReactNode; resultClass?: string; media?: React.ReactNode } = {}) => (
     <Screen id="student-screen" className="student-shell">
       <div className="student-top">
         <div id="studentTopName">{player?.name || 'Player'}</div>
-        <div id="studentTopScore" className="student-top-score">
-          {player?.score || 0}
+        <div className="student-top-right">
+          <SoundToggle />
+          <div id="studentTopScore" className="student-top-score" ref={scoreEl}>
+            {player?.score || 0}
+          </div>
         </div>
       </div>
       <div className="student-main">
-        <div className="student-card">
+        <div className="student-card" ref={card}>
           <div id="studentPhase" className="student-phase">
             {phaseText}
           </div>

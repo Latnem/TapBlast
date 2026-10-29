@@ -27,6 +27,9 @@ npm run build      # type-check + production build into dist/
 | `src/game/roomStore.ts` | Where a game lives: Firebase for live games, memory for the editor's Preview. |
 | `src/screens/` | Login, library, editor, host game, player (student) screens. |
 | `src/styles/app.css` | The original stylesheet. The "RESPONSIVE CLEAN-UP" section at the end has the final say on layout. |
+| `src/lib/sound.ts` | Game sounds and music ([Howler.js](https://howlerjs.com)), with a mute button that's remembered per device. |
+| `src/lib/anim.ts` | Animations ([GSAP](https://gsap.com)): answer tiles pop in, correct answer bounces, scoreboard rows glide to their new rank, podium rises. Skipped when the device asks for reduced motion. |
+| `scripts/make-sounds.mjs` | Generates every sound in `public/sounds/` from scratch (no third-party audio). Run `node scripts/make-sounds.mjs` after tweaking; needs ffmpeg for the MP3s. |
 | `e2e/` | End-to-end test and the fake Firebase it uses. |
 | `public/legacy/` | The previous single-file version, kept as a fallback at `/legacy/`. |
 

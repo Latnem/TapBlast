@@ -1,6 +1,9 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Brand, MediaView, Screen } from '../components/Screen';
 import { Icon } from '../components/Icon';
+import { SoundToggle } from '../components/SoundToggle';
+import { sound } from '../lib/sound';
+import { countUp, gsap, useGsap } from '../lib/anim';
 import { HostController } from '../game/hostController';
 import type { RoomStore } from '../game/roomStore';
 import {
@@ -92,18 +95,73 @@ export function HostGame({ store, preview, onExit }: { store: RoomStore; preview
     return () => document.removeEventListener('keydown', onKey);
   }, [host]);
 
+  // Music and sound effects follow the game phase.
+  const prevPhase = useRef<Room['phase'] | undefined>(undefined);
+  useEffect(() => {
+    if (!phase || prevPhase.current === phase) return;
+    const prev = prevPhase.current;
+    prevPhase.current = phase;
+    switch (phase) {
+      case 'lobby':
+      case 'leaderboard':
+        sound.music('lobby');
+        break;
+      case 'question_answers':
+        if (prev !== 'paused') sound.play('go');
+        sound.music('question');
+        break;
+      case 'locked':
+        sound.music(null);
+        sound.play('timesup');
+        break;
+      case 'answer_results':
+        sound.music(null);
+        sound.play('reveal');
+        break;
+      case 'final':
+        sound.music(null);
+        sound.play('podium');
+        break;
+      default:
+        sound.music(null);
+    }
+  }, [phase]);
+  useEffect(() => {
+    sound.preload(['count', 'go', 'tick', 'timesup', 'reveal', 'join', 'podium']);
+    return () => sound.music(null);
+  }, []);
+
   if (!room) return null;
 
   const endGame = () => (preview ? onExit(true) : host.endGame());
-  if (room.phase === 'leaderboard') return <Leaderboard room={room} onNext={() => host.next()} onEnd={endGame} />;
-  if (room.phase === 'final') return <FinalResults room={room} onBack={() => onExit(true)} />;
-  if (room.phase === 'lobby') return <Lobby room={room} preview={preview} onStart={() => host.startQuiz()} onEnd={endGame} />;
-  return <QuestionView room={room} host={host} countdownAt={countdownEnd.current.at} onEnd={endGame} />;
+  let screen: React.ReactNode;
+  if (room.phase === 'leaderboard') screen = <Leaderboard room={room} onNext={() => host.next()} onEnd={endGame} />;
+  else if (room.phase === 'final') screen = <FinalResults room={room} onBack={() => onExit(true)} />;
+  else if (room.phase === 'lobby') screen = <Lobby room={room} preview={preview} onStart={() => host.startQuiz()} onEnd={endGame} />;
+  else screen = <QuestionView room={room} host={host} countdownAt={countdownEnd.current.at} onEnd={endGame} />;
+  return screen;
 }
 
 function Lobby({ room, preview, onStart, onEnd }: { room: Room; preview: boolean; onStart(): void; onEnd(): void }) {
   const players = sortedPlayers(room);
   const join = preview ? 'Preview mode' : getJoinUrl(room.code);
+  const chips = useRef<HTMLDivElement>(null);
+  const seen = useRef<Set<string> | null>(null);
+  // Pop sound + bounce for each player who joins while the lobby is open.
+  useLayoutEffect(() => {
+    const ids = new Set(players.map((p) => p.id));
+    if (seen.current) {
+      const fresh = players.filter((p) => !seen.current!.has(p.id));
+      if (fresh.length) {
+        sound.play('join');
+        fresh.forEach((p) => {
+          const el = chips.current?.querySelector(`[data-player="${CSS.escape(p.id)}"]`);
+          if (el) gsap.from(el, { scale: 0.4, opacity: 0, duration: 0.45, ease: 'back.out(2)' });
+        });
+      }
+    }
+    seen.current = ids;
+  }, [players.length]);
   return (
     <HostShell timer={null}>
       <div id="hostLobby" className="lobby-card lobby-combined" style={{ display: 'grid' }}>
@@ -127,10 +185,10 @@ function Lobby({ room, preview, onStart, onEnd }: { room: Room; preview: boolean
               {players.length}
             </span>
           </div>
-          <div id="playerChips" className="player-chips">
+          <div id="playerChips" className="player-chips" ref={chips}>
             {players.length ? (
               players.map((p) => (
-                <div key={p.id} className="player-chip player-chip-clean">
+                <div key={p.id} className="player-chip player-chip-clean" data-player={p.id}>
                   <span className="player-avatar-square" style={{ background: p.avatarColor || '#2563eb' }}>
                     {p.avatarEmoji || '🐶'}
                   </span>
@@ -179,6 +237,7 @@ function HostShell({ timer, children }: { timer: { text: string; ratio: number }
           <div id="hostTimer" ref={timerEl} className={`timer ${hide}`}>
             {timer?.text || ''}
           </div>
+          <SoundToggle />
         </div>
         <div className="host-content">{children}</div>
       </div>
@@ -233,6 +292,36 @@ function QuestionView({ room, host, countdownAt, onEnd }: { room: Room; host: Ho
   const isTypeQuestion = q.type === 'type';
   const answers = isTypeQuestion ? [] : displayAnswersFor(room, room.quiz, q);
 
+  // Countdown beeps, and a tick for each of the last five seconds.
+  const secondsLeft = Math.ceil(remainingMs / 1000);
+  useEffect(() => {
+    if (phase === 'countdown') sound.play('count');
+  }, [phase, countdownNum]);
+  useEffect(() => {
+    if (phase === 'question_answers' && secondsLeft > 0 && secondsLeft <= 5) sound.play('tick');
+  }, [phase, secondsLeft]);
+
+  const panel = useRef<HTMLDivElement>(null);
+  // Answer tiles pop in when the answers appear.
+  useGsap(
+    panel,
+    (q) => {
+      if (showAnswers) gsap.from(q('.host-answer, .host-type-answer'), { scale: 0.85, opacity: 0, y: 14, duration: 0.38, stagger: 0.07, ease: 'back.out(1.7)' });
+    },
+    [room.currentQ, showAnswers],
+  );
+  // Results: correct answer bounces, counts and scores slide in.
+  useGsap(
+    panel,
+    (q) => {
+      if (!isReveal) return;
+      gsap.from(q('.host-answer.correct'), { scale: 1.12, duration: 0.7, ease: 'elastic.out(1, 0.45)' });
+      gsap.from(q('.dist-row'), { x: -18, opacity: 0, duration: 0.3, stagger: 0.06, delay: 0.1 });
+      gsap.from(q('.host-score-row'), { y: 10, opacity: 0, duration: 0.3, stagger: 0.05, delay: 0.25 });
+    },
+    [room.currentQ, isReveal],
+  );
+
   const notice =
     phase === 'question_media' ? 'Video plays first — answers appear when it ends.'
     : phase === 'locked' ? 'Showing results…'
@@ -243,7 +332,7 @@ function QuestionView({ room, host, countdownAt, onEnd }: { room: Room; host: Ho
 
   return (
     <HostShell timer={{ text: timerText, ratio: remainingMs / totalMs }}>
-      <div id="hostQuestionPanel" className={`host-card host-question-layout ${q.media ? 'has-media' : 'no-media'} ${q.type === 'truefalse' ? 'tf-question' : ''} ${isReveal ? 'phase-results' : ''}`} style={{ display: 'grid' }}>
+      <div ref={panel} id="hostQuestionPanel" className={`host-card host-question-layout ${q.media ? 'has-media' : 'no-media'} ${q.type === 'truefalse' ? 'tf-question' : ''} ${isReveal ? 'phase-results' : ''}`} style={{ display: 'grid' }}>
         <div className="host-left-media-col">
           <div id="hostMedia" className="host-media">
             {q.media?.type === 'video' ? (
@@ -399,6 +488,24 @@ function Distribution({ room, q, answers, players }: { room: Room; q: Question; 
 
 function Leaderboard({ room, onNext, onEnd }: { room: Room; onNext(): void; onEnd(): void }) {
   const players = sortedPlayers(room);
+  const list = useRef<HTMLDivElement>(null);
+  // Each row glides from where it was ranked before this question; scores count up.
+  useGsap(
+    list,
+    (q) => {
+      const rows = q('.rank-row') as HTMLElement[];
+      if (!rows.length) return;
+      const step = rows[0].offsetHeight + 8;
+      rows.forEach((row, i) => {
+        row.style.animation = 'none';
+        const p = players[i];
+        const from = typeof p?.prevRank === 'number' ? (p.prevRank - (i + 1)) * step : 0;
+        gsap.from(row, { y: from, opacity: from ? 1 : 0, duration: 0.9, delay: 0.25 + i * 0.03, ease: 'power3.inOut' });
+        countUp(row.querySelector('.rank-score'), (p?.score || 0) - (p?.lastDelta || 0), p?.score || 0, 1.1);
+      });
+    },
+    [room.currentQ],
+  );
   return (
     <Screen id="leaderboard-screen">
       <div style={{ width: '100%' }}>
@@ -407,7 +514,8 @@ function Leaderboard({ room, onNext, onEnd }: { room: Room; onNext(): void; onEn
             <Brand />
             <div className="subtle">Scoreboard</div>
           </div>
-          <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <SoundToggle />
             <button id="leaderboardNextBtn" type="button" className="btn accent" onClick={onNext}>
               Next Question
               <Icon name="arrow_forward" />
@@ -422,7 +530,7 @@ function Leaderboard({ room, onNext, onEnd }: { room: Room; onNext(): void; onEn
             <div id="leaderboardTitle" className="lb-title">
               After Question {(room.currentQ || 0) + 1}
             </div>
-            <div id="leaderboardList">
+            <div id="leaderboardList" ref={list}>
               {players.length ? (
                 players.map((p, i) => {
                   const delta = typeof p.prevRank === 'number' && typeof p.rank === 'number' ? p.prevRank - p.rank : 0;
@@ -453,7 +561,23 @@ function Leaderboard({ room, onNext, onEnd }: { room: Room; onNext(): void; onEn
 function FinalResults({ room, onBack }: { room: Room; onBack(): void }) {
   const players = sortedPlayers(room);
   const initials = (n: string) => (n || '').trim().slice(0, 2).toUpperCase() || '??';
-  const pod = (p: PlayerWithId, cls: string, place: number) => (
+  const podiumRef = useRef<HTMLDivElement>(null);
+  // Kahoot-style reveal: 3rd place rises first, then 2nd, then the winner.
+  useGsap(
+    podiumRef,
+    (q) => {
+      const tl = gsap.timeline({ delay: 0.3 });
+      for (const cls of ['.bronze', '.silver', '.gold']) {
+        const pod = q(cls)[0];
+        if (!pod) continue;
+        tl.from(pod.querySelector('.pod-block'), { scaleY: 0, transformOrigin: '50% 100%', duration: 0.6, ease: 'back.out(1.4)' });
+        tl.from(pod.querySelectorAll('.pod-avatar, .pod-name, .pod-score'), { y: -24, opacity: 0, duration: 0.35, stagger: 0.06 }, '-=0.15');
+      }
+    },
+    [],
+  );
+  const pod = (p: PlayerWithId | undefined, cls: string, place: number) =>
+    p && (
     <div className={`pod ${cls}`}>
       <div className="pod-avatar">{initials(p.name)}</div>
       <div className="pod-name">{p.name}</div>
@@ -469,16 +593,19 @@ function FinalResults({ room, onBack }: { room: Room; onBack(): void }) {
             <Brand />
             <div className="subtle">Final Results 🎉</div>
           </div>
-          <button id="finalLibraryBtn" type="button" className="btn accent" onClick={onBack}>
-            <Icon name="home" />
-            Back to Library
-          </button>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <SoundToggle />
+            <button id="finalLibraryBtn" type="button" className="btn accent" onClick={onBack}>
+              <Icon name="home" />
+              Back to Library
+            </button>
+          </div>
         </div>
         <div className="final-wrap">
-          {players.length >= 3 && (
+          {players.length > 0 && (
             <div id="podiumCard" className="lb-card">
               <div className="lb-title">Podium</div>
-              <div id="podium" className="podium">
+              <div id="podium" className="podium" ref={podiumRef}>
                 {pod(players[1], 'silver', 2)}
                 {pod(players[0], 'gold', 1)}
                 {pod(players[2], 'bronze', 3)}
