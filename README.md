@@ -14,6 +14,7 @@ npm install
 npm run dev        # local dev server
 npm test           # unit tests (scoring, game flow, PDF import)
 npm run e2e        # full game in a headless browser against a fake Firebase
+npm run screenshots # every screen at phone/tablet/desktop/wide sizes -> e2e/screenshots/
 npm run build      # type-check + production build into dist/
 ```
 
@@ -25,7 +26,7 @@ npm run build      # type-check + production build into dist/
 | `src/game/hostController.ts` | Game flow: countdown → question → time's up → results → scoreboard → podium. |
 | `src/game/roomStore.ts` | Where a game lives: Firebase for live games, memory for the editor's Preview. |
 | `src/screens/` | Login, library, editor, host game, player (student) screens. |
-| `src/styles/app.css` | The original stylesheet, unchanged apart from small fixes noted at the end. |
+| `src/styles/app.css` | The original stylesheet. The "RESPONSIVE CLEAN-UP" section at the end has the final say on layout. |
 | `e2e/` | End-to-end test and the fake Firebase it uses. |
 | `public/legacy/` | The previous single-file version, kept as a fallback at `/legacy/`. |
 

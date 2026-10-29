@@ -61,7 +61,9 @@ export function LibraryScreen({
       if (!(e.target as Element).closest?.('.menu-wrap')) setOpenMenu(null);
     };
     const esc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') document.body.classList.remove('folders-open');
+      if (e.key !== 'Escape') return;
+      document.body.classList.remove('folders-open');
+      setOpenMenu(null);
     };
     document.addEventListener('click', close);
     document.addEventListener('keydown', esc);

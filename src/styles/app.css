@@ -7058,3 +7058,281 @@ body[data-screen="student-screen"] #student-join-screen{
 #hostQuestionPanel.phase-results .label-text{
   text-align:left !important;
 }
+
+/* =====================================================================
+   RESPONSIVE CLEAN-UP (React version)
+   Final word on layout; earlier patches above fight each other, so these
+   are scoped under #root to win. Colors come from the existing palette.
+   ===================================================================== */
+
+/* --- Library: search box must not stretch vertically when the row stacks --- */
+#root #library-screen .option2-search-row{
+  flex-direction:row !important;
+}
+#root #library-screen .option2-search-row .search-wrap.dashboard-search{
+  flex:0 1 380px !important;
+  width:100% !important;
+  max-width:420px !important;
+  min-width:0 !important;
+  height:auto !important;
+}
+
+/* --- Question progress pill ("Question 1/4"): one line, bar underneath --- */
+#root .student-question-progress,
+#root .game-question-progress{
+  display:inline-block !important;
+  white-space:nowrap !important;
+  align-self:flex-start !important;
+}
+#root .student-question-progress{
+  align-self:center !important;
+}
+#root .student-question-progress:empty,
+#root .game-question-progress:empty{
+  display:none !important;
+}
+#root #hostQuestionPanel .game-question-progress{
+  color:var(--royal-700) !important;
+  background:var(--sky-50) !important;
+  border-color:var(--line) !important;
+}
+
+/* --- Player screen: question text is on a dark card at every size --- */
+#root #student-screen #studentQuestion{
+  color:#ffffff !important;
+}
+
+/* --- Host controls on the white card: Pause readable, End Game red --- */
+#root #hostQuestionPanel .control-row .btn.outline{
+  background:#ffffff !important;
+  color:var(--royal-700) !important;
+  -webkit-text-fill-color:var(--royal-700) !important;
+  border:1px solid var(--line) !important;
+}
+#root #hostQuestionPanel .control-row #endGameBtn{
+  background:var(--danger) !important;
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+  border-color:var(--danger) !important;
+  margin-left:auto !important;
+}
+
+/* --- Host results: answer rows sit together, highlighted tile not clipped --- */
+#root #hostQuestionPanel.phase-results .host-answers{
+  grid-auto-rows:auto !important;
+  align-content:start !important;
+  height:auto !important;
+  min-height:0 !important;
+  overflow:visible !important;
+  padding:4px !important;
+}
+#root #hostQuestionPanel.phase-results .host-answer.dim{
+  transform:none !important;
+}
+
+/* Results have more content than a question: let the card grow so the
+   Scoreboard / Final Results button is never cut off. */
+#root #hostQuestionPanel.phase-results.host-question-layout.host-question-layout{
+  height:auto !important;
+  max-height:none !important;
+  overflow:visible !important;
+}
+#root #hostQuestionPanel.phase-results .host-right-content-col{
+  height:auto !important;
+  max-height:none !important;
+  overflow:visible !important;
+}
+#root #hostQuestionPanel.phase-results #hostAnswers,
+#root #hostQuestionPanel.phase-results #hostDistribution{
+  flex-shrink:0 !important;
+}
+
+/* --- Host question: tiles fill the space instead of leaving gaps --- */
+#root #hostQuestionPanel:not(.phase-results) .host-answer{
+  height:auto !important;
+  min-height:110px !important;
+}
+
+/* --- Host on big screens (projectors): use more of the width --- */
+@media(min-width:1500px){
+  #root #host-screen .host-content{
+    max-width:none !important;
+    width:100% !important;
+  }
+  #root #hostQuestionPanel.host-question-layout.host-question-layout{
+    width:min(92vw, 1500px) !important;
+    max-width:1500px !important;
+  }
+  #root #hostQuestionPanel.no-media.host-question-layout.host-question-layout{
+    grid-template-columns:minmax(0, 1fr) !important;
+  }
+}
+
+/* --- Rank rows (scoreboard / podium list): never wider than the screen --- */
+#root .rank-row > *{
+  min-width:0;
+}
+#root .rank-name{
+  flex:1 1 auto;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+#root .rank-score{
+  flex:0 0 auto;
+}
+
+/* --- Editor: tablet = questions column + editor, settings under editor --- */
+@media(max-width:1180px) and (min-width:761px){
+  #root #editor-screen .editor-shell.editor-three-col{
+    display:grid !important;
+    grid-template-columns:240px minmax(0, 1fr) !important;
+    width:calc(100vw - 32px) !important;
+  }
+  #root #editor-screen .editor-questions-panel{
+    grid-column:1 !important;
+    grid-row:1 / span 2 !important;
+    position:sticky !important;
+    top:10px !important;
+    height:auto !important;
+    max-height:calc(100vh - 20px) !important;
+  }
+  #root #editor-screen .editor-questions-panel .question-list{
+    display:flex !important;
+    flex-direction:column !important;
+    overflow-x:hidden !important;
+    overflow-y:auto !important;
+  }
+  #root #editor-screen .editor-questions-panel .question-card{
+    flex:0 0 auto !important;
+    width:auto !important;
+  }
+  #root #editor-screen .editor-question-panel{
+    grid-column:2 !important;
+    grid-row:1 !important;
+    min-width:0 !important;
+  }
+  #root #editor-screen .editor-right-settings{
+    grid-column:2 !important;
+    grid-row:2 !important;
+    width:auto !important;
+    max-width:none !important;
+    position:static !important;
+    height:auto !important;
+    max-height:none !important;
+  }
+  #root #editor-screen .editor-right-settings .quiz-settings-card{
+    width:100% !important;
+    max-width:none !important;
+  }
+}
+
+/* --- Phones: one column, nothing wider than the screen --- */
+@media(max-width:760px){
+  /* Editor: questions strip, then the question, then quiz settings */
+  #root #editor-screen .topbar{
+    position:static !important;
+    width:calc(100vw - 20px) !important;
+    margin:10px auto 0 !important;
+  }
+  #root #editor-screen .editor-shell.editor-three-col{
+    display:flex !important;
+    flex-direction:column !important;
+    width:calc(100vw - 20px) !important;
+    max-width:100% !important;
+    margin:0 auto !important;
+  }
+  #root #editor-screen .editor-questions-panel,
+  #root #editor-screen .editor-question-panel,
+  #root #editor-screen .editor-right-settings{
+    position:static !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    height:auto !important;
+    max-height:none !important;
+    margin:0 !important;
+  }
+  #root #editor-screen .editor-questions-panel{ order:1 !important; }
+  #root #editor-screen .editor-question-panel{ order:2 !important; padding:14px !important; }
+  #root #editor-screen .editor-right-settings{ order:3 !important; padding:14px !important; }
+  #root #editor-screen .editor-right-settings .quiz-settings-card{
+    width:100% !important;
+    max-width:none !important;
+  }
+  #root #editor-screen .editor-questions-panel .question-list{
+    display:flex !important;
+    flex-direction:row !important;
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
+    max-width:100% !important;
+  }
+  #root #editor-screen .editor-questions-panel .question-card{
+    flex:0 0 200px !important;
+  }
+
+  /* Host: one column, media above the question.
+     (Doubled class outranks the older :has(#hostMedia:empty) rule.) */
+  #root #hostQuestionPanel.host-question-layout.host-question-layout{
+    grid-template-columns:minmax(0, 1fr) !important;
+    width:calc(100vw - 20px) !important;
+    max-width:100% !important;
+    padding:14px !important;
+    gap:12px !important;
+  }
+  #root #hostQuestionPanel .host-right-content-col,
+  #root #hostQuestionPanel .host-left-media-col{
+    min-width:0 !important;
+    width:100% !important;
+  }
+  #root #hostQuestionPanel.no-media .host-left-media-col{
+    display:none !important;
+  }
+  #root #hostQuestionPanel .host-answers{
+    grid-template-columns:1fr 1fr !important;
+  }
+  #root #hostQuestionPanel .answer-dist{
+    width:100% !important;
+  }
+  #root #hostQuestionPanel .host-answer .label-text{
+    white-space:normal !important;
+    overflow:visible !important;
+    text-overflow:clip !important;
+    overflow-wrap:anywhere !important;
+    line-height:1.15 !important;
+  }
+  #root #hostQuestionPanel .stat-row{
+    display:grid !important;
+    grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+    gap:8px !important;
+  }
+  #root #hostQuestionPanel .stat-row .stat{
+    min-width:0 !important;
+    padding-left:6px !important;
+    padding-right:6px !important;
+  }
+  #root .rank-row{
+    gap:8px !important;
+    padding:10px 12px !important;
+  }
+  #root .final-wrap{
+    grid-template-columns:minmax(0, 1fr) !important;
+    padding:0 10px 20px !important;
+    margin:16px auto !important;
+  }
+  #root .podium{
+    gap:8px !important;
+    max-width:100% !important;
+  }
+  #root .pod{
+    flex:1 1 0 !important;
+    min-width:0 !important;
+    width:auto !important;
+  }
+  #root .pod-name{
+    max-width:100% !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+  }
+}

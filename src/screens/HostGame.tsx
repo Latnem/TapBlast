@@ -313,7 +313,7 @@ function QuestionView({ room, host, countdownAt, onEnd }: { room: Room; host: Ho
           </div>
           <div className="control-row">
             {phase === 'question_answers' && (
-              <button id="pauseBtn" type="button" className="btn outline" style={{ background: 'rgba(255,255,255,.1)', color: '#fff', borderColor: 'rgba(255,255,255,.2)' }} onClick={() => host.pause(room)}>
+              <button id="pauseBtn" type="button" className="btn outline" onClick={() => host.pause(room)}>
                 <Icon name="pause" />
                 Pause
               </button>
@@ -334,7 +334,7 @@ function QuestionView({ room, host, countdownAt, onEnd }: { room: Room; host: Ho
                 {isLastQuestion(room) ? 'Final Results' : 'Scoreboard'}
               </button>
             )}
-            <button id="endGameBtn" type="button" className="btn outline" style={{ background: 'rgba(255,255,255,.1)', color: '#fff', borderColor: 'rgba(255,255,255,.2)' }} onClick={onEnd}>
+            <button id="endGameBtn" type="button" className="btn outline" onClick={onEnd}>
               End Game
             </button>
           </div>
